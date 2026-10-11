@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 
 type GateState =
   | { kind: 'checking' }
-  | { kind: 'enroll'; factorId: string; qrCode: string; uri: string }
+  | { kind: 'enroll'; factorId: string; qrCode: string; uri: string; secret: string }
   | { kind: 'challenge'; factorId: string }
   | { kind: 'error'; message: string }
   | { kind: 'ready' };
@@ -64,7 +64,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       setState({ kind: 'error', message: enrollmentError.message });
       return;
     }
-    setState({ kind: 'enroll', factorId: enrollment.id, qrCode: enrollment.totp.qr_code, uri: enrollment.totp.uri });
+    setState({ kind: 'enroll', factorId: enrollment.id, qrCode: enrollment.totp.qr_code, uri: enrollment.totp.uri, secret: enrollment.totp.secret });
   }, []);
 
   useEffect(() => {
@@ -122,8 +122,14 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
           : 'Enter the current six-digit code from your authenticator app to access the System Admin dashboard.'}</p>
         {enrolling && (
           <div className="mfa-enrollment">
-            <img src={state.qrCode} alt="Authenticator enrollment QR code" />
-            <details><summary>Can't scan the QR code?</summary><code>{state.uri}</code></details>
+            <img src={state.qrCode} alt="Authenticator enrollment QR code" style={{ display: 'block', width: 'min(100%, 320px)', height: 'auto', aspectRatio: '1 / 1', objectFit: 'contain', background: '#fff', padding: '12px', boxSizing: 'border-box', imageRendering: 'pixelated', margin: '16px auto' }} />
+            <details>
+              <summary>Can't scan the QR code? Set up manually</summary>
+              <p>In your authenticator app, choose the option to enter a setup key manually. Enter this secret key:</p>
+              <code style={{ display: 'block', overflowWrap: 'anywhere', userSelect: 'all', padding: '10px' }}>{state.secret}</code>
+              <button type="button" className="secondary-button" onClick={() => void navigator.clipboard.writeText(state.secret).then(() => setMessage('Setup key copied.')).catch(() => setMessage('Select and copy the setup key above.'))}>Copy setup key</button>
+              <p>Account: your System Admin email. Type: time-based (TOTP).</p>
+            </details>
           </div>
         )}
         <form onSubmit={verify}>
