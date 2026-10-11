@@ -79,18 +79,37 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
         });
       }
     }, 12000);
-    void inspect().catch((error) => {
-      if (active) {
-        setState({
-          kind: 'error',
-          message: error instanceof Error ? error.message : 'The security check failed unexpectedly. Please retry.',
-        });
+    const runInspection = () => {
+      setState({ kind: 'checking' });
+      void inspect().catch((error) => {
+        if (active) {
+          setState({
+            kind: 'error',
+            message: error instanceof Error ? error.message : 'The security check failed unexpectedly. Please retry.',
+          });
+        }
+      }).finally(() => {
+        window.clearTimeout(timeoutId);
+      });
+    };
+
+    runInspection();
+
+    // The gate mounts before the login form is submitted. Re-check as soon as
+    // Supabase emits SIGNED_IN so privileged pages never render before MFA.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        setState({ kind: 'checking' });
+        // Defer Supabase calls until the auth callback has completed.
+        window.setTimeout(() => {
+          if (active) runInspection();
+        }, 0);
       }
-    }).finally(() => {
-      window.clearTimeout(timeoutId);
     });
+
     return () => {
       active = false;
+      subscription.unsubscribe();
       window.clearTimeout(timeoutId);
     };
   }, [inspect]);
