@@ -58,7 +58,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
     }
     const { data: enrollment, error: enrollmentError } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
-      friendlyName: 'Web2Table System Admin',
+      friendlyName: `Web2Table System Admin ${new Date().toISOString().replace(/[:.]/g, '-')}`,
     });
     if (enrollmentError) {
       setState({ kind: 'error', message: enrollmentError.message });
