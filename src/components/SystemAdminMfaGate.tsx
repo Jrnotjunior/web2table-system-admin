@@ -71,13 +71,27 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
     // Run once per mount. Re-running on every auth/token event can race MFA
     // enrollment and leave the gate repeatedly returning to "checking".
     let active = true;
-    const runInspection = async () => {
-      await inspect();
-      if (!active) return;
-    };
-    void runInspection();
+    const timeoutId = window.setTimeout(() => {
+      if (active) {
+        setState({
+          kind: 'error',
+          message: 'The security check is taking too long. Please refresh the page. If this continues, sign out and sign in again, then retry.',
+        });
+      }
+    }, 12000);
+    void inspect().catch((error) => {
+      if (active) {
+        setState({
+          kind: 'error',
+          message: error instanceof Error ? error.message : 'The security check failed unexpectedly. Please retry.',
+        });
+      }
+    }).finally(() => {
+      window.clearTimeout(timeoutId);
+    });
     return () => {
       active = false;
+      window.clearTimeout(timeoutId);
     };
   }, [inspect]);
 
