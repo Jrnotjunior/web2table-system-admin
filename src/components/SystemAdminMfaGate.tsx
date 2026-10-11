@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
 
 type GateState =
@@ -13,6 +13,8 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const inspectionInFlight = useRef(false);
+  const lastInspectedUserId = useRef<string | null>(null);
 
   const inspect = useCallback(async () => {
     setState({ kind: 'checking' });
@@ -23,6 +25,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       return;
     }
     const user = sessionResult.session?.user;
+    lastInspectedUserId.current = user?.id ?? null;
     if (!user || user.app_metadata?.role !== 'system_admin') {
       setState({ kind: 'ready' });
       return;
@@ -80,7 +83,9 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       }
     }, 12000);
     const runInspection = () => {
-      setState({ kind: 'checking' });
+      // Prevent overlapping checks from racing each other and flashing the UI.
+      if (!active || inspectionInFlight.current) return;
+      inspectionInFlight.current = true;
       void inspect().catch((error) => {
         if (active) {
           setState({
@@ -89,23 +94,23 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
           });
         }
       }).finally(() => {
+        inspectionInFlight.current = false;
         window.clearTimeout(timeoutId);
       });
     };
 
-    runInspection();
-
-    // The gate mounts before the login form is submitted. Re-check as soon as
-    // Supabase emits SIGNED_IN so privileged pages never render before MFA.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        setState({ kind: 'checking' });
-        // Defer Supabase calls until the auth callback has completed.
-        window.setTimeout(() => {
-          if (active) runInspection();
-        }, 0);
-      }
+    // Subscribe before the initial inspection so a login during page startup
+    // cannot be missed. Ignore duplicate SIGNED_IN events for the same user.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== 'SIGNED_IN' || !session?.user) return;
+      if (lastInspectedUserId.current === session.user.id || inspectionInFlight.current) return;
+      setState({ kind: 'checking' });
+      window.setTimeout(() => {
+        if (active) runInspection();
+      }, 0);
     });
+
+    runInspection();
 
     return () => {
       active = false;
