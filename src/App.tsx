@@ -3120,4 +3120,10 @@ function AppContent() {
   );
 }
 
-export default function App() {\n  return (\n    <SystemAdminMfaGate>\n      <AppContent />\n    </SystemAdminMfaGate>\n  );\n}
+export default function App() {
+  return (
+    <SystemAdminMfaGate>
+      <AppContent />
+    </SystemAdminMfaGate>
+  );
+}
