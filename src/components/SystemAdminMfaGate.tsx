@@ -26,7 +26,21 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
     }
     const user = sessionResult.session?.user;
     lastInspectedUserId.current = user?.id ?? null;
-    if (!user || user.app_metadata?.role !== 'system_admin') {
+    if (!user) {
+      setState({ kind: 'ready' });
+      return;
+    }
+
+    // Do not rely on app_metadata.role: the System Admin authorization source
+    // is the database access record, and JWT metadata can be absent/stale.
+    const { data: accessData, error: accessError } = await supabase.rpc('system_admin_get_my_access_level');
+    if (accessError) {
+      setState({ kind: 'error', message: accessError.message });
+      return;
+    }
+    const access = Array.isArray(accessData) ? accessData[0] : accessData;
+    if (!access?.access_level || access.is_active !== true || access.status !== 'active') {
+      // A signed-in non-admin should not be blocked by the System Admin gate.
       setState({ kind: 'ready' });
       return;
     }
