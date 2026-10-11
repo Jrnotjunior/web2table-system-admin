@@ -116,6 +116,13 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
     // Subscribe before the initial inspection so a login during page startup
     // cannot be missed. Ignore duplicate SIGNED_IN events for the same user.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        lastInspectedUserId.current = null;
+        setCode('');
+        setMessage('');
+        setState({ kind: 'ready' });
+        return;
+      }
       if (event !== 'SIGNED_IN' || !session?.user) return;
       if (lastInspectedUserId.current === session.user.id || inspectionInFlight.current) return;
       setState({ kind: 'checking' });
@@ -197,7 +204,15 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
           <button type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying…' : enrolling ? 'Verify and enable MFA' : 'Verify and continue'}</button>
         </form>
         <div className="mfa-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', marginTop: '12px', width: '100%' }}>
-          <button type="button" className="secondary-button" style={{ position: 'static', float: 'none', margin: 0, flex: '0 0 auto' }} onClick={() => void supabase.auth.signOut()}>Sign out</button>
+          <button type="button" className="secondary-button" style={{ position: 'static', float: 'none', margin: 0, flex: '0 0 auto' }} onClick={async () => {
+            setBusy(true);
+            setMessage('');
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+              setMessage(`Unable to sign out: ${error.message}`);
+              setBusy(false);
+            }
+          }}>Sign out</button>
         </div>
       </section>
     </main>
