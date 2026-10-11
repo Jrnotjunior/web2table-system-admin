@@ -158,7 +158,9 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
           {message && <p role="alert" className="error-banner">{message}</p>}
           <button type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying…' : enrolling ? 'Verify and enable MFA' : 'Verify and continue'}</button>
         </form>
-        <button type="button" className="secondary-button" onClick={() => void supabase.auth.signOut()}>Sign out</button>
+        <div className="mfa-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', marginTop: '12px', width: '100%' }}>
+          <button type="button" className="secondary-button" style={{ position: 'static', float: 'none', margin: 0, flex: '0 0 auto' }} onClick={() => void supabase.auth.signOut()}>Sign out</button>
+        </div>
       </section>
     </main>
   );
