@@ -68,11 +68,17 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
   }, []);
 
   useEffect(() => {
-    void inspect();
-    const { data } = supabase.auth.onAuthStateChange(() => {
-      window.setTimeout(() => void inspect(), 0);
-    });
-    return () => data.subscription.unsubscribe();
+    // Run once per mount. Re-running on every auth/token event can race MFA
+    // enrollment and leave the gate repeatedly returning to "checking".
+    let active = true;
+    const runInspection = async () => {
+      await inspect();
+      if (!active) return;
+    };
+    void runInspection();
+    return () => {
+      active = false;
+    };
   }, [inspect]);
 
   async function verify(event: React.FormEvent) {
