@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { supabase } from './lib/supabase';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
+import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 
 type AdminPage = 'dashboard' | 'restaurants' | 'audit' | 'administrators' | 'health' | 'maps';
 
@@ -48,7 +49,7 @@ const emptyForm: RestaurantForm = {
   is_active: true,
 };
 
-function App() {
+function AppContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [signedIn, setSignedIn] = useState(false);
@@ -3119,4 +3120,4 @@ function App() {
   );
 }
 
-export default App;
+export default function App() {\n  return (\n    <SystemAdminMfaGate>\n      <AppContent />\n    </SystemAdminMfaGate>\n  );\n}
