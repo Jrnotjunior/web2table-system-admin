@@ -300,3 +300,6 @@ input{width:100%;margin-top:.4rem;border:1px solid rgba(255,255,255,.14);border-
   .workspace-topbar>div:first-child strong{font-size:14px}
   .topbar-kicker{font-size:8px}
 }
+
+/* The new workspace shell must not inherit the legacy fixed desktop canvas. */
+body{min-width:320px}
