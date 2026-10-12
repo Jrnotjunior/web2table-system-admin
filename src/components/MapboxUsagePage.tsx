@@ -64,6 +64,10 @@ export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrator
         <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console<button type="button" onClick={onSignOut}>Sign out</button></div>
       </aside>
       <div className="admin-main">
+      <header className="workspace-topbar">
+        <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Mapbox usage</strong></div>
+        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={onSignOut}><span className="topbar-avatar">SA</span><span>System Admin<small>{accessLevel === 'owner' ? 'Owner access' : accessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">↗</span></button></div>
+      </header>
       <main className="admin-shell admin-shell-with-sidebar">
       <section className="dashboard-card mapbox-usage-card">
         <div className="mapbox-usage-toolbar">
