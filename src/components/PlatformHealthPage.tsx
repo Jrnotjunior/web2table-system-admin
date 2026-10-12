@@ -90,7 +90,7 @@ export default function PlatformHealthPage({ onBack, onRestaurants, onAdministra
 
   return (
     <div className="admin-layout">
-      <SystemAdminSidebar activePage="health" accessLevel={accessLevel} onDashboard={onBack} onRestaurants={onRestaurants} onAdministrators={onAdministrators} onAuditLogs={onAuditLogs} onPlatformHealth={() => {}} onMapboxUsage={onMapboxUsage} />
+      <SystemAdminSidebar activePage="health" accessLevel={accessLevel} onDashboard={onBack} onRestaurants={onRestaurants} onAdministrators={onAdministrators} onAuditLogs={onAuditLogs} onPlatformHealth={() => {}} onMapboxUsage={onMapboxUsage} onSignOut={onSignOut} />
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Platform health</strong></div>
