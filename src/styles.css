@@ -811,3 +811,9 @@ body{min-width:320px}
   .totp-confirm-modal .modal-actions{padding:14px 18px 18px}
   .totp-confirm-modal .modal-actions button{flex:1}
 }
+
+
+/* Keep the branded TOTP confirmation above all dashboard content. */
+.totp-confirm-modal{position:relative;z-index:31;max-height:calc(100vh - 40px);overflow:auto}
+.totp-confirm-modal .modal-header{display:block}
+.totp-confirm-modal .modal-actions button{min-height:42px;pointer-events:auto}
