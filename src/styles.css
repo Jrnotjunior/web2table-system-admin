@@ -545,3 +545,39 @@ body{min-width:320px}
   letter-spacing:.35em;
   font-variant-numeric:tabular-nums;
 }
+
+
+/* Tight sidebar branding: keep the logo prominent without wasting vertical space above navigation. */
+.admin-sidebar .sidebar-brand{
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:0 !important;
+  padding:0 8px 10px !important;
+  margin:0 !important;
+  min-height:0 !important;
+  text-align:center !important;
+}
+.admin-sidebar .sidebar-brand img{
+  display:block !important;
+  width:132px !important;
+  height:74px !important;
+  flex:0 0 74px !important;
+  object-fit:contain !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  filter:none !important;
+  mix-blend-mode:screen !important;
+}
+.admin-sidebar .sidebar-brand .sidebar-brand-label{
+  display:block !important;
+  margin:0 !important;
+  line-height:1.15 !important;
+}
+@media(max-width:760px){
+  .admin-sidebar .sidebar-brand{gap:0 !important;padding:0 4px 8px !important}
+  .admin-sidebar .sidebar-brand img{width:94px !important;height:58px !important;flex-basis:58px !important}
+}
