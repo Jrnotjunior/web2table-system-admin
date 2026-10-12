@@ -1349,7 +1349,7 @@ function AppContent() {
     return (
       <main className="auth-shell">
         <section className="auth-card">
-          <img className="company-logo auth-logo" src="/web2table-system-admin/web2table.png" alt="WEB2TABLE" />
+          <img className="company-logo auth-logo" src="/web2table-system-admin/web2table.png?v=20261012" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE Platform</div>
           <h1>Set up your account</h1>
           <p>You have been invited as a System Administrator. Create your password to activate your account.</p>
@@ -1390,7 +1390,7 @@ function AppContent() {
     return (
       <main className="auth-shell">
         <section className="auth-card">
-          <img className="company-logo auth-logo" src="/web2table-system-admin/web2table.png" alt="WEB2TABLE" />
+          <img className="company-logo auth-logo" src="/web2table-system-admin/web2table.png?v=20261012" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE Platform</div>
           <h1>System Admin</h1>
           <p>Sign in to manage restaurants and platform settings.</p>
@@ -1436,7 +1436,7 @@ function AppContent() {
       <div className="admin-layout">
         <aside className="admin-sidebar" aria-label="System administration navigation">
           <button type="button" className="sidebar-brand" onClick={() => openDashboard()} aria-label="Web2Table System Admin home">
-            <img src="/web2table-system-admin/web2table.png" alt="" />
+            <img src="/web2table-system-admin/web2table.png?v=20261012" alt="" />
             <span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span>
           </button>
           <nav className="sidebar-nav">
@@ -1520,7 +1520,7 @@ function AppContent() {
     return (
       <div className="admin-layout">
       <aside className="admin-sidebar" aria-label="System administration navigation">
-        <button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png" alt="" /><span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span></button>
+        <button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png?v=20261012" alt="" /><span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span></button>
         <nav className="sidebar-nav">
           <button type="button" className="sidebar-nav-item" onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
           <button type="button" className="sidebar-nav-item" onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
@@ -1647,7 +1647,7 @@ function AppContent() {
 
       <div className="admin-layout">
       <aside className="admin-sidebar" aria-label="System administration navigation">
-        <button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png" alt="" /><span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span></button>
+        <button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png?v=20261012" alt="" /><span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span></button>
         <nav className="sidebar-nav">
           <button type="button" className="sidebar-nav-item" onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
           <button type="button" className="sidebar-nav-item" onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
@@ -2727,7 +2727,7 @@ function AppContent() {
     <div className="admin-layout">
       <aside className="admin-sidebar" aria-label="System administration navigation">
         <button type="button" className="sidebar-brand" onClick={() => openDashboard()} aria-label="Web2Table System Admin home">
-          <img src="/web2table-system-admin/web2table.png" alt="" />
+          <img src="/web2table-system-admin/web2table.png?v=20261012" alt="" />
           <span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span>
         </button>
         <nav className="sidebar-nav">
