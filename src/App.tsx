@@ -1550,6 +1550,28 @@ function AppContent() {
             )}
           </section>
         </main>
+        {pendingTotpReset && (
+          <div className="modal-backdrop totp-reset-confirm-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && staffActionId === null) setPendingTotpReset(null); }}>
+            <section className="modal-card totp-reset-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="totp-reset-confirm-title">
+              <div className="modal-heading">
+                <div><div className="eyebrow">ACCOUNT SECURITY</div><h2 id="totp-reset-confirm-title">Reset authenticator?</h2></div>
+                <button className="icon-button" type="button" onClick={() => setPendingTotpReset(null)} disabled={staffActionId !== null} aria-label="Close">×</button>
+              </div>
+              <div className="totp-reset-confirm-content">
+                <p>You're about to reset the authenticator for <strong>{pendingTotpReset.displayName}</strong>.</p>
+                <p>They'll need to sign in and set up a new authenticator before accessing Web2Table.</p>
+                <p className="totp-reset-confirm-note">Their password and account role will remain unchanged.</p>
+                {staffActionError && <div className="error-banner">{staffActionError}</div>}
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="secondary-button" onClick={() => setPendingTotpReset(null)} disabled={staffActionId !== null}>Cancel</button>
+                <button type="button" className="danger-button" onClick={async () => { const target = pendingTotpReset; const succeeded = await resetRestaurantUserTotp(target.userId, target.displayName, target.role, target.restaurantId, true); if (succeeded) setPendingTotpReset(null); }} disabled={staffActionId !== null}>
+                  {staffActionId === pendingTotpReset.userId ? 'Resetting…' : 'Reset authenticator'}
+                </button>
+              </div>
+            </section>
+          </div>
+        )}
         {renderRestaurantDeleteModal()}
       </div>
     );
@@ -3148,31 +3170,6 @@ function AppContent() {
               <button type="button" className="secondary-button" onClick={() => setPendingRestaurantFormSave(false)} disabled={saving}>Cancel</button>
               <button type="button" onClick={() => void confirmSaveRestaurant()} disabled={saving}>
                 {saving ? 'Saving...' : editingRestaurant ? 'Confirm & Save' : 'Confirm & Create'}
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
-      {pendingTotpReset && (
-        <div className="modal-backdrop totp-reset-confirm-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && staffActionId === null) setPendingTotpReset(null); }}>
-          <section className="modal-card totp-reset-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="totp-reset-confirm-title">
-            <div className="modal-heading">
-              <div>
-                <div className="eyebrow">ACCOUNT SECURITY</div>
-                <h2 id="totp-reset-confirm-title">Reset authenticator?</h2>
-              </div>
-              <button className="icon-button" type="button" onClick={() => setPendingTotpReset(null)} disabled={staffActionId !== null} aria-label="Close">×</button>
-            </div>
-            <div className="totp-reset-confirm-content">
-              <p>You're about to reset the authenticator for <strong>{pendingTotpReset.displayName}</strong>.</p>
-              <p>They'll need to sign in and set up a new authenticator before accessing Web2Table.</p>
-              <p className="totp-reset-confirm-note">Their password and account role will remain unchanged.</p>
-              {staffActionError && <div className="error-banner">{staffActionError}</div>}
-            </div>
-            <div className="modal-actions">
-              <button type="button" className="secondary-button" onClick={() => setPendingTotpReset(null)} disabled={staffActionId !== null}>Cancel</button>
-              <button type="button" className="danger-button" onClick={async () => { const target = pendingTotpReset; const succeeded = await resetRestaurantUserTotp(target.userId, target.displayName, target.role, target.restaurantId, true); if (succeeded) setPendingTotpReset(null); }} disabled={staffActionId !== null}>
-                {staffActionId === pendingTotpReset.userId ? 'Resetting…' : 'Reset authenticator'}
               </button>
             </div>
           </section>
