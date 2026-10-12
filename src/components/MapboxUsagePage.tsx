@@ -71,7 +71,6 @@ export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrator
           <div><div className="eyebrow">WEB2TABLE Platform</div><h1>Mapbox Usage</h1></div>
         </div>
         <div className="platform-health-header-actions">
-          <button className="secondary-button" type="button" onClick={onBack}>Dashboard</button>
           <button className="secondary-button" type="button" onClick={() => void loadUsage(false)} disabled={refreshing}>{refreshing ? 'Refreshing...' : 'Refresh'}</button>
         </div>
       </header>
