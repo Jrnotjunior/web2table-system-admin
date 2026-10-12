@@ -1424,7 +1424,7 @@ function AppContent() {
   }
 
   if (isAdminPage(adminPage, 'health')) {
-    return <PlatformHealthPage onBack={() => openDashboard()} />;
+    return <PlatformHealthPage onBack={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onMapboxUsage={() => openMapboxUsage()} accessLevel={adminAccessLevel} />;
   }
 
   if (isAdminPage(adminPage, 'maps')) {
