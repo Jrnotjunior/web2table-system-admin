@@ -479,3 +479,18 @@ body{min-width:320px}
   justify-self:center !important;
   margin-inline:auto !important;
 }
+
+
+/* Final sign-in sizing: enlarge the existing logo and make the primary action narrower. */
+.auth-logo{
+  width:160px !important;
+  height:130px !important;
+  object-fit:contain !important;
+  margin:0 auto 20px !important;
+}
+.auth-card form button[type="submit"]{
+  width:min(180px,100%) !important;
+  min-width:0 !important;
+  justify-self:center !important;
+  margin-inline:auto !important;
+}
