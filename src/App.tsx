@@ -1447,7 +1447,7 @@ function AppContent() {
             <button type="button" className="sidebar-nav-item" onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
             <button type="button" className="sidebar-nav-item" onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
           </nav>
-          <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console<button type="button" onClick={() => void signOut()}>Sign out</button></div>
+          <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
         </aside>
         <div className="admin-main">
           <header className="workspace-topbar">
@@ -1529,7 +1529,7 @@ function AppContent() {
           <button type="button" className="sidebar-nav-item" onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
           <button type="button" className="sidebar-nav-item" onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
         </nav>
-        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console<button type="button" onClick={() => void signOut()}>Sign out</button></div>
+        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
       </aside>
       <div className="admin-main"><main className="admin-shell admin-shell-with-sidebar">
        {accountMenuOpen && (
@@ -1656,7 +1656,7 @@ function AppContent() {
           <button type="button" className="sidebar-nav-item" onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
           <button type="button" className="sidebar-nav-item" onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
         </nav>
-        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console<button type="button" onClick={() => void signOut()}>Sign out</button></div>
+        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
       </aside>
       <div className="admin-main"><main className="admin-shell admin-shell-with-sidebar">
         {accountMenuOpen && (
@@ -2738,7 +2738,7 @@ function AppContent() {
           <button type="button" className={isAdminPage(adminPage, 'health') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
           <button type="button" className={isAdminPage(adminPage, 'maps') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
         </nav>
-        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console<button type="button" onClick={() => void signOut()}>Sign out</button></div>
+        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
       </aside>
       <div className="admin-main">
     <main className="admin-shell admin-shell-with-sidebar">
