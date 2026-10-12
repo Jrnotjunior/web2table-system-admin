@@ -3153,7 +3153,7 @@ function AppContent() {
       )}
       {pendingTotpReset && (
         <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setPendingTotpReset(null); }}>
-          <section className="confirmation-modal totp-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="totp-confirm-title">
+          <section className="modal-card totp-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="totp-confirm-title">
             <div className="modal-header">
               <span className="eyebrow">ACCOUNT SECURITY</span>
               <h2 id="totp-confirm-title">Reset authenticator?</h2>
@@ -3166,7 +3166,7 @@ function AppContent() {
             </div>
             <div className="modal-actions">
               <button type="button" className="secondary-button" onClick={() => setPendingTotpReset(null)} disabled={staffActionId === pendingTotpReset.userId}>Cancel</button>
-              <button type="button" className="danger-button" onClick={() => { const target = pendingTotpReset; setPendingTotpReset(null); void resetRestaurantUserTotp(target.userId, target.displayName, target.role, target.restaurantId, true); }} disabled={staffActionId === pendingTotpReset.userId}>
+              <button type="button" className="danger-button" onClick={async () => { const target = pendingTotpReset; await resetRestaurantUserTotp(target.userId, target.displayName, target.role, target.restaurantId, true); setPendingTotpReset(null); }} disabled={staffActionId !== null}>
                 {staffActionId === pendingTotpReset.userId ? 'Resetting…' : 'Reset authenticator'}
               </button>
             </div>
