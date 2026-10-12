@@ -457,3 +457,25 @@ body{min-width:320px}
 @media(max-width:760px){
   .sidebar-brand img{width:76px !important;height:62px !important}
 }
+
+
+/* Logo correction: the PNG itself has a black canvas. Blend that canvas into the dark page
+   instead of applying a grayscale/alpha filter that strips the logo's original colors. */
+.company-logo,
+.auth-logo,
+.sidebar-brand img{
+  background:transparent !important;
+  box-shadow:none !important;
+  border:0 !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  filter:none !important;
+  mix-blend-mode:screen !important;
+}
+
+/* Keep the sign-in action compact and centered rather than stretching across the form. */
+.auth-card form button[type="submit"]{
+  width:min(240px,100%) !important;
+  justify-self:center !important;
+  margin-inline:auto !important;
+}
