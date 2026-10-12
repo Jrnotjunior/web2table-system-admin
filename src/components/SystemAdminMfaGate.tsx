@@ -201,7 +201,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
           <label htmlFor="system-admin-mfa-code">Authenticator code</label>
           <input id="system-admin-mfa-code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={code} onChange={(event) => setCode(event.target.value.replace(/\\D/g, '').slice(0, 6))} required />
           {message && <p role="alert" className="error-banner">{message}</p>}
-          <button type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying…' : enrolling ? 'Verify and enable MFA' : 'Verify and continue'}</button>
+          <button type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying…' : enrolling ? 'Verify and enable MFA' : 'Verify'}</button>
         </form>
         <div className="mfa-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', marginTop: '12px', width: '100%' }}>
           <button type="button" className="secondary-button" style={{ position: 'static', float: 'none', margin: 0, flex: '0 0 auto' }} onClick={async () => {
