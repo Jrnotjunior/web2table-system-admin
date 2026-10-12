@@ -107,7 +107,6 @@ export default function PlatformHealthPage({ onBack, onRestaurants, onAdministra
       <div className="admin-main">
       <section className="dashboard-card platform-health-card">
         <div className={`platform-health-overview platform-health-overview-${overall}`}>
-          <button className="secondary-button platform-health-refresh-button" type="button" onClick={() => void runHealthCheck(false)} disabled={refreshing}>{refreshing ? 'Checking...' : 'Run health check'}</button>
           <div>
             <div className="eyebrow">Overall Platform Status</div>
             <h2><StatusDot status={overall} /> {statusLabel[overall]}</h2>
@@ -117,6 +116,7 @@ export default function PlatformHealthPage({ onBack, onRestaurants, onAdministra
                 : 'Checking platform dependencies...'}
             </p>
           </div>
+          <button className="secondary-button platform-health-refresh-button" type="button" onClick={() => void runHealthCheck(false)} disabled={refreshing}>{refreshing ? 'Checking...' : 'Run health check'}</button>
           {report?.aiConfidence != null && (
             <div className="platform-health-confidence">
               AI confidence<br /><strong>{Math.round(report.aiConfidence * 100)}%</strong>
