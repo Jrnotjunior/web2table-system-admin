@@ -182,3 +182,15 @@ input{width:100%;margin-top:.4rem;border:1px solid rgba(255,255,255,.14);border-
 @media (max-width:560px){.mapbox-usage-metrics{grid-template-columns:1fr}.mapbox-usage-bar-row{grid-template-columns:58px 1fr 55px}}
 
 .restaurant-delete-confirm-backdrop{z-index:31}.restaurant-delete-confirm-modal{width:min(540px,100%)}.restaurant-delete-confirm-content{display:grid;gap:14px}.restaurant-delete-confirm-content p{margin:0;color:rgba(255,255,255,.68);line-height:1.6}.restaurant-delete-confirm-warning{display:grid;gap:6px;padding:14px 16px;border:1px solid rgba(213,0,28,.38);border-radius:9px;background:rgba(213,0,28,.1)}.restaurant-delete-confirm-warning strong{color:#fff;line-height:1.5}.restaurant-delete-confirm-warning span{color:rgba(255,255,255,.58);font-size:.86rem;line-height:1.5}
+
+/* System Admin MFA screen: centered sign-out and a shorter primary action. */
+.auth-card form button[type="submit"]{
+  width:min(320px,100%);
+  justify-self:center;
+}
+.auth-card .mfa-actions{
+  justify-content:center;
+}
+.auth-card .mfa-actions .secondary-button{
+  margin-inline:auto!important;
+}
