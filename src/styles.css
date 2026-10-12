@@ -348,3 +348,25 @@ body{min-width:320px}
 @media(max-width:760px){
   .admin-shell-with-sidebar{padding:20px 14px}
 }
+
+
+/* Left sidebar is the sole primary navigation; remove the legacy icon navigation row. */
+.admin-shell-with-sidebar .admin-header-actions,
+.admin-shell .admin-header-actions{display:none!important}
+.admin-layout>.admin-main{min-width:0}
+.admin-layout>.admin-main>.admin-shell-with-sidebar{
+  width:100%;
+  max-width:none;
+  min-height:100vh;
+  margin:0;
+  padding:28px clamp(18px,2.5vw,38px);
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+}
+.admin-layout>.admin-main>.admin-shell-with-sidebar:before{display:none}
+@media(max-width:760px){
+ .admin-layout>.admin-main>.admin-shell-with-sidebar{padding:20px 14px}
+}
