@@ -1522,7 +1522,7 @@ function AppContent() {
         <SystemAdminSidebar activePage="totp-reset" accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
         <main className="admin-main">
           <header className="workspace-topbar"><div><span className="topbar-kicker">ACCOUNT SECURITY</span><strong>TOTP Reset</strong></div><div className="topbar-right"><span className="topbar-status">System Admin Owner</span></div></header>
-          <section className="page-content">
+          <section className="page-content totp-reset-page">
             <div className="page-heading"><div><div className="eyebrow">RECOVERY TOOLS</div><h1>Restaurant account authenticators</h1><p>Find a restaurant owner or staff account and reset its verified authenticator when the user has lost access.</p></div><button className="secondary-button" type="button" onClick={() => void loadTotpResetAccounts()} disabled={totpResetLoading}>{totpResetLoading ? 'Refreshing…' : 'Refresh list'}</button></div>
             <div className="restaurant-delete-confirm-warning"><strong>Important:</strong> Resetting TOTP removes the account’s verified authenticator. The user must sign in and enroll a new authenticator before entering their workspace. Passwords and roles are not changed.</div>
             {totpResetError && <div className="form-error" role="alert">{totpResetError}</div>}
