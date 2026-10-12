@@ -44,7 +44,7 @@ function StatusDot({ status }: { status: ServiceStatus }) {
   return <span className={`platform-health-dot platform-health-dot-${status}`} aria-hidden="true" />;
 }
 
-export default function PlatformHealthPage({ onBack, onRestaurants, onAdministrators, onAuditLogs, onMapboxUsage, accessLevel, onSignOut }: { onBack: () => void; onRestaurants: () => void; onAdministrators: () => void; onAuditLogs: () => void; onMapboxUsage: () => void; accessLevel: 'owner' | 'administrator' | 'view_only' | null; onSignOut: () => void }) {
+export default function PlatformHealthPage({ onBack, onRestaurants, onAdministrators, onAuditLogs, onMapboxUsage, onTotpResets, accessLevel, onSignOut }: { onBack: () => void; onRestaurants: () => void; onAdministrators: () => void; onAuditLogs: () => void; onMapboxUsage: () => void; onTotpResets: () => void; accessLevel: 'owner' | 'administrator' | 'view_only' | null; onSignOut: () => void }) {
   const [report, setReport] = useState<HealthReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -90,7 +90,7 @@ export default function PlatformHealthPage({ onBack, onRestaurants, onAdministra
 
   return (
     <div className="admin-layout">
-      <SystemAdminSidebar activePage="health" accessLevel={accessLevel} onDashboard={onBack} onRestaurants={onRestaurants} onAdministrators={onAdministrators} onAuditLogs={onAuditLogs} onPlatformHealth={() => {}} onMapboxUsage={onMapboxUsage} onSignOut={onSignOut} />
+      <SystemAdminSidebar activePage="health" accessLevel={accessLevel} onDashboard={onBack} onRestaurants={onRestaurants} onAdministrators={onAdministrators} onAuditLogs={onAuditLogs} onPlatformHealth={() => {}} onMapboxUsage={onMapboxUsage} onTotpResets={onTotpResets} onSignOut={onSignOut} />
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Platform health</strong></div>
