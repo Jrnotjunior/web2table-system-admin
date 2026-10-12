@@ -1531,7 +1531,12 @@ function AppContent() {
         </nav>
         <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
       </aside>
-      <div className="admin-main"><main className="admin-shell admin-shell-with-sidebar">
+      <div className="admin-main">
+      <header className="workspace-topbar">
+        <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System administrators</strong></div>
+        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={() => setAccountMenuOpen((open) => !open)}><span className="topbar-avatar">SA</span><span>System Admin<small>{adminAccessLevel === 'owner' ? 'Owner access' : adminAccessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">⌄</span></button></div>
+      </header>
+      <main className="admin-shell admin-shell-with-sidebar">
        {accountMenuOpen && (
           <div className="account-menu">
             <div className="account-menu-header"><span>System Administrator</span><strong>{adminAccessLevel === 'owner' ? 'Owner' : adminAccessLevel === 'administrator' ? 'Administrator — Full Access' : 'View Only'}</strong></div>
@@ -1658,7 +1663,12 @@ function AppContent() {
         </nav>
         <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
       </aside>
-      <div className="admin-main"><main className="admin-shell admin-shell-with-sidebar">
+      <div className="admin-main">
+      <header className="workspace-topbar">
+        <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Activity logs</strong></div>
+        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={() => setAccountMenuOpen((open) => !open)}><span className="topbar-avatar">SA</span><span>System Admin<small>{adminAccessLevel === 'owner' ? 'Owner access' : adminAccessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">⌄</span></button></div>
+      </header>
+      <main className="admin-shell admin-shell-with-sidebar">
         {accountMenuOpen && (
           <div className="account-menu">
             <div className="account-menu-header"><span>System Administrator</span><strong>{adminAccessLevel === 'owner' ? 'Owner' : adminAccessLevel === 'administrator' ? 'Administrator — Full Access' : 'View Only'}</strong></div>
