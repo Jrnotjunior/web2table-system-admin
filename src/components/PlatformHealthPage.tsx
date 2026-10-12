@@ -105,18 +105,9 @@ export default function PlatformHealthPage({ onBack, onRestaurants, onAdministra
         <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
       </aside>
       <div className="admin-main">
-      <header className="admin-header">
-        <div className="brand-block">
-          <img className="company-logo" src="/web2table-system-admin/web2table.png" alt="WEB2TABLE" />
-          <div>
-            <div className="eyebrow">WEB2TABLE Platform</div>
-            <h1>Platform Health</h1>
-          </div>
-        </div>
-        <div className="platform-health-header-actions"><button className="secondary-button" type="button" onClick={() => void runHealthCheck(false)} disabled={refreshing}>
+      <div className="page-action-row"><button className="secondary-button" type="button" onClick={() => void runHealthCheck(false)} disabled={refreshing}>
           {refreshing ? 'Checking...' : 'Run health check'}
         </button></div>
-      </header>
 
       <section className="dashboard-card platform-health-card">
         <div className={`platform-health-overview platform-health-overview-${overall}`}>
