@@ -124,6 +124,7 @@ function AppContent() {
   const [staffError, setStaffError] = useState('');
   const [restaurantStaff, setRestaurantStaff] = useState<Array<{ id: string; name: string; mobile_number: string; email: string; role: string; is_active: boolean; auth_user_id: string | null }>>([]);
   const [staffActionId, setStaffActionId] = useState<string | null>(null);
+  const [pendingTotpReset, setPendingTotpReset] = useState<{ userId: string; displayName: string; role: 'restaurant_owner' | 'staff'; restaurantId: string } | null>(null);
   const [staffActionError, setStaffActionError] = useState('');
   const [pendingDeleteStaff, setPendingDeleteStaff] = useState<typeof restaurantStaff[number] | null>(null);
   const [settingsLoading, setSettingsLoading] = useState(false);
@@ -811,7 +812,7 @@ function AppContent() {
     setPendingDeleteStaff(staff);
   }
 
-  async function resetRestaurantUserTotp(targetUserId: string, displayName: string, role: 'restaurant_owner' | 'staff', restaurantId: string) {
+  async function resetRestaurantUserTotp(targetUserId: string, displayName: string, role: 'restaurant_owner' | 'staff', restaurantId: string, confirmed = false) {
     if (adminAccessLevel !== 'owner') {
       setStaffActionError('Only the System Administrator Owner can reset restaurant account authenticators.');
       setOwnerError('Only the System Administrator Owner can reset restaurant account authenticators.');
@@ -822,8 +823,10 @@ function AppContent() {
       setOwnerError('This account is not linked to a Supabase Auth user.');
       return;
     }
-    const confirmed = window.confirm('Reset the TOTP authenticator for ' + displayName + '? They will need to sign in again and enroll a new authenticator before accessing Web2Table. Their password and role will not change.');
-    if (!confirmed) return;
+    if (!confirmed) {
+      setPendingTotpReset({ userId: targetUserId, displayName, role, restaurantId });
+      return;
+    }
     setStaffActionId(targetUserId);
     setStaffActionError('');
     setOwnerError('');
@@ -3143,6 +3146,31 @@ function AppContent() {
               <button type="button" className="secondary-button" onClick={() => setPendingRestaurantFormSave(false)} disabled={saving}>Cancel</button>
               <button type="button" onClick={() => void confirmSaveRestaurant()} disabled={saving}>
                 {saving ? 'Saving...' : editingRestaurant ? 'Confirm & Save' : 'Confirm & Create'}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+      {pendingTotpReset && (
+        <div className="modal-backdrop totp-reset-confirm-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && staffActionId === null) setPendingTotpReset(null); }}>
+          <section className="modal-card totp-reset-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="totp-reset-confirm-title">
+            <div className="modal-heading">
+              <div>
+                <div className="eyebrow">ACCOUNT SECURITY</div>
+                <h2 id="totp-reset-confirm-title">Reset authenticator?</h2>
+              </div>
+              <button className="icon-button" type="button" onClick={() => setPendingTotpReset(null)} disabled={staffActionId !== null} aria-label="Close">×</button>
+            </div>
+            <div className="totp-reset-confirm-content">
+              <p>You're about to reset the authenticator for <strong>{pendingTotpReset.displayName}</strong>.</p>
+              <p>They'll need to sign in and set up a new authenticator before accessing Web2Table.</p>
+              <p className="totp-reset-confirm-note">Their password and account role will remain unchanged.</p>
+              {staffActionError && <div className="error-banner">{staffActionError}</div>}
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="secondary-button" onClick={() => setPendingTotpReset(null)} disabled={staffActionId !== null}>Cancel</button>
+              <button type="button" className="danger-button" onClick={() => { const target = pendingTotpReset; setPendingTotpReset(null); void resetRestaurantUserTotp(target.userId, target.displayName, target.role, target.restaurantId, true); }} disabled={staffActionId !== null}>
+                {staffActionId === pendingTotpReset.userId ? 'Resetting…' : 'Reset authenticator'}
               </button>
             </div>
           </section>
