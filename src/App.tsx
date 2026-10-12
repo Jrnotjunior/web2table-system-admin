@@ -1454,6 +1454,13 @@ function AppContent() {
             <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System overview</strong></div>
             <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={() => setAccountMenuOpen((open) => !open)}><span className="topbar-avatar">SA</span><span>System Admin<small>{adminAccessLevel === 'owner' ? 'Owner access' : adminAccessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">⌄</span></button></div>
           </header>
+          {accountMenuOpen && (
+            <div className="account-menu">
+              <div className="account-menu-header"><span>System Administrator</span><strong>{adminAccessLevel === 'owner' ? 'Owner' : adminAccessLevel === 'administrator' ? 'Administrator — Full Access' : 'View Only'}</strong></div>
+              {adminAccessLevel === 'owner' && <button className="account-menu-item" onClick={() => openAdministrators()}>System Administrators</button>}
+              <button type="button" className="account-menu-item" onClick={(event) => { event.preventDefault(); event.stopPropagation(); void signOut(); }}>Sign out</button>
+            </div>
+          )}
           <main className="admin-workspace">
         <section className="dashboard-card system-dashboard-card">
           <div className="section-heading">
