@@ -1439,7 +1439,7 @@ function AppContent() {
         <div className="admin-main">
           <header className="workspace-topbar">
             <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System overview</strong></div>
-            <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={() => setAccountMenuOpen((open) => !open)}><span className="topbar-avatar">SA</span><span>System Admin<small>{adminAccessLevel === 'owner' ? 'Owner access' : adminAccessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">⌄</span></button></div>
+            <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span></div>
           </header>
           {accountMenuOpen && (
             <div className="account-menu">
@@ -1510,7 +1510,7 @@ function AppContent() {
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System administrators</strong></div>
-        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={() => setAccountMenuOpen((open) => !open)}><span className="topbar-avatar">SA</span><span>System Admin<small>{adminAccessLevel === 'owner' ? 'Owner access' : adminAccessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">⌄</span></button></div>
+        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span></div>
       </header>
       <main className="admin-shell admin-shell-with-sidebar">
        {accountMenuOpen && (
@@ -1631,7 +1631,7 @@ function AppContent() {
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Activity logs</strong></div>
-        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={() => setAccountMenuOpen((open) => !open)}><span className="topbar-avatar">SA</span><span>System Admin<small>{adminAccessLevel === 'owner' ? 'Owner access' : adminAccessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">⌄</span></button></div>
+        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span></div>
       </header>
       <main className="admin-shell admin-shell-with-sidebar">
         {accountMenuOpen && (
@@ -2704,7 +2704,7 @@ function AppContent() {
       <div className="admin-main">
         <header className="workspace-topbar">
           <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>{isAdminPage(adminPage, 'restaurants') ? 'Restaurant management' : isAdminPage(adminPage, 'administrators') ? 'System administrators' : 'Activity logs'}</strong></div>
-          <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={() => setAccountMenuOpen((open) => !open)}><span className="topbar-avatar">SA</span><span>System Admin<small>{adminAccessLevel === 'owner' ? 'Owner access' : adminAccessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">⌄</span></button></div>
+          <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span></div>
         </header>
     <main className="admin-shell admin-shell-with-sidebar">
       
