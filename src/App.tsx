@@ -1549,7 +1549,7 @@ function AppContent() {
   }
 
   if (isAdminPage(adminPage, 'maps')) {
-    return <MapboxUsagePage onBack={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} accessLevel={adminAccessLevel} onSignOut={() => void signOut()} />
+    return <MapboxUsagePage onBack={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onTotpResets={() => openTotpReset()} accessLevel={adminAccessLevel} onSignOut={() => void signOut()} />
   }
 
   if (isAdminPage(adminPage, 'dashboard')) {
