@@ -375,3 +375,19 @@ body{min-width:320px}
 .mapbox-refresh-button,.platform-health-refresh-button{white-space:nowrap;flex-shrink:0}
 .platform-health-refresh-button{align-self:flex-start;margin-left:auto}
 @media(max-width:760px){.mapbox-usage-toolbar{flex-wrap:wrap}.mapbox-refresh-button{margin-left:auto}.platform-health-refresh-button{margin-left:0}}
+
+
+/* Sidebar brand: give the mark more presence and let the sidebar show through. */
+.sidebar-brand img{
+  width:58px;
+  height:58px;
+  flex:0 0 58px;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  object-fit:contain;
+  mix-blend-mode:screen;
+}
+@media(max-width:760px){
+  .sidebar-brand img{width:46px;height:46px;flex-basis:46px}
+}
