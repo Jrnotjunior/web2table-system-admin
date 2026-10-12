@@ -812,20 +812,20 @@ function AppContent() {
     setPendingDeleteStaff(staff);
   }
 
-  async function resetRestaurantUserTotp(targetUserId: string, displayName: string, role: 'restaurant_owner' | 'staff', restaurantId: string, confirmed = false) {
+  async function resetRestaurantUserTotp(targetUserId: string, displayName: string, role: 'restaurant_owner' | 'staff', restaurantId: string, confirmed = false): Promise<boolean> {
     if (adminAccessLevel !== 'owner') {
       setStaffActionError('Only the System Administrator Owner can reset restaurant account authenticators.');
       setOwnerError('Only the System Administrator Owner can reset restaurant account authenticators.');
-      return;
+      return false;
     }
     if (!targetUserId || !restaurantId) {
       setStaffActionError('This account is not linked to a Supabase Auth user.');
       setOwnerError('This account is not linked to a Supabase Auth user.');
-      return;
+      return false;
     }
     if (!confirmed) {
       setPendingTotpReset({ userId: targetUserId, displayName, role, restaurantId });
-      return;
+      return false;
     }
     setStaffActionId(targetUserId);
     setStaffActionError('');
@@ -848,10 +848,12 @@ function AppContent() {
       if (data?.error) throw new Error(String(data.error));
       await recordAdminAudit('Restaurant account TOTP reset', restaurantId, role, targetUserId, { target_user_id: targetUserId, target_role: role, account_label: displayName, factor_type: 'totp' });
       window.alert('Authenticator reset for ' + displayName + '. They must sign in and enroll a new authenticator before accessing their workspace.');
+      return true;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to reset this authenticator.';
       setStaffActionError(message);
       setOwnerError(message);
+      return false;
     } finally {
       setStaffActionId(null);
     }
@@ -3169,7 +3171,7 @@ function AppContent() {
             </div>
             <div className="modal-actions">
               <button type="button" className="secondary-button" onClick={() => setPendingTotpReset(null)} disabled={staffActionId !== null}>Cancel</button>
-              <button type="button" className="danger-button" onClick={() => { const target = pendingTotpReset; setPendingTotpReset(null); void resetRestaurantUserTotp(target.userId, target.displayName, target.role, target.restaurantId, true); }} disabled={staffActionId !== null}>
+              <button type="button" className="danger-button" onClick={async () => { const target = pendingTotpReset; const succeeded = await resetRestaurantUserTotp(target.userId, target.displayName, target.role, target.restaurantId, true); if (succeeded) setPendingTotpReset(null); }} disabled={staffActionId !== null}>
                 {staffActionId === pendingTotpReset.userId ? 'Resetting…' : 'Reset authenticator'}
               </button>
             </div>
