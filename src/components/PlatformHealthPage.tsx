@@ -43,7 +43,7 @@ function StatusDot({ status }: { status: ServiceStatus }) {
   return <span className={`platform-health-dot platform-health-dot-${status}`} aria-hidden="true" />;
 }
 
-export default function PlatformHealthPage({ onBack, onRestaurants, onAdministrators, onAuditLogs, onMapboxUsage, accessLevel }: { onBack: () => void; onRestaurants: () => void; onAdministrators: () => void; onAuditLogs: () => void; onMapboxUsage: () => void; accessLevel: 'owner' | 'administrator' | 'view_only' | null }) {
+export default function PlatformHealthPage({ onBack, onRestaurants, onAdministrators, onAuditLogs, onMapboxUsage, accessLevel, onSignOut }: { onBack: () => void; onRestaurants: () => void; onAdministrators: () => void; onAuditLogs: () => void; onMapboxUsage: () => void; accessLevel: 'owner' | 'administrator' | 'view_only' | null; onSignOut: () => void }) {
   const [report, setReport] = useState<HealthReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -105,6 +105,10 @@ export default function PlatformHealthPage({ onBack, onRestaurants, onAdministra
         <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
       </aside>
       <div className="admin-main">
+      <header className="workspace-topbar">
+        <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Platform health</strong></div>
+        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={onSignOut}><span className="topbar-avatar">SA</span><span>System Admin<small>{accessLevel === 'owner' ? 'Owner access' : accessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">↗</span></button></div>
+      </header>
       <section className="dashboard-card platform-health-card">
         <div className={`platform-health-overview platform-health-overview-${overall}`}>
           <div>
