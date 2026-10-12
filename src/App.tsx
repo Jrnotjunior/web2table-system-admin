@@ -6,7 +6,7 @@ import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
 
-type AdminPage = 'dashboard' | 'restaurants' | 'audit' | 'administrators' | 'health' | 'maps';
+type AdminPage = 'dashboard' | 'restaurants' | 'audit' | 'administrators' | 'health' | 'maps' | 'totp-reset';
 
 function isAdminPage(current: AdminPage, target: AdminPage) {
   return current === target;
@@ -153,6 +153,9 @@ function AppContent() {
   const [restaurantDeleteSaving, setRestaurantDeleteSaving] = useState(false);
   const [pendingRestaurantFormSave, setPendingRestaurantFormSave] = useState(false);
   const [adminPage, setAdminPage] = useState<AdminPage>('dashboard');
+  const [totpResetAccounts, setTotpResetAccounts] = useState<Array<{userId:string; restaurantId:string; restaurantName:string; displayName:string; email:string; role:'restaurant_owner'|'staff'; staffRole?:string}>>([]);
+  const [totpResetLoading, setTotpResetLoading] = useState(false);
+  const [totpResetError, setTotpResetError] = useState('');
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [dashboardError, setDashboardError] = useState('');
   const [dashboardSummary, setDashboardSummary] = useState<{ total_restaurants: number; active_restaurants: number; inactive_restaurants: number; active_system_administrators: number; pending_system_administrators: number; } | null>(null);
@@ -298,10 +301,11 @@ function AppContent() {
     if (page === 'administrators') return { page: 'administrators' as const, restaurantId: null, auditId: null };
     if (page === 'health') return { page: 'health' as const, restaurantId: null, auditId: null };
     if (page === 'maps') return { page: 'maps' as const, restaurantId: null, auditId: null };
+    if (page === 'totp-reset') return { page: 'totp-reset' as const, restaurantId: null, auditId: null };
     return { page: 'dashboard' as const, restaurantId: null, auditId: null };
   }
 
-  function pushNavigation(page: 'dashboard' | 'restaurants' | 'audit' | 'administrators' | 'health' | 'maps' | 'restaurant', options: { restaurantId?: string; auditId?: string } = {}) {
+  function pushNavigation(page: 'dashboard' | 'restaurants' | 'audit' | 'administrators' | 'health' | 'maps' | 'totp-reset' | 'restaurant', options: { restaurantId?: string; auditId?: string } = {}) {
     const params = new URLSearchParams();
     params.set('page', page);
     if (options.restaurantId) params.set('restaurantId', options.restaurantId);
@@ -340,6 +344,8 @@ function AppContent() {
       void loadAuditLogs(0);
     } else if (navigation.page === 'administrators' && adminAccessLevel === 'owner') {
       void loadAdministrators();
+    } else if (navigation.page === 'totp-reset') {
+      void loadTotpResetAccounts();
     }
   }
 
@@ -1170,6 +1176,50 @@ function AppContent() {
     void loadRestaurants();
   }
 
+  async function loadTotpResetAccounts() {
+    setTotpResetLoading(true);
+    setTotpResetError('');
+    try {
+      const { data, error } = await supabase.from('restaurants')
+        .select('id,owner_id,name')
+        .order('name', { ascending: true });
+      if (error) throw error;
+      const rows: Array<{userId:string;restaurantId:string;restaurantName:string;displayName:string;email:string;role:'restaurant_owner'|'staff';staffRole?:string}> = [];
+      const tenantRows = data ?? [];
+      for (const restaurant of tenantRows) {
+        if (restaurant.owner_id) rows.push({
+          userId: restaurant.owner_id, restaurantId: restaurant.id, restaurantName: restaurant.name || 'Restaurant',
+          displayName: (restaurant.name || 'Restaurant') + ' — Owner', email: '', role: 'restaurant_owner',
+        });
+        const { data: staffData, error: staffError } = await supabase.rpc('system_admin_get_restaurant_staff', { p_restaurant_id: restaurant.id });
+        if (staffError) throw new Error('Could not load staff for ' + (restaurant.name || 'restaurant') + ': ' + staffError.message);
+        for (const staff of (Array.isArray(staffData) ? staffData : [])) {
+          if (staff.auth_user_id) rows.push({
+            userId: staff.auth_user_id, restaurantId: restaurant.id, restaurantName: restaurant.name || 'Restaurant',
+            displayName: staff.name || staff.email || 'Staff member', email: staff.email || '',
+            role: 'staff', staffRole: staff.role || 'Staff',
+          });
+        }
+      }
+      setTotpResetAccounts(rows);
+    } catch (error) {
+      setTotpResetError(error instanceof Error ? error.message : 'Unable to load restaurant accounts.');
+      setTotpResetAccounts([]);
+    } finally {
+      setTotpResetLoading(false);
+    }
+  }
+
+  function openTotpReset(pushHistory = true) {
+    if (adminAccessLevel !== 'owner') return;
+    if (pushHistory) pushNavigation('totp-reset');
+    setAccountMenuOpen(false);
+    setSelectedRestaurant(null);
+    setSelectedAuditLog(null);
+    setAdminPage('totp-reset');
+    void loadTotpResetAccounts();
+  }
+
   function openAuditLogs(pushHistory = true) {
     if (pushHistory) pushNavigation('audit');
     setSelectedAuditLog(null);
@@ -1466,8 +1516,36 @@ function AppContent() {
     );
   }
 
+  if (isAdminPage(adminPage, 'totp-reset')) {
+    return (
+      <div className="admin-layout">
+        <SystemAdminSidebar activePage="totp-reset" accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
+        <main className="admin-main">
+          <header className="workspace-topbar"><div><span className="topbar-kicker">ACCOUNT SECURITY</span><strong>TOTP Reset</strong></div><div className="topbar-right"><span className="topbar-status">System Admin Owner</span></div></header>
+          <section className="page-content">
+            <div className="page-heading"><div><div className="eyebrow">RECOVERY TOOLS</div><h1>Restaurant account authenticators</h1><p>Find a restaurant owner or staff account and reset its verified authenticator when the user has lost access.</p></div><button className="secondary-button" type="button" onClick={() => void loadTotpResetAccounts()} disabled={totpResetLoading}>{totpResetLoading ? 'Refreshing…' : 'Refresh list'}</button></div>
+            <div className="restaurant-delete-confirm-warning"><strong>Important:</strong> Resetting TOTP removes the account’s verified authenticator. The user must sign in and enroll a new authenticator before entering their workspace. Passwords and roles are not changed.</div>
+            {totpResetError && <div className="form-error" role="alert">{totpResetError}</div>}
+            {totpResetLoading ? <p>Loading restaurant owners and staff…</p> : (
+              <div className="table-wrap"><table><thead><tr><th>Account</th><th>Account type</th><th>Restaurant</th><th>Staff role</th><th>Auth user ID</th><th>Action</th></tr></thead>
+                <tbody>{totpResetAccounts.map((account) => <tr key={account.role + ':' + account.userId + ':' + account.restaurantId}>
+                  <td>{account.displayName}{account.email ? <div className="muted-text">{account.email}</div> : null}</td>
+                  <td>{account.role === 'restaurant_owner' ? 'Restaurant Owner' : 'Staff'}</td><td>{account.restaurantName}</td><td>{account.staffRole || '—'}</td>
+                  <td><code>{account.userId}</code></td>
+                  <td><button className="secondary-button" type="button" disabled={staffActionId !== null} onClick={() => void resetRestaurantUserTotp(account.userId, account.displayName, account.role, account.restaurantId)}>{staffActionId === account.userId ? 'Resetting…' : 'Reset TOTP'}</button></td>
+                </tr>)}
+                {totpResetAccounts.length === 0 && <tr><td colSpan={6}>No linked restaurant owner or staff Auth accounts were found.</td></tr>}</tbody>
+              </table></div>
+            )}
+          </section>
+        </main>
+        {renderRestaurantDeleteModal()}
+      </div>
+    );
+  }
+
   if (isAdminPage(adminPage, 'health')) {
-    return <PlatformHealthPage onBack={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onMapboxUsage={() => openMapboxUsage()} accessLevel={adminAccessLevel} onSignOut={() => void signOut()} />;
+    return <PlatformHealthPage onBack={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} accessLevel={adminAccessLevel} onSignOut={() => void signOut()} />;
   }
 
   if (isAdminPage(adminPage, 'maps')) {
@@ -1477,7 +1555,7 @@ function AppContent() {
   if (isAdminPage(adminPage, 'dashboard')) {
     return (
       <div className="admin-layout">
-        <SystemAdminSidebar activePage={'dashboard'} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onSignOut={() => void signOut()} />
+        <SystemAdminSidebar activePage={'dashboard'} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
         <div className="admin-main">
           <header className="workspace-topbar">
             <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System overview</strong></div>
@@ -1548,7 +1626,7 @@ function AppContent() {
   if (isAdminPage(adminPage, 'administrators')) {
     return (
       <div className="admin-layout">
-      <SystemAdminSidebar activePage={'administrators'} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onSignOut={() => void signOut()} />
+      <SystemAdminSidebar activePage={'administrators'} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System administrators</strong></div>
@@ -1669,7 +1747,7 @@ function AppContent() {
     return (
 
       <div className="admin-layout">
-      <SystemAdminSidebar activePage={'audit'} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onSignOut={() => void signOut()} />
+      <SystemAdminSidebar activePage={'audit'} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Activity logs</strong></div>
@@ -2751,7 +2829,7 @@ function AppContent() {
 
   return (
     <div className="admin-layout">
-      <SystemAdminSidebar activePage={adminPage} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onSignOut={() => void signOut()} />
+      <SystemAdminSidebar activePage={adminPage} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
       <div className="admin-main">
         <header className="workspace-topbar">
           <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>{isAdminPage(adminPage, 'restaurants') ? 'Restaurant management' : isAdminPage(adminPage, 'administrators') ? 'System administrators' : 'Activity logs'}</strong></div>
