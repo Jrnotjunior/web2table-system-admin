@@ -429,3 +429,31 @@ body{min-width:320px}
   .sidebar-brand img{width:76px;height:62px}
   .sidebar-brand .sidebar-brand-label{font-size:9px;letter-spacing:.12em}
 }
+
+
+/* Use the actual repository logo on dark surfaces: remove white pixels via SVG alpha,
+   rather than painting a white tile behind the image or substituting another mark. */
+.company-logo,
+.sidebar-brand img{
+  background:transparent !important;
+  box-shadow:none !important;
+  border:0 !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  filter:url(#remove-white-logo-background) !important;
+  mix-blend-mode:normal !important;
+}
+.auth-logo{
+  width:110px !important;
+  height:110px !important;
+  object-fit:contain;
+}
+.sidebar-brand img{
+  width:104px !important;
+  height:82px !important;
+  flex:0 0 auto !important;
+  object-fit:contain;
+}
+@media(max-width:760px){
+  .sidebar-brand img{width:76px !important;height:62px !important}
+}
