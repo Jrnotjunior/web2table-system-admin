@@ -817,3 +817,17 @@ body{min-width:320px}
 .totp-confirm-modal{position:relative;z-index:31;max-height:calc(100vh - 40px);overflow:auto}
 .totp-confirm-modal .modal-header{display:block}
 .totp-confirm-modal .modal-actions button{min-height:42px;pointer-events:auto}
+
+
+/* Branded TOTP confirmation: uses the existing modal system and keeps reset actions intact. */
+.totp-reset-confirm-backdrop{z-index:1000}
+.totp-reset-confirm-modal{width:min(520px,100%);position:relative;z-index:1001}
+.totp-reset-confirm-modal .modal-heading{align-items:flex-start}
+.totp-reset-confirm-content{display:grid;gap:12px}
+.totp-reset-confirm-content p{margin:0;color:rgba(255,255,255,.78);line-height:1.6}
+.totp-reset-confirm-content strong{color:#fff}
+.totp-reset-confirm-note{padding:11px 13px;border-left:3px solid #ED1C24;border-radius:0 7px 7px 0;background:rgba(237,28,36,.08);font-size:.9rem}
+.totp-reset-confirm-modal .danger-button{border:1px solid #ED1C24;border-radius:8px;padding:11px 16px;background:#ED1C24;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.totp-reset-confirm-modal .danger-button:hover:not(:disabled){background:#c9161d}
+.totp-reset-confirm-modal button:disabled{opacity:.6;cursor:not-allowed}
+@media(max-width:520px){.totp-reset-confirm-modal{padding:18px}.totp-reset-confirm-modal .modal-actions{flex-wrap:wrap}.totp-reset-confirm-modal .modal-actions button{flex:1}}
