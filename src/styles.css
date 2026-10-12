@@ -329,3 +329,22 @@ body{min-width:320px}
 @media(max-width:760px){
   .admin-shell{padding:20px 14px}
 }
+
+
+/* Non-dashboard admin pages share the persistent left navigation shell. */
+.admin-shell-with-sidebar{
+  width:100%;
+  max-width:none;
+  min-height:100vh;
+  margin:0;
+  padding:28px clamp(18px,2.5vw,38px);
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+}
+.admin-shell-with-sidebar:before{display:none}
+@media(max-width:760px){
+  .admin-shell-with-sidebar{padding:20px 14px}
+}
