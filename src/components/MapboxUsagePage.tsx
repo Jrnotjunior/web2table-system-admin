@@ -67,7 +67,6 @@ export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrator
       <main className="admin-shell admin-shell-with-sidebar">
       <section className="dashboard-card mapbox-usage-card">
         <div className="mapbox-usage-toolbar">
-          <button className="secondary-button mapbox-refresh-button" type="button" onClick={() => void loadUsage(false)} disabled={refreshing}>{refreshing ? 'Refreshing...' : 'Refresh'}</button>
           <div>
             <div className="eyebrow">Cost & Usage Control</div>
             <h2>Mapbox</h2>
@@ -77,6 +76,7 @@ export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrator
             <button className={range === 7 ? 'active' : ''} type="button" onClick={() => setRange(7)}>7 days</button>
             <button className={range === 30 ? 'active' : ''} type="button" onClick={() => setRange(30)}>30 days</button>
           </div>
+          <button className="secondary-button mapbox-refresh-button" type="button" onClick={() => void loadUsage(false)} disabled={refreshing}>{refreshing ? 'Refreshing...' : 'Refresh'}</button>
         </div>
         {error && <div className="error-banner">{error}</div>}
         {loading ? <div className="empty-state">Loading Mapbox usage...</div> : (
