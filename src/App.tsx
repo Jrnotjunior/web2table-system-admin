@@ -1433,8 +1433,29 @@ function AppContent() {
 
   if (isAdminPage(adminPage, 'dashboard')) {
     return (
-      <main className="admin-shell">
-        <header className="admin-header">
+      <div className="admin-layout">
+        <aside className="admin-sidebar" aria-label="System administration navigation">
+          <button type="button" className="sidebar-brand" onClick={() => openDashboard()} aria-label="Web2Table System Admin home">
+            <img src="/web2table-system-admin/web2table.png" alt="" />
+            <span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span>
+          </button>
+          <nav className="sidebar-nav">
+            <button type="button" className="sidebar-nav-item active" onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
+            <button type="button" className="sidebar-nav-item" onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
+            <button type="button" className="sidebar-nav-item" onClick={() => openAdministrators()} disabled={adminAccessLevel !== 'owner'}><span className="sidebar-nav-icon">♙</span>Administrators</button>
+            <button type="button" className="sidebar-nav-item" onClick={() => openAuditLogs()}><span className="sidebar-nav-icon">▧</span>Activity Logs</button>
+            <button type="button" className="sidebar-nav-item" onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
+            <button type="button" className="sidebar-nav-item" onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
+          </nav>
+          <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console<button type="button" onClick={() => void signOut()}>Sign out</button></div>
+        </aside>
+        <div className="admin-main">
+          <header className="workspace-topbar">
+            <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System overview</strong></div>
+            <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={() => setAccountMenuOpen((open) => !open)}><span className="topbar-avatar">SA</span><span>System Admin<small>{adminAccessLevel === 'owner' ? 'Owner access' : adminAccessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">⌄</span></button></div>
+          </header>
+          <main className="admin-workspace">
+        <section className="dashboard-card system-dashboard-card">
           <div className="brand-block">
             <img className="company-logo" src="/web2table-system-admin/web2table.png" alt="WEB2TABLE" />
             <div><div className="eyebrow">WEB2TABLE Platform</div><h1>System Admin</h1></div>
@@ -1515,7 +1536,9 @@ function AppContent() {
             </>
           )}
         </section>
-      </main>
+          </main>
+        </div>
+      </div>
     );
   }
 
