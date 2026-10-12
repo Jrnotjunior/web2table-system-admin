@@ -581,3 +581,103 @@ body{min-width:320px}
   .admin-sidebar .sidebar-brand{gap:0 !important;padding:0 4px 8px !important}
   .admin-sidebar .sidebar-brand img{width:94px !important;height:58px !important;flex-basis:58px !important}
 }
+
+
+/* TOTP Reset directory: improve spacing, alignment, and table readability. */
+.totp-reset-page{
+  box-sizing:border-box;
+  width:100%;
+  max-width:100%;
+  padding:clamp(20px,2.4vw,36px) !important;
+  overflow-x:hidden;
+}
+.totp-reset-page .page-heading{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+  margin-bottom:22px;
+}
+.totp-reset-page .page-heading > div{min-width:min(100%,420px);flex:1}
+.totp-reset-page .page-heading h1{
+  margin:8px 0 10px;
+  line-height:1.2;
+  font-size:clamp(1.65rem,2.2vw,2.25rem);
+}
+.totp-reset-page .page-heading p{
+  max-width:760px;
+  line-height:1.6;
+  margin:0;
+  color:var(--muted,#b8b8b8);
+}
+.totp-reset-page .page-heading .secondary-button{flex:0 0 auto;margin-top:4px}
+.totp-reset-page .restaurant-delete-confirm-warning{
+  padding:16px 18px;
+  margin:0 0 22px;
+  border:1px solid rgba(255,180,70,.28);
+  border-radius:12px;
+  background:rgba(255,180,70,.07);
+  line-height:1.6;
+}
+.totp-reset-page .restaurant-delete-confirm-warning strong{display:block;margin-bottom:4px}
+.totp-reset-page .table-wrap{
+  width:100%;
+  max-width:100%;
+  overflow:auto;
+  border:1px solid var(--border-color,rgba(255,255,255,.12));
+  border-radius:12px;
+  margin-top:8px;
+}
+.totp-reset-page .table-wrap table{
+  width:100%;
+  min-width:940px;
+  border-collapse:separate;
+  border-spacing:0;
+}
+.totp-reset-page .table-wrap th,
+.totp-reset-page .table-wrap td{
+  padding:14px 16px;
+  text-align:left;
+  vertical-align:middle;
+  line-height:1.45;
+  border-bottom:1px solid rgba(255,255,255,.09);
+}
+.totp-reset-page .table-wrap th{
+  position:sticky;
+  top:0;
+  z-index:1;
+  background:#151515;
+  color:#f5f5f5;
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:.025em;
+  white-space:nowrap;
+}
+.totp-reset-page .table-wrap tbody tr:last-child td{border-bottom:0}
+.totp-reset-page .table-wrap tbody tr:hover{background:rgba(255,255,255,.035)}
+.totp-reset-page .table-wrap td:first-child{min-width:180px;overflow-wrap:anywhere}
+.totp-reset-page .table-wrap td:nth-child(3){min-width:150px}
+.totp-reset-page .table-wrap td:nth-child(4){white-space:nowrap}
+.totp-reset-page .table-wrap td code{
+  display:inline-block;
+  max-width:190px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  vertical-align:middle;
+  font-size:.78rem;
+  color:#d7d7d7;
+}
+.totp-reset-page .table-wrap td .secondary-button{
+  white-space:nowrap;
+  min-width:112px;
+}
+@media(max-width:760px){
+  .totp-reset-page{padding:18px 14px !important}
+  .totp-reset-page .page-heading{gap:14px}
+  .totp-reset-page .page-heading h1{font-size:1.55rem}
+  .totp-reset-page .page-heading .secondary-button{margin-top:0}
+  .totp-reset-page .table-wrap th,
+  .totp-reset-page .table-wrap td{padding:12px}
+}
