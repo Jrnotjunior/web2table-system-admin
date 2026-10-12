@@ -804,6 +804,48 @@ function AppContent() {
     setPendingDeleteStaff(staff);
   }
 
+  async function resetRestaurantUserTotp(targetUserId: string, displayName: string, role: 'restaurant_owner' | 'staff', restaurantId: string) {
+    if (adminAccessLevel !== 'owner') {
+      setStaffActionError('Only the System Administrator Owner can reset restaurant account authenticators.');
+      setOwnerError('Only the System Administrator Owner can reset restaurant account authenticators.');
+      return;
+    }
+    if (!targetUserId || !restaurantId) {
+      setStaffActionError('This account is not linked to a Supabase Auth user.');
+      setOwnerError('This account is not linked to a Supabase Auth user.');
+      return;
+    }
+    const confirmed = window.confirm('Reset the TOTP authenticator for ' + displayName + '? They will be signed out and must sign in again, enroll a new authenticator, and verify it before accessing Web2Table. This does not change their password or role.');
+    if (!confirmed) return;
+    setStaffActionId(targetUserId);
+    setStaffActionError('');
+    setOwnerError('');
+    try {
+      const { data, error } = await supabase.functions.invoke('system-admin-reset-restaurant-user-totp', {
+        body: { target_user_id: targetUserId, restaurant_id: restaurantId, target_role: role },
+      });
+      if (error) {
+        let message = error.message;
+        try {
+          const response = (error as { context?: Response }).context;
+          if (response) {
+            const payload = await response.clone().json() as { error?: unknown };
+            if (typeof payload.error === 'string' && payload.error.trim()) message = payload.error;
+          }
+        } catch { /* Keep the original Functions error. */ }
+        throw new Error(message);
+      }
+      if (data?.error) throw new Error(String(data.error));
+      await recordAdminAudit('Restaurant account TOTP reset', restaurantId, role, targetUserId, { target_user_id: targetUserId, target_role: role, account_label: displayName, factor_type: 'totp' });
+      window.alert('Authenticator reset for ' + displayName + '. They must sign in and enroll a new authenticator before accessing their workspace.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to reset this authenticator.';
+      setStaffActionError(message);
+      setOwnerError(message);
+    } finally {
+      setStaffActionId(null);
+    }
+  }
   async function confirmDeleteRestaurantStaff() {
     if (!pendingDeleteStaff) return;
 
@@ -2167,6 +2209,7 @@ function AppContent() {
                   <div className="owner-current">
                     <div className="owner-avatar">{(ownerName || ownerEmail).charAt(0).toUpperCase()}</div>
                     <div className="owner-current-details"><strong>{ownerName || 'Restaurant Owner'}</strong><span>{ownerEmail}</span><small>User ID: {ownerUserId}</small></div>
+                    {adminAccessLevel === 'owner' && <button className="secondary-button" type="button" onClick={() => void resetRestaurantUserTotp(ownerUserId, ownerName || ownerEmail || 'Restaurant Owner', 'restaurant_owner', selectedRestaurant.id)} disabled={staffActionId !== null || !ownerUserId}>{staffActionId === ownerUserId ? 'Resetting...' : 'Reset TOTP'}</button>}
                     {canManage && <button className="danger-button" onClick={() => { setOwnerError(''); setPendingRemoveOwner(true); }} disabled={ownerSaving}>Remove owner</button>}
                   </div>
                 ) : (
@@ -2349,6 +2392,14 @@ function AppContent() {
                                 >
                                   {staffActionId === staff.id ? 'Saving...' : staff.is_active ? 'Deactivate' : 'Activate'}
                                 </button>
+                                {adminAccessLevel === 'owner' && staff.auth_user_id && <button
+                                  className="secondary-button"
+                                  type="button"
+                                  onClick={() => void resetRestaurantUserTotp(staff.auth_user_id!, staff.name || staff.email || 'Staff member', 'staff', selectedRestaurant.id)}
+                                  disabled={staffActionId !== null}
+                                >
+                                  {staffActionId === staff.auth_user_id ? 'Resetting...' : 'Reset TOTP'}
+                                </button>}
                                 <button
                                   className="danger-button"
                                   type="button"
