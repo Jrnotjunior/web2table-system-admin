@@ -1428,7 +1428,7 @@ function AppContent() {
   }
 
   if (isAdminPage(adminPage, 'maps')) {
-    return <MapboxUsagePage onBack={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} accessLevel={adminAccessLevel} onSignOut={() => void signOut()} />
+    return <MapboxUsagePage onBack={() => openDashboard()} />;
   }
 
   if (isAdminPage(adminPage, 'dashboard')) {
@@ -1518,16 +1518,7 @@ function AppContent() {
 
   if (isAdminPage(adminPage, 'administrators')) {
     return (
-      <div className="admin-layout"><aside className="admin-sidebar" aria-label="System administration navigation">
-<button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png" alt="" /><span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span></button>
-<nav className="sidebar-nav">
-<button type="button" className={isAdminPage(adminPage, 'dashboard') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
-<button type="button" className={isAdminPage(adminPage, 'restaurants') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
-<button type="button" className={isAdminPage(adminPage, 'administrators') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openAdministrators()} disabled={adminAccessLevel !== 'owner'}><span className="sidebar-nav-icon">♙</span>Administrators</button>
-<button type="button" className={isAdminPage(adminPage, 'audit') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openAuditLogs()}><span className="sidebar-nav-icon">▧</span>Activity Logs</button>
-<button type="button" className={isAdminPage(adminPage, 'health') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
-<button type="button" className={isAdminPage(adminPage, 'maps') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
-</nav><div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console<button type="button" onClick={() => void signOut()}>Sign out</button></div></aside><div className="admin-main"><main className="admin-shell admin-shell-with-sidebar">
+      <main className="admin-shell">
         <header className="admin-header">
           <div className="brand-block">
             <img className="company-logo" src="/web2table-system-admin/web2table.png" alt="WEB2TABLE" />
@@ -1657,23 +1648,14 @@ function AppContent() {
             </section>
           </div>
         )}
-      </main></div></div>
+      </main>
     );
   }
 
   if (isAdminPage(adminPage, 'audit')) {
     return (
 
-      <div className="admin-layout"><aside className="admin-sidebar" aria-label="System administration navigation">
-<button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png" alt="" /><span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span></button>
-<nav className="sidebar-nav">
-<button type="button" className={isAdminPage(adminPage, 'dashboard') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
-<button type="button" className={isAdminPage(adminPage, 'restaurants') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
-<button type="button" className={isAdminPage(adminPage, 'administrators') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openAdministrators()} disabled={adminAccessLevel !== 'owner'}><span className="sidebar-nav-icon">♙</span>Administrators</button>
-<button type="button" className={isAdminPage(adminPage, 'audit') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openAuditLogs()}><span className="sidebar-nav-icon">▧</span>Activity Logs</button>
-<button type="button" className={isAdminPage(adminPage, 'health') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
-<button type="button" className={isAdminPage(adminPage, 'maps') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
-</nav><div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console<button type="button" onClick={() => void signOut()}>Sign out</button></div></aside><div className="admin-main"><main className="admin-shell admin-shell-with-sidebar">
+      <main className="admin-shell">
         <header className="admin-header">
           <div className="brand-block">
             <img className="company-logo" src="/web2table-system-admin/web2table.png" alt="WEB2TABLE" />
@@ -2786,7 +2768,7 @@ function AppContent() {
             </div>
           )}
 
-      </main></div></div>
+      </main>
     );
   }
 
