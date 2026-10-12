@@ -65,15 +65,9 @@ export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrator
       </aside>
       <div className="admin-main">
       <main className="admin-shell admin-shell-with-sidebar">
-      <header className="admin-header">
-        <div className="brand-block">
-          <img className="company-logo" src="/web2table-system-admin/web2table.png" alt="WEB2TABLE" />
-          <div><div className="eyebrow">WEB2TABLE Platform</div><h1>Mapbox Usage</h1></div>
-        </div>
-        <div className="platform-health-header-actions">
-          <button className="secondary-button" type="button" onClick={() => void loadUsage(false)} disabled={refreshing}>{refreshing ? 'Refreshing...' : 'Refresh'}</button>
-        </div>
-      </header>
+      <div className="page-action-row">
+        <button className="secondary-button" type="button" onClick={() => void loadUsage(false)} disabled={refreshing}>{refreshing ? 'Refreshing...' : 'Refresh'}</button>
+      </div>
       <section className="dashboard-card mapbox-usage-card">
         <div className="mapbox-usage-toolbar">
           <div>
