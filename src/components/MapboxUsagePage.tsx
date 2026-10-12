@@ -65,11 +65,9 @@ export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrator
       </aside>
       <div className="admin-main">
       <main className="admin-shell admin-shell-with-sidebar">
-      <div className="page-action-row">
-        <button className="secondary-button" type="button" onClick={() => void loadUsage(false)} disabled={refreshing}>{refreshing ? 'Refreshing...' : 'Refresh'}</button>
-      </div>
       <section className="dashboard-card mapbox-usage-card">
         <div className="mapbox-usage-toolbar">
+          <button className="secondary-button mapbox-refresh-button" type="button" onClick={() => void loadUsage(false)} disabled={refreshing}>{refreshing ? 'Refreshing...' : 'Refresh'}</button>
           <div>
             <div className="eyebrow">Cost & Usage Control</div>
             <h2>Mapbox</h2>
