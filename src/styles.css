@@ -386,6 +386,7 @@ body{min-width:320px}
   border-radius:0;
   background:transparent;
   object-fit:contain;
+  filter:invert(1) hue-rotate(180deg);
   mix-blend-mode:screen;
 }
 @media(max-width:760px){
