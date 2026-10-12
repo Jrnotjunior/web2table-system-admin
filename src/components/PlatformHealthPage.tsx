@@ -94,8 +94,9 @@ export default function PlatformHealthPage({ onBack, onRestaurants, onAdministra
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Platform health</strong></div>
-        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="topbar-account" onClick={onSignOut}><span className="topbar-avatar">SA</span><span>System Admin<small>{accessLevel === 'owner' ? 'Owner access' : accessLevel === 'administrator' ? 'Administrator' : 'View only'}</small></span><span aria-hidden="true">↗</span></button></div>
+        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span></div>
       </header>
+      <main className="admin-shell admin-shell-with-sidebar">
       <section className="dashboard-card platform-health-card">
         <div className={`platform-health-overview platform-health-overview-${overall}`}>
           <div>
@@ -177,6 +178,7 @@ export default function PlatformHealthPage({ onBack, onRestaurants, onAdministra
           </>
         ) : null}
       </section>
+      </main>
       </div>
     </div>
   );
