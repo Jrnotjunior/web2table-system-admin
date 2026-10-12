@@ -508,3 +508,15 @@ body{min-width:320px}
   text-align:center !important;
 }
 .auth-card form label{text-align:left}
+
+
+/* Center the Web2Table Platform eyebrow label with the rest of the sign-in heading. */
+.auth-card .auth-eyebrow,
+.auth-card .eyebrow,
+.auth-card .brand-kicker,
+.auth-card .platform-label,
+.auth-card .auth-brand-label{
+  display:block;
+  width:100%;
+  text-align:center !important;
+}
