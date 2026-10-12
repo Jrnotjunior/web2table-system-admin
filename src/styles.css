@@ -533,3 +533,15 @@ body{min-width:320px}
 .auth-card form button[type="submit"]:disabled{
   opacity:.7;
 }
+
+
+/* Center the MFA authenticator-code label and the six-digit code in its input. */
+.auth-card form label[for="system-admin-mfa-code"]{
+  display:block;
+  text-align:center !important;
+}
+#system-admin-mfa-code{
+  text-align:center !important;
+  letter-spacing:.35em;
+  font-variant-numeric:tabular-nums;
+}
