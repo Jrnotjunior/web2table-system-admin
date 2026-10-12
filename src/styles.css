@@ -494,3 +494,17 @@ body{min-width:320px}
   justify-self:center !important;
   margin-inline:auto !important;
 }
+
+
+/* Center the sign-in card's text while keeping form fields full-width and the button centered. */
+.auth-card > .auth-logo,
+.auth-card > .company-logo{margin-inline:auto !important}
+.auth-card > h1,
+.auth-card > p,
+.auth-card > .auth-eyebrow,
+.auth-card > .brand-block,
+.auth-card .auth-heading,
+.auth-card .auth-subtitle{
+  text-align:center !important;
+}
+.auth-card form label{text-align:left}
