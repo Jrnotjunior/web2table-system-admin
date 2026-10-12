@@ -43,7 +43,7 @@ function StatusDot({ status }: { status: ServiceStatus }) {
   return <span className={`platform-health-dot platform-health-dot-${status}`} aria-hidden="true" />;
 }
 
-export default function PlatformHealthPage({ onBack }: { onBack: () => void }) {
+export default function PlatformHealthPage({ onBack, onRestaurants, onAdministrators, onAuditLogs, onMapboxUsage, accessLevel }: { onBack: () => void; onRestaurants: () => void; onAdministrators: () => void; onAuditLogs: () => void; onMapboxUsage: () => void; accessLevel: 'owner' | 'administrator' | 'view_only' | null }) {
   const [report, setReport] = useState<HealthReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -88,7 +88,23 @@ export default function PlatformHealthPage({ onBack }: { onBack: () => void }) {
   const overall = report?.overallStatus ?? 'unknown';
 
   return (
-    <main className="admin-shell">
+    <div className="admin-layout">
+      <aside className="admin-sidebar" aria-label="System administration navigation">
+        <button type="button" className="sidebar-brand" onClick={onBack} aria-label="Web2Table System Admin home">
+          <img src="/web2table-system-admin/web2table.png" alt="" />
+          <span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span>
+        </button>
+        <nav className="sidebar-nav">
+          <button type="button" className="sidebar-nav-item" onClick={onBack}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
+          <button type="button" className="sidebar-nav-item" onClick={onRestaurants}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
+          <button type="button" className="sidebar-nav-item" onClick={onAdministrators} disabled={accessLevel !== 'owner'}><span className="sidebar-nav-icon">♙</span>Administrators</button>
+          <button type="button" className="sidebar-nav-item" onClick={onAuditLogs}><span className="sidebar-nav-icon">▧</span>Activity Logs</button>
+          <button type="button" className="sidebar-nav-item active" aria-current="page"><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
+          <button type="button" className="sidebar-nav-item" onClick={onMapboxUsage}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
+        </nav>
+        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
+      </aside>
+      <div className="admin-main">
       <header className="admin-header">
         <div className="brand-block">
           <img className="company-logo" src="/web2table-system-admin/web2table.png" alt="WEB2TABLE" />
@@ -182,6 +198,7 @@ export default function PlatformHealthPage({ onBack }: { onBack: () => void }) {
           </>
         ) : null}
       </section>
-    </main>
+      </div>
+    </div>
   );
 }
