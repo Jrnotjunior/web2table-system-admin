@@ -1437,7 +1437,7 @@ function AppContent() {
         <aside className="admin-sidebar" aria-label="System administration navigation">
           <button type="button" className="sidebar-brand" onClick={() => openDashboard()} aria-label="Web2Table System Admin home">
             <img src="/web2table-system-admin/web2table.png?v=20261012" alt="" />
-            <span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span>
+            <span className="sidebar-brand-label">SYSTEM ADMIN</span>
           </button>
           <nav className="sidebar-nav">
             <button type="button" className="sidebar-nav-item active" onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
@@ -1520,7 +1520,7 @@ function AppContent() {
     return (
       <div className="admin-layout">
       <aside className="admin-sidebar" aria-label="System administration navigation">
-        <button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png?v=20261012" alt="" /><span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span></button>
+        <button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png?v=20261012" alt="" /><span className="sidebar-brand-label">SYSTEM ADMIN</span></button>
         <nav className="sidebar-nav">
           <button type="button" className="sidebar-nav-item" onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
           <button type="button" className="sidebar-nav-item" onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
@@ -1647,7 +1647,7 @@ function AppContent() {
 
       <div className="admin-layout">
       <aside className="admin-sidebar" aria-label="System administration navigation">
-        <button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png?v=20261012" alt="" /><span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span></button>
+        <button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png?v=20261012" alt="" /><span className="sidebar-brand-label">SYSTEM ADMIN</span></button>
         <nav className="sidebar-nav">
           <button type="button" className="sidebar-nav-item" onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
           <button type="button" className="sidebar-nav-item" onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
@@ -2728,7 +2728,7 @@ function AppContent() {
       <aside className="admin-sidebar" aria-label="System administration navigation">
         <button type="button" className="sidebar-brand" onClick={() => openDashboard()} aria-label="Web2Table System Admin home">
           <img src="/web2table-system-admin/web2table.png?v=20261012" alt="" />
-          <span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span>
+          <span className="sidebar-brand-label">SYSTEM ADMIN</span>
         </button>
         <nav className="sidebar-nav">
           <button type="button" className={isAdminPage(adminPage, 'dashboard') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
