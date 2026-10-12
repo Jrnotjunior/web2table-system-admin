@@ -370,3 +370,8 @@ body{min-width:320px}
 @media(max-width:760px){
  .admin-layout>.admin-main>.admin-shell-with-sidebar{padding:20px 14px}
 }
+
+/* Keep page actions within their content panels, not detached at the viewport edge. */
+.mapbox-refresh-button,.platform-health-refresh-button{white-space:nowrap;flex-shrink:0}
+.platform-health-refresh-button{align-self:flex-start;margin-left:auto}
+@media(max-width:760px){.mapbox-usage-toolbar{flex-wrap:wrap}.mapbox-refresh-button{margin-left:auto}.platform-health-refresh-button{margin-left:0}}
