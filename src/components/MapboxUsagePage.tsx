@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import SystemAdminSidebar from './SystemAdminSidebar';
 
 type ServiceRow = { service: string; requests: number; successful_requests: number; error_requests: number; estimated_cost_usd: number };
 type RestaurantRow = { restaurant_id: string | null; restaurant_name: string; requests: number; estimated_cost_usd: number };
@@ -51,18 +52,7 @@ export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrator
 
   return (
     <div className="admin-layout">
-      <aside className="admin-sidebar" aria-label="System administration navigation">
-        <button type="button" className="sidebar-brand" onClick={onBack}><img src="/web2table-system-admin/web2table.png" alt="" /><span><strong>Web2Table</strong><small>SYSTEM ADMIN</small></span></button>
-        <nav className="sidebar-nav">
-          <button type="button" className="sidebar-nav-item" onClick={onBack}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
-          <button type="button" className="sidebar-nav-item" onClick={onRestaurants}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
-          <button type="button" className="sidebar-nav-item" onClick={onAdministrators} disabled={accessLevel !== 'owner'}><span className="sidebar-nav-icon">♙</span>Administrators</button>
-          <button type="button" className="sidebar-nav-item" onClick={onAuditLogs}><span className="sidebar-nav-icon">▧</span>Activity Logs</button>
-          <button type="button" className="sidebar-nav-item" onClick={onPlatformHealth}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
-          <button type="button" className="sidebar-nav-item active" aria-current="page"><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
-        </nav>
-        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console<button type="button" onClick={onSignOut}>Sign out</button></div>
-      </aside>
+      <SystemAdminSidebar activePage="maps" accessLevel={accessLevel} onDashboard={onBack} onRestaurants={onRestaurants} onAdministrators={onAdministrators} onAuditLogs={onAuditLogs} onPlatformHealth={onPlatformHealth} onMapboxUsage={() => {}} />
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Mapbox usage</strong></div>
