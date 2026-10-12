@@ -105,12 +105,9 @@ export default function PlatformHealthPage({ onBack, onRestaurants, onAdministra
         <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
       </aside>
       <div className="admin-main">
-      <div className="page-action-row"><button className="secondary-button" type="button" onClick={() => void runHealthCheck(false)} disabled={refreshing}>
-          {refreshing ? 'Checking...' : 'Run health check'}
-        </button></div>
-
       <section className="dashboard-card platform-health-card">
         <div className={`platform-health-overview platform-health-overview-${overall}`}>
+          <button className="secondary-button platform-health-refresh-button" type="button" onClick={() => void runHealthCheck(false)} disabled={refreshing}>{refreshing ? 'Checking...' : 'Run health check'}</button>
           <div>
             <div className="eyebrow">Overall Platform Status</div>
             <h2><StatusDot status={overall} /> {statusLabel[overall]}</h2>
