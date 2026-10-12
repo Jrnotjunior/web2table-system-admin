@@ -4,6 +4,7 @@ import { supabase } from './lib/supabase';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
+import SystemAdminSidebar from './components/SystemAdminSidebar';
 
 type AdminPage = 'dashboard' | 'restaurants' | 'audit' | 'administrators' | 'health' | 'maps';
 
@@ -1434,21 +1435,7 @@ function AppContent() {
   if (isAdminPage(adminPage, 'dashboard')) {
     return (
       <div className="admin-layout">
-        <aside className="admin-sidebar" aria-label="System administration navigation">
-          <button type="button" className="sidebar-brand" onClick={() => openDashboard()} aria-label="Web2Table System Admin home">
-            <img src="/web2table-system-admin/web2table.png?v=20261012" alt="" />
-            <span className="sidebar-brand-label">SYSTEM ADMIN</span>
-          </button>
-          <nav className="sidebar-nav">
-            <button type="button" className="sidebar-nav-item active" onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
-            <button type="button" className="sidebar-nav-item" onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
-            <button type="button" className="sidebar-nav-item" onClick={() => openAdministrators()} disabled={adminAccessLevel !== 'owner'}><span className="sidebar-nav-icon">♙</span>Administrators</button>
-            <button type="button" className="sidebar-nav-item" onClick={() => openAuditLogs()}><span className="sidebar-nav-icon">▧</span>Activity Logs</button>
-            <button type="button" className="sidebar-nav-item" onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
-            <button type="button" className="sidebar-nav-item" onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
-          </nav>
-          <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
-        </aside>
+        <SystemAdminSidebar activePage={'dashboard'} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} />
         <div className="admin-main">
           <header className="workspace-topbar">
             <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System overview</strong></div>
@@ -1519,18 +1506,7 @@ function AppContent() {
   if (isAdminPage(adminPage, 'administrators')) {
     return (
       <div className="admin-layout">
-      <aside className="admin-sidebar" aria-label="System administration navigation">
-        <button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png?v=20261012" alt="" /><span className="sidebar-brand-label">SYSTEM ADMIN</span></button>
-        <nav className="sidebar-nav">
-          <button type="button" className="sidebar-nav-item" onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
-          <button type="button" className="sidebar-nav-item" onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
-          <button type="button" className="sidebar-nav-item active" aria-current="page"><span className="sidebar-nav-icon">♙</span>Administrators</button>
-          <button type="button" className="sidebar-nav-item" onClick={() => openAuditLogs()}><span className="sidebar-nav-icon">▧</span>Activity Logs</button>
-          <button type="button" className="sidebar-nav-item" onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
-          <button type="button" className="sidebar-nav-item" onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
-        </nav>
-        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
-      </aside>
+      <SystemAdminSidebar activePage={'administrators'} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} />
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System administrators</strong></div>
@@ -1651,18 +1627,7 @@ function AppContent() {
     return (
 
       <div className="admin-layout">
-      <aside className="admin-sidebar" aria-label="System administration navigation">
-        <button type="button" className="sidebar-brand" onClick={() => openDashboard()}><img src="/web2table-system-admin/web2table.png?v=20261012" alt="" /><span className="sidebar-brand-label">SYSTEM ADMIN</span></button>
-        <nav className="sidebar-nav">
-          <button type="button" className="sidebar-nav-item" onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
-          <button type="button" className="sidebar-nav-item" onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
-          <button type="button" className="sidebar-nav-item" onClick={() => openAdministrators()} disabled={adminAccessLevel !== 'owner'}><span className="sidebar-nav-icon">♙</span>Administrators</button>
-          <button type="button" className="sidebar-nav-item active" aria-current="page"><span className="sidebar-nav-icon">▧</span>Activity Logs</button>
-          <button type="button" className="sidebar-nav-item" onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
-          <button type="button" className="sidebar-nav-item" onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
-        </nav>
-        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
-      </aside>
+      <SystemAdminSidebar activePage={'audit'} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} />
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Activity logs</strong></div>
@@ -2735,21 +2700,7 @@ function AppContent() {
 
   return (
     <div className="admin-layout">
-      <aside className="admin-sidebar" aria-label="System administration navigation">
-        <button type="button" className="sidebar-brand" onClick={() => openDashboard()} aria-label="Web2Table System Admin home">
-          <img src="/web2table-system-admin/web2table.png?v=20261012" alt="" />
-          <span className="sidebar-brand-label">SYSTEM ADMIN</span>
-        </button>
-        <nav className="sidebar-nav">
-          <button type="button" className={isAdminPage(adminPage, 'dashboard') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openDashboard()}><span className="sidebar-nav-icon">▦</span>Dashboard</button>
-          <button type="button" className={isAdminPage(adminPage, 'restaurants') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openRestaurants()}><span className="sidebar-nav-icon">▤</span>Restaurants</button>
-          <button type="button" className={isAdminPage(adminPage, 'administrators') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openAdministrators()} disabled={adminAccessLevel !== 'owner'}><span className="sidebar-nav-icon">♙</span>Administrators</button>
-          <button type="button" className={isAdminPage(adminPage, 'audit') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openAuditLogs()}><span className="sidebar-nav-icon">▧</span>Activity Logs</button>
-          <button type="button" className={isAdminPage(adminPage, 'health') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openPlatformHealth()}><span className="sidebar-nav-icon">⌁</span>Platform Health</button>
-          <button type="button" className={isAdminPage(adminPage, 'maps') ? 'sidebar-nav-item active' : 'sidebar-nav-item'} onClick={() => openMapboxUsage()}><span className="sidebar-nav-icon">◎</span>Mapbox Usage</button>
-        </nav>
-        <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
-      </aside>
+      <SystemAdminSidebar activePage={adminPage} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} />
       <div className="admin-main">
         <header className="workspace-topbar">
           <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>{isAdminPage(adminPage, 'restaurants') ? 'Restaurant management' : isAdminPage(adminPage, 'administrators') ? 'System administrators' : 'Activity logs'}</strong></div>
