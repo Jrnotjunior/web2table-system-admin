@@ -392,3 +392,40 @@ body{min-width:320px}
 @media(max-width:760px){
   .sidebar-brand img{width:46px;height:46px;flex-basis:46px}
 }
+
+
+/* Compact vertical brand: use the existing repository logo, no duplicate wordmark. */
+.sidebar-brand{
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  padding:10px 8px 22px;
+  text-align:center;
+}
+.sidebar-brand img{
+  width:104px;
+  height:82px;
+  flex:0 0 auto;
+  object-fit:contain;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  filter:none;
+  mix-blend-mode:screen;
+}
+.sidebar-brand .sidebar-brand-label{
+  display:block;
+  color:#c6c6c6;
+  font-size:10px;
+  line-height:1.2;
+  letter-spacing:.18em;
+  font-weight:800;
+  white-space:nowrap;
+}
+@media(max-width:760px){
+  .sidebar-brand{gap:8px;padding:8px 4px 14px}
+  .sidebar-brand img{width:76px;height:62px}
+  .sidebar-brand .sidebar-brand-label{font-size:9px;letter-spacing:.12em}
+}
