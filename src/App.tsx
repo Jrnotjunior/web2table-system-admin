@@ -1465,7 +1465,7 @@ function AppContent() {
         <section className="dashboard-card system-dashboard-card">
           <div className="section-heading">
             <div><div className="eyebrow">Platform Command Center</div><h2>System Dashboard</h2><p>See platform health, operational activity, and anything that needs your attention.</p></div>
-            <button className="secondary-button dashboard-health-button" type="button" onClick={() => openPlatformHealth()}>Open Platform Health</button>
+            
           </div>
           {dashboardError && <div className="error-banner">{dashboardError}</div>}
           {dashboardLoading && !dashboardSummary ? <div className="empty-state">Loading platform command center...</div> : (
