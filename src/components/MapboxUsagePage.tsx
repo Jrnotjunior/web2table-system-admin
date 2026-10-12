@@ -13,7 +13,7 @@ function dateRange(days: number) {
   return { start: start.toISOString(), end: end.toISOString() };
 }
 
-export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrators, onAuditLogs, onPlatformHealth, accessLevel, onSignOut }: { onBack: () => void; onRestaurants: () => void; onAdministrators: () => void; onAuditLogs: () => void; onPlatformHealth: () => void; accessLevel: 'owner' | 'administrator' | 'view_only' | null; onSignOut: () => void }) {
+export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrators, onAuditLogs, onPlatformHealth, onTotpResets, accessLevel, onSignOut }: { onBack: () => void; onRestaurants: () => void; onAdministrators: () => void; onAuditLogs: () => void; onPlatformHealth: () => void; onTotpResets: () => void; accessLevel: 'owner' | 'administrator' | 'view_only' | null; onSignOut: () => void }) {
   const [range, setRange] = useState<7 | 30>(30);
   const [services, setServices] = useState<ServiceRow[]>([]);
   const [restaurants, setRestaurants] = useState<RestaurantRow[]>([]);
@@ -52,7 +52,7 @@ export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrator
 
   return (
     <div className="admin-layout">
-      <SystemAdminSidebar activePage="maps" accessLevel={accessLevel} onDashboard={onBack} onRestaurants={onRestaurants} onAdministrators={onAdministrators} onAuditLogs={onAuditLogs} onPlatformHealth={onPlatformHealth} onMapboxUsage={() => {}} onSignOut={onSignOut} />
+      <SystemAdminSidebar activePage="maps" accessLevel={accessLevel} onDashboard={onBack} onRestaurants={onRestaurants} onAdministrators={onAdministrators} onAuditLogs={onAuditLogs} onPlatformHealth={onPlatformHealth} onMapboxUsage={() => {}} onTotpResets={onTotpResets} onSignOut={onSignOut} />
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Mapbox usage</strong></div>
