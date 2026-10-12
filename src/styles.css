@@ -729,3 +729,85 @@ body{min-width:320px}
   .totp-reset-searchbar{grid-template-columns:minmax(0,1fr);padding:12px}
   .totp-reset-result-count{white-space:normal}
 }
+
+
+/* Branded confirmation dialog for account authenticator resets. */
+.totp-confirm-modal{
+  width:min(520px,calc(100vw - 32px));
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  background:#111;
+  color:#f7f7f7;
+  box-shadow:0 24px 80px rgba(0,0,0,.6);
+  overflow:hidden;
+}
+.totp-confirm-modal .modal-header{
+  position:relative;
+  padding:24px 26px 18px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.totp-confirm-modal .modal-header .eyebrow{
+  display:block;
+  margin-bottom:8px;
+  color:#ff303b;
+  font-size:.72rem;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+.totp-confirm-modal .modal-header h2{
+  margin:0;
+  padding-right:28px;
+  font-size:1.45rem;
+  line-height:1.25;
+}
+.totp-confirm-modal .modal-close{
+  position:absolute;
+  top:16px;
+  right:18px;
+  border:0;
+  background:transparent;
+  color:#bbb;
+  font-size:1.6rem;
+  cursor:pointer;
+}
+.totp-confirm-modal .modal-body{
+  display:grid;
+  gap:12px;
+  padding:22px 26px;
+  line-height:1.55;
+}
+.totp-confirm-modal .modal-body p{margin:0;color:#dedede}
+.totp-confirm-modal .modal-body strong{color:#fff}
+.totp-confirm-modal .totp-confirm-note{
+  padding:11px 13px;
+  border-left:3px solid #f51d2a;
+  border-radius:0 7px 7px 0;
+  background:rgba(245,29,42,.08);
+  color:#c9c9c9 !important;
+  font-size:.9rem;
+}
+.totp-confirm-modal .modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:16px 26px 22px;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+.totp-confirm-modal .danger-button{
+  border:1px solid #f51d2a;
+  border-radius:8px;
+  padding:11px 16px;
+  background:#f51d2a;
+  color:#fff;
+  font:inherit;
+  font-weight:700;
+  cursor:pointer;
+}
+.totp-confirm-modal .danger-button:hover{background:#d91623}
+.totp-confirm-modal button:disabled{opacity:.6;cursor:not-allowed}
+@media(max-width:520px){
+  .totp-confirm-modal .modal-header,.totp-confirm-modal .modal-body{padding-left:18px;padding-right:18px}
+  .totp-confirm-modal .modal-actions{padding:14px 18px 18px}
+  .totp-confirm-modal .modal-actions button{flex:1}
+}
