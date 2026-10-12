@@ -13,6 +13,8 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [showRecovery, setShowRecovery] = useState(false);
+  const [recoveryPassword, setRecoveryPassword] = useState('');
   const inspectionInFlight = useRef(false);
   const lastInspectedUserId = useRef<string | null>(null);
 
@@ -168,6 +170,35 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
     }
   }
 
+  async function resetAuthenticator(event: React.FormEvent) {
+    event.preventDefault();
+    if (!recoveryPassword) {
+      setMessage('Enter your current System Admin password to authorize the reset.');
+      return;
+    }
+    const confirmed = window.confirm(
+      'Reset your System Admin authenticator? This removes only your verified TOTP factor and signs you out. You must sign in again and set up a new authenticator before entering the dashboard.',
+    );
+    if (!confirmed) return;
+
+    setBusy(true);
+    setMessage('');
+    try {
+      const { data, error } = await supabase.functions.invoke('system-admin-reset-own-totp', {
+        body: { password: recoveryPassword },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setRecoveryPassword('');
+      await supabase.auth.signOut();
+      window.location.reload();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Authenticator recovery failed. No changes were confirmed.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (state.kind === 'ready') return <>{children}</>;
   if (state.kind === 'checking') {
     return <main className="auth-shell"><section className="auth-card"><h1>Checking account security</h1><p>Verifying your System Admin MFA status…</p></section></main>;
@@ -203,6 +234,22 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
           {message && <p role="alert" className="error-banner">{message}</p>}
           <button type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying…' : enrolling ? 'Verify and enable MFA' : 'Verify'}</button>
         </form>
+        {state.kind === 'challenge' && (
+          <section aria-label="Authenticator recovery" style={{ marginTop: '18px', borderTop: '1px solid #ddd', paddingTop: '14px' }}>
+            <button type="button" className="secondary-button" disabled={busy} onClick={() => { setShowRecovery((shown) => !shown); setMessage(''); }}>
+              {showRecovery ? 'Cancel authenticator reset' : 'Lost your authenticator? Reset it'}
+            </button>
+            {showRecovery && (
+              <form onSubmit={resetAuthenticator} style={{ marginTop: '12px' }}>
+                <p>Reset only your own authenticator. You’ll be signed out and must enroll a new authenticator before the dashboard unlocks.</p>
+                <label htmlFor="system-admin-recovery-password">Current System Admin password</label>
+                <input id="system-admin-recovery-password" type="password" autoComplete="current-password" value={recoveryPassword} onChange={(event) => setRecoveryPassword(event.target.value)} required />
+                {message && <p role="alert" className="error-banner">{message}</p>}
+                <button type="submit" disabled={busy || !recoveryPassword}>{busy ? 'Resetting…' : 'Confirm reset'}</button>
+              </form>
+            )}
+          </section>
+        )}
         <div className="mfa-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', marginTop: '12px', width: '100%' }}>
           <button type="button" className="secondary-button" style={{ position: 'static', float: 'none', margin: 0, flex: '0 0 auto' }} onClick={async () => {
             setBusy(true);
