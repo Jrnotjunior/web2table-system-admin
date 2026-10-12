@@ -1,4 +1,4 @@
-export type SystemAdminPage = 'dashboard' | 'restaurants' | 'administrators' | 'audit' | 'health' | 'maps';
+export type SystemAdminPage = 'dashboard' | 'restaurants' | 'administrators' | 'audit' | 'health' | 'maps' | 'totp-reset';
 
 type Props = {
   activePage: SystemAdminPage;
@@ -9,11 +9,12 @@ type Props = {
   onAuditLogs: () => void;
   onPlatformHealth: () => void;
   onMapboxUsage: () => void;
+  onTotpResets: () => void;
   onSignOut?: () => void;
 };
 
 export default function SystemAdminSidebar({
-  activePage, accessLevel, onDashboard, onRestaurants, onAdministrators, onAuditLogs, onPlatformHealth, onMapboxUsage, onSignOut,
+  activePage, accessLevel, onDashboard, onRestaurants, onAdministrators, onAuditLogs, onPlatformHealth, onMapboxUsage, onTotpResets, onSignOut,
 }: Props) {
   const item = (page: SystemAdminPage, icon: string, label: string, action: () => void, disabled = false) => (
     <button key={page} type="button" className={activePage === page ? 'sidebar-nav-item active' : 'sidebar-nav-item'} aria-current={activePage === page ? 'page' : undefined} onClick={action} disabled={disabled}>
@@ -34,6 +35,7 @@ export default function SystemAdminSidebar({
         {item('audit', '▧', 'Activity Logs', onAuditLogs)}
         {item('health', '⌁', 'Platform Health', onPlatformHealth)}
         {item('maps', '◎', 'Mapbox Usage', onMapboxUsage)}
+        {accessLevel === 'owner' && item('totp-reset', '♧', 'TOTP Reset', onTotpResets)}
       </nav>
       <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console{onSignOut && <button type="button" onClick={onSignOut}>Sign out</button>}</div>
     </aside>
