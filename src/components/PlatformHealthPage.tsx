@@ -113,7 +113,7 @@ export default function PlatformHealthPage({ onBack, onRestaurants, onAdministra
             <h1>Platform Health</h1>
           </div>
         </div>
-        <div className="platform-health-header-actions"><button className="secondary-button" type="button" onClick={onBack}>Dashboard</button><button className="secondary-button" type="button" onClick={() => void runHealthCheck(false)} disabled={refreshing}>
+        <div className="platform-health-header-actions"><button className="secondary-button" type="button" onClick={() => void runHealthCheck(false)} disabled={refreshing}>
           {refreshing ? 'Checking...' : 'Run health check'}
         </button></div>
       </header>
