@@ -1010,8 +1010,33 @@ function AppContent() {
       p_email: ownerEmail.trim(),
     });
     if (error) {
-      setOwnerError(error.message);
+      const missingAuthAccount = /no auth account was found/i.test(error.message);
+      if (!missingAuthAccount) {
+        setOwnerError(error.message);
+        setOwnerSaving(false);
+        return;
+      }
+
+      const { data: invitationData, error: invitationError } = await supabase.functions.invoke('web2table-invite-user', {
+        body: {
+          email: ownerEmail.trim(),
+          invitation_type: 'restaurant_owner',
+          restaurant_id: selectedRestaurant.id,
+        },
+      });
+
+      if (invitationError || invitationData?.error || !invitationData?.success) {
+        setOwnerError(invitationData?.error || invitationError?.message || 'Unable to invite the restaurant owner.');
+        setOwnerSaving(false);
+        return;
+      }
+
+      setOwnerName('');
+      setOwnerUserId(invitationData.user_id ?? '');
       setOwnerSaving(false);
+      setPendingAssignOwner(false);
+      setOwnerError('');
+      window.alert(`Owner invitation sent to ${ownerEmail.trim()}. They can finish setting up their account from the email invitation.`);
       return;
     }
     const owner = Array.isArray(data) ? data[0] : data;
