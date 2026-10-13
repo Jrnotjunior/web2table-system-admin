@@ -149,6 +149,7 @@ function AppContent() {
   const [ownerUserId, setOwnerUserId] = useState('');
   const [ownerError, setOwnerError] = useState('');
   const [pendingAssignOwner, setPendingAssignOwner] = useState(false);
+  const [ownerInvitationNotice, setOwnerInvitationNotice] = useState('');
   const [pendingRemoveOwner, setPendingRemoveOwner] = useState(false);
   const [pendingRestaurantStatus, setPendingRestaurantStatus] = useState<Restaurant | null>(null);
   const [pendingDeleteRestaurant, setPendingDeleteRestaurant] = useState<Restaurant | null>(null);
@@ -1036,7 +1037,7 @@ function AppContent() {
       setOwnerSaving(false);
       setPendingAssignOwner(false);
       setOwnerError('');
-      window.alert(`Owner invitation sent to ${ownerEmail.trim()}. They can finish setting up their account from the email invitation.`);
+      setOwnerInvitationNotice(`An invitation was sent to ${ownerEmail.trim()}. They can finish setting up their account using the invitation email.`);
       return;
     }
     const owner = Array.isArray(data) ? data[0] : data;
@@ -2798,6 +2799,30 @@ function AppContent() {
                 <div className="modal-actions">
                   <button type="button" className="secondary-button" onClick={() => setPendingAssignOwner(false)} disabled={ownerSaving}>Cancel</button>
                   <button type="button" onClick={() => void assignOwner()} disabled={ownerSaving}>{ownerSaving ? 'Processing...' : 'Confirm & Assign / Invite'}</button>
+                </div>
+              </section>
+            </div>
+          )}
+
+          {ownerInvitationNotice && (
+            <div className="modal-backdrop owner-confirm-backdrop" role="presentation">
+              <section className="modal-card owner-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="owner-invitation-title">
+                <div className="modal-heading">
+                  <div>
+                    <div className="eyebrow">Invitation Sent</div>
+                    <h2 id="owner-invitation-title">Owner invitation sent</h2>
+                  </div>
+                  <button className="icon-button" type="button" onClick={() => setOwnerInvitationNotice('')} aria-label="Close">×</button>
+                </div>
+                <div className="owner-confirm-content">
+                  <p>{ownerInvitationNotice}</p>
+                  <div className="owner-confirm-warning">
+                    <strong>Next step</strong>
+                    <span>Ask the owner to check their inbox, including the spam or junk folder, and follow the invitation instructions.</span>
+                  </div>
+                </div>
+                <div className="modal-actions">
+                  <button type="button" onClick={() => setOwnerInvitationNotice('')}>Got it</button>
                 </div>
               </section>
             </div>
