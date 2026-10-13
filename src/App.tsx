@@ -2790,14 +2790,14 @@ function AppContent() {
                 <div className="owner-confirm-content">
                   <p>You are about to assign <strong>{ownerEmail.trim()}</strong> as the owner of <strong>{selectedRestaurant.name}</strong>.</p>
                   <div className="owner-confirm-warning">
-                    <strong>This will change the restaurant's owner account.</strong>
-                    <span>The existing Supabase account will be used. No new Auth account will be created.</span>
+                    <strong>This will assign the restaurant owner.</strong>
+                    <span>If the email already has an account, it will be assigned. If not, Web2Table will send an invitation to create an account.</span>
                   </div>
                   {ownerError && <div className="error-banner">{ownerError}</div>}
                 </div>
                 <div className="modal-actions">
                   <button type="button" className="secondary-button" onClick={() => setPendingAssignOwner(false)} disabled={ownerSaving}>Cancel</button>
-                  <button type="button" onClick={() => void assignOwner()} disabled={ownerSaving}>{ownerSaving ? 'Assigning...' : 'Confirm & Assign'}</button>
+                  <button type="button" onClick={() => void assignOwner()} disabled={ownerSaving}>{ownerSaving ? 'Processing...' : 'Confirm & Assign / Invite'}</button>
                 </div>
               </section>
             </div>
