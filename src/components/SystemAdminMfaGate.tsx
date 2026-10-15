@@ -245,7 +245,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
         )}
         <form onSubmit={verify}>
           <label htmlFor="system-admin-mfa-code">Authenticator code</label>
-          <input id="system-admin-mfa-code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={code} onChange={(event) => setCode(event.target.value.replace(/\\D/g, '').slice(0, 6))} required />
+          <input id="system-admin-mfa-code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} placeholder="" value={code} onChange={(event) => setCode(event.target.value.replace(/\\D/g, '').slice(0, 6))} required />
           {message && <p role="alert" className="error-banner">{message}</p>}
           <button type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying…' : enrolling ? 'Verify and enable MFA' : 'Verify'}</button>
         </form>
