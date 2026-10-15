@@ -877,3 +877,5 @@ body{min-width:320px}
 
 .auth-shell .auth-card .mfa-recovery-copy{color:#fff!important}
 .auth-shell .auth-card .mfa-recovery-copy .mfa-recovery-link{color:#ED1C24!important}
+
+.auth-shell .auth-card .mfa-recovery-copy{text-align:center!important;width:100%!important}
