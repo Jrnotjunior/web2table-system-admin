@@ -956,3 +956,9 @@ body{min-width:320px}
     flex-basis:64px !important;
   }
 }
+
+
+/* Remove the divider line beneath the System Admin sidebar brand. */
+.admin-sidebar .sidebar-brand{
+  border-bottom:0 !important;
+}
