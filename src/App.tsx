@@ -1523,7 +1523,7 @@ function AppContent() {
           <p>Sign in to manage restaurants and platform settings.</p>
           <form onSubmit={signIn}>
             <label>
-              Email
+              Email address
               <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required />
             </label>
             <label>
