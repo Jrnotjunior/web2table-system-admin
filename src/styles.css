@@ -906,3 +906,17 @@ body{min-width:320px}
 .auth-card .password-visibility-toggle{position:absolute!important;right:5px!important;top:50%!important;transform:translateY(-50%)!important;display:grid!important;place-items:center!important;width:36px!important;height:36px!important;padding:7px!important;background:transparent!important;color:#333!important;border:0!important;border-radius:7px!important;box-shadow:none!important;cursor:pointer!important;}
 .auth-card .password-visibility-toggle:hover{background:rgba(0,0,0,.07)!important;}
 .auth-card .password-visibility-toggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+
+
+/* Keep the password eye control neutral; it must not inherit the red submit-button styling. */
+.auth-shell .auth-card .password-visibility-toggle,
+.auth-shell .auth-card .password-visibility-toggle:hover,
+.auth-shell .auth-card .password-visibility-toggle:focus-visible {
+  background: transparent !important;
+  color: #334155 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.auth-shell .auth-card .password-visibility-toggle:hover {
+  background: rgba(15, 23, 42, .08) !important;
+}
