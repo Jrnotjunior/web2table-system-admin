@@ -142,6 +142,21 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
     };
   }, [inspect]);
 
+  useEffect(() => {
+    if (state.kind !== 'enroll' && state.kind !== 'challenge') return;
+    const timeoutId = window.setTimeout(() => {
+      void (async () => {
+        try {
+          await supabase.auth.signOut();
+        } finally {
+          // Return to the system-admin sign-in flow when the MFA window expires.
+          window.location.reload();
+        }
+      })();
+    }, 60_000);
+    return () => window.clearTimeout(timeoutId);
+  }, [state.kind, lastInspectedUserId.current]);
+
   async function verify(event: React.FormEvent) {
     event.preventDefault();
     if (state.kind !== 'enroll' && state.kind !== 'challenge') return;
