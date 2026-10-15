@@ -836,3 +836,16 @@ body{min-width:320px}
 .totp-reset-success{padding:14px 15px;border:1px solid rgba(34,197,94,.35);border-radius:9px;background:rgba(34,197,94,.08);color:rgba(255,255,255,.86);line-height:1.55}
 .totp-reset-success strong{display:block;margin-bottom:7px;color:#86efac;font-size:1rem}
 .totp-reset-success p{margin:0;color:rgba(255,255,255,.82)}
+
+/* Match the Ticket Dashboard login palette on the System Admin sign-in card. */
+.auth-shell{background:#000!important}
+.auth-shell .auth-card{background:#000!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:8px!important;box-shadow:none!important}
+.auth-shell .auth-card:before{display:none!important}
+.auth-shell .auth-card h1{color:#fff!important}
+.auth-shell .auth-card p{color:#d0d0d0!important}
+.auth-shell .auth-card .eyebrow{color:#fff!important}
+.auth-shell .auth-card label{color:#fff!important}
+.auth-shell .auth-card input{background:#e8f0fe!important;color:#111!important;border:1px solid #dce6f7!important;border-radius:8px!important}
+.auth-shell .auth-card input::placeholder{color:#687386!important}
+.auth-shell .auth-card button{background:#ED1C24!important;color:#fff!important;border:0!important;border-radius:8px!important;box-shadow:none!important}
+.auth-shell .auth-card button:hover:not(:disabled){background:#c9161d!important}
