@@ -879,3 +879,8 @@ body{min-width:320px}
 .auth-shell .auth-card .mfa-recovery-copy .mfa-recovery-link{color:#ED1C24!important}
 
 .auth-shell .auth-card .mfa-recovery-copy{text-align:center!important;width:100%!important}
+
+/* Center the email and password field labels on System Admin sign-in. */
+.auth-shell .auth-card label{ text-align:center!important; }
+.auth-shell .auth-card input[type="email"],
+.auth-shell .auth-card input[type="password"]{ text-align:center!important; }
