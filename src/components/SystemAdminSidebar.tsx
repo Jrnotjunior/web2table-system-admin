@@ -25,7 +25,7 @@ export default function SystemAdminSidebar({
   return (
     <aside className="admin-sidebar" aria-label="System administration navigation">
       <button type="button" className="sidebar-brand" onClick={onDashboard} aria-label="Web2Table System Admin home">
-        <img src="/web2table-system-admin/web2table.png?v=20261012" alt="" />
+        <img src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table%20(1).png" alt="" />
         <span className="sidebar-brand-label">SYSTEM ADMIN</span>
       </button>
       <nav className="sidebar-nav">
