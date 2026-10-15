@@ -962,3 +962,9 @@ body{min-width:320px}
 .admin-sidebar .sidebar-brand{
   border-bottom:0 !important;
 }
+
+
+/* Align the sidebar brand block with the top of the workspace header. */
+.admin-sidebar{
+  padding-top:0 !important;
+}
