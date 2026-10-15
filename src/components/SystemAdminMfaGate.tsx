@@ -251,9 +251,17 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
         </form>
         {state.kind === 'challenge' && (
           <section aria-label="Authenticator recovery" style={{ marginTop: '18px', borderTop: '1px solid #ddd', paddingTop: '14px' }}>
-            <button type="button" className="mfa-recovery-link" disabled={busy} onClick={() => { setShowRecovery((shown) => !shown); setMessage(''); }}>
-              {showRecovery ? 'Cancel authenticator reset' : 'Lost your authenticator? Reset it'}
-            </button>
+            {showRecovery ? (
+              <p className="mfa-recovery-copy">
+                Lost your authenticator?{' '}
+                <button type="button" className="mfa-recovery-link" disabled={busy} onClick={() => { setShowRecovery(false); setMessage(''); }}>Cancel reset</button>
+              </p>
+            ) : (
+              <p className="mfa-recovery-copy">
+                Lost your authenticator?{' '}
+                <button type="button" className="mfa-recovery-link" disabled={busy} onClick={() => { setShowRecovery(true); setMessage(''); }}>Reset it</button>
+              </p>
+            )}
             {showRecovery && (
               <form onSubmit={resetAuthenticator} style={{ marginTop: '12px' }}>
                 <p>Reset only your own authenticator. You’ll be signed out and must enroll a new authenticator before the dashboard unlocks.</p>
