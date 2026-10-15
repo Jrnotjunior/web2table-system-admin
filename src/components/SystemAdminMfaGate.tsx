@@ -265,17 +265,6 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
             )}
           </section>
         )}
-        <div className="mfa-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', marginTop: '12px', width: '100%' }}>
-          <button type="button" className="secondary-button" style={{ position: 'static', float: 'none', margin: 0, flex: '0 0 auto' }} onClick={async () => {
-            setBusy(true);
-            setMessage('');
-            const { error } = await supabase.auth.signOut();
-            if (error) {
-              setMessage(`Unable to sign out: ${error.message}`);
-              setBusy(false);
-            }
-          }}>Sign out</button>
-        </div>
       </section>
     </main>
   );
