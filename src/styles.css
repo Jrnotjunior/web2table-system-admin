@@ -924,3 +924,20 @@ body{min-width:320px}
 /* Keep the password centered when revealed as text, with balanced space around the eye icon. */
 .auth-shell .auth-card .password-input-wrap input[type="password"],
 .auth-shell .auth-card .password-input-wrap input[type="text"]{text-align:center!important;padding-left:48px!important;padding-right:48px!important;}
+
+/* The password eye stays neutral on hover/focus; never use the red submit-button hover color. */
+.auth-shell .auth-card button.password-visibility-toggle,
+.auth-shell .auth-card button.password-visibility-toggle:hover,
+.auth-shell .auth-card button.password-visibility-toggle:focus,
+.auth-shell .auth-card button.password-visibility-toggle:focus-visible,
+.auth-shell .auth-card button.password-visibility-toggle:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #334155 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+.auth-shell .auth-card button.password-visibility-toggle:hover {
+  background: rgba(15, 23, 42, .08) !important;
+  background-color: rgba(15, 23, 42, .08) !important;
+}
