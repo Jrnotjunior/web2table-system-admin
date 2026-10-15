@@ -920,3 +920,7 @@ body{min-width:320px}
 .auth-shell .auth-card .password-visibility-toggle:hover {
   background: rgba(15, 23, 42, .08) !important;
 }
+
+/* Keep the password centered when revealed as text, with balanced space around the eye icon. */
+.auth-shell .auth-card .password-input-wrap input[type="password"],
+.auth-shell .auth-card .password-input-wrap input[type="text"]{text-align:center!important;padding-left:48px!important;padding-right:48px!important;}
