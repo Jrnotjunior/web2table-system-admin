@@ -874,3 +874,6 @@ body{min-width:320px}
 .auth-shell .auth-card .mfa-recovery-copy{margin:14px 0 0!important;text-align:center;color:inherit}
 .auth-shell .auth-card .mfa-recovery-link{display:inline!important;width:auto!important;min-height:0!important;margin:0!important;padding:0!important;background:transparent!important;color:#ED1C24!important;border:0!important;border-radius:0!important;box-shadow:none!important;font:inherit!important;font-weight:inherit!important;text-decoration:underline!important;text-underline-offset:3px!important;cursor:pointer!important}
 .auth-shell .auth-card .mfa-recovery-link:hover:not(:disabled){background:transparent!important;color:#ff555c!important}
+
+.auth-shell .auth-card .mfa-recovery-copy{color:#fff!important}
+.auth-shell .auth-card .mfa-recovery-copy .mfa-recovery-link{color:#ED1C24!important}
