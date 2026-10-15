@@ -251,7 +251,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
         </form>
         {state.kind === 'challenge' && (
           <section aria-label="Authenticator recovery" style={{ marginTop: '18px', borderTop: '1px solid #ddd', paddingTop: '14px' }}>
-            <button type="button" className="secondary-button" disabled={busy} onClick={() => { setShowRecovery((shown) => !shown); setMessage(''); }}>
+            <button type="button" className="mfa-recovery-link" disabled={busy} onClick={() => { setShowRecovery((shown) => !shown); setMessage(''); }}>
               {showRecovery ? 'Cancel authenticator reset' : 'Lost your authenticator? Reset it'}
             </button>
             {showRecovery && (
