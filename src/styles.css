@@ -941,3 +941,18 @@ body{min-width:320px}
   background: rgba(15, 23, 42, .08) !important;
   background-color: rgba(15, 23, 42, .08) !important;
 }
+
+
+/* Slightly enlarge the System Admin sidebar logo. */
+.admin-sidebar .sidebar-brand img{
+  width:148px !important;
+  height:84px !important;
+  flex-basis:84px !important;
+}
+@media(max-width:760px){
+  .admin-sidebar .sidebar-brand img{
+    width:104px !important;
+    height:64px !important;
+    flex-basis:64px !important;
+  }
+}
