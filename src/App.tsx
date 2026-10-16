@@ -18,6 +18,7 @@ import { fetchRestaurantSettings, updateRestaurantSettings } from './features/re
 import { fetchRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 import { fetchAdministrators, revokeAdministratorAccess, restoreAdministratorAccess, deleteRevokedAdministratorAccess, updateAdministratorAccessLevel } from './features/administrators/services/administratorService';
+import { fetchMySystemAdminAccessLevel } from './features/administrators/services/currentAdminAccessService';
 import { fetchTotpResetAccounts } from './features/totp-reset/services/totpResetService';
 import { resetRestaurantUserTotp as resetRestaurantUserTotpService } from './features/totp-reset/services/totpResetService';
 import useAppNavigation from './app/useAppNavigation';
@@ -184,22 +185,7 @@ function AppContent() {
   }
 
   async function loadMyAccessLevel() {
-    const { data, error } = await supabase.rpc('system_admin_get_my_access_level');
-    if (error) {
-      setAdminAccessLevel(null);
-      return null;
-    }
-
-    const access = Array.isArray(data) ? data[0] : data;
-    const level = access?.access_level as 'owner' | 'administrator' | 'view_only' | undefined;
-    const isActive = access?.is_active === true;
-    const isActiveStatus = access?.status === 'active';
-
-    if (!level || !isActive || !isActiveStatus) {
-      setAdminAccessLevel(null);
-      return null;
-    }
-
+    const level = await fetchMySystemAdminAccessLevel();
     setAdminAccessLevel(level);
     return level;
   }
