@@ -16,8 +16,8 @@ export default function TotpResetPage(props: Props) {
    <div className="totp-reset-searchbar"><label htmlFor="totp-reset-search">Search accounts</label><input id="totp-reset-search" className="uniform-search-input" type="search" value={search} onChange={e=>onSearchChange(e.target.value)} placeholder="Search by name, email, restaurant, or role…" autoComplete="off"/><span className="totp-reset-result-count">{filtered.length} accounts</span></div>
    {loading ? <p>Loading System Administrators, restaurant owners, and staff…</p> : <div className="table-wrap"><table><thead><tr><th>Account</th><th>Role / Access</th><th>Restaurant</th>{canReset && <th>Action</th>}</tr></thead><tbody>
     {filtered.map(a=><tr key={a.role+':'+a.userId+':'+a.restaurantId}><td>{a.displayName}{a.email ? <div className="muted-text">{a.email}</div> : null}</td><td>{a.role==='restaurant_owner'?'Restaurant owner':a.role==='system_admin'?'System Administrator':(a.staffRole||'Staff')}{a.role==='system_admin' && a.accessLevel ? <div className="muted-text">{a.accessLevel === 'view_only' ? 'View Only' : 'Administrator'}</div> : null}</td><td>{a.role==='system_admin' ? '—' : a.restaurantName}</td>{canReset && <td><button className="secondary-button" type="button" disabled={staffActionId!==null} onClick={()=>onRequestReset(a)}>{staffActionId===a.userId?'Resetting…':'Reset TOTP'}</button></td>}</tr>)}
-    {accounts.length===0 && <tr><td colSpan={4}>No eligible System Administrator, restaurant owner, or staff accounts were found.</td></tr>}
-    {accounts.length>0 && filtered.length===0 && <tr><td colSpan={4}>No accounts match your search.</td></tr>}
+    {accounts.length===0 && <tr><td colSpan={canReset ? 4 : 3}>No eligible System Administrator, restaurant owner, or staff accounts were found.</td></tr>}
+    {accounts.length>0 && filtered.length===0 && <tr><td colSpan={canReset ? 4 : 3}>No accounts match your search.</td></tr>}
    </tbody></table></div>}
   </section>
   {canReset && pendingReset && <div className="modal-backdrop totp-reset-confirm-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget&&staffActionId===null)onCloseConfirmation();}}>
