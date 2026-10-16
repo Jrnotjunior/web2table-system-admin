@@ -8,6 +8,7 @@ import type { AuditLog } from './shared/types/audit';
 import type { TotpResetAccount, PendingTotpReset } from './features/totp-reset/types';
 import { recordAuthAuditEvent, recordAdminAudit } from './shared/services/auditService';
 import { fetchAuditLogs } from './features/audit/services/auditLogService';
+import { getAuditDateRange } from './features/audit/utils/auditDateRange';
 import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
@@ -970,42 +971,11 @@ function AppContent() {
     setAuditLoading(true);
     setAuditError('');
 
-    const now = new Date();
-    let startDate: string | null = null;
-    let endDate: string | null = null;
-
-    if (auditDatePreset === 'TODAY') {
-      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const end = new Date(start);
-      end.setDate(end.getDate() + 1);
-      startDate = start.toISOString();
-      endDate = end.toISOString();
-    } else if (auditDatePreset === '7_DAYS') {
-      const start = new Date(now);
-      start.setHours(0, 0, 0, 0);
-      start.setDate(start.getDate() - 6);
-      const end = new Date(now);
-      end.setHours(0, 0, 0, 0);
-      end.setDate(end.getDate() + 1);
-      startDate = start.toISOString();
-      endDate = end.toISOString();
-    } else if (auditDatePreset === '30_DAYS') {
-      const start = new Date(now);
-      start.setHours(0, 0, 0, 0);
-      start.setDate(start.getDate() - 29);
-      const end = new Date(now);
-      end.setHours(0, 0, 0, 0);
-      end.setDate(end.getDate() + 1);
-      startDate = start.toISOString();
-      endDate = end.toISOString();
-    } else if (auditDatePreset === 'CUSTOM') {
-      if (auditStartDate) startDate = new Date(auditStartDate + 'T00:00:00').toISOString();
-      if (auditEndDate) {
-        const end = new Date(auditEndDate + 'T00:00:00');
-        end.setDate(end.getDate() + 1);
-        endDate = end.toISOString();
-      }
-    }
+    const { startDate, endDate } = getAuditDateRange(
+      auditDatePreset,
+      auditStartDate,
+      auditEndDate,
+    );
 
     const pageSize = 50;
     const { data, error } = await fetchAuditLogs({
