@@ -1017,3 +1017,12 @@ body{min-width:320px}
 .administrators-result-count{white-space:nowrap;color:rgba(255,255,255,.68);font-size:.82rem}
 .administrators-toolbar button{margin-left:auto;white-space:nowrap;padding:.62rem .9rem;font-size:.84rem;line-height:1.2}
 @media(max-width:640px){.administrators-toolbar{flex-wrap:wrap}.administrators-search-input{flex-basis:100%}.administrators-result-count{margin-right:auto}.administrators-toolbar button{margin-left:0}}
+
+
+/* Uniform, compact search fields across System Admin pages. */
+.uniform-search-input{box-sizing:border-box!important;width:min(360px,100%)!important;max-width:360px!important;min-width:0!important;flex:0 1 360px!important;height:42px!important;min-height:42px!important;padding:0 13px!important;margin:0!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:8px!important;font-size:14px!important;line-height:1.2!important}
+.restaurants-search-toolbar .uniform-search-input{flex:0 1 360px!important}
+.administrators-toolbar .uniform-search-input{flex:0 1 360px!important}
+.audit-toolbar .uniform-search-input{flex:0 1 360px!important;max-width:360px!important}
+.totp-reset-searchbar input.uniform-search-input{width:min(360px,100%)!important;max-width:360px!important;flex:none!important}
+@media(max-width:640px){.uniform-search-input,.restaurants-search-toolbar .uniform-search-input,.administrators-toolbar .uniform-search-input,.audit-toolbar .uniform-search-input,.totp-reset-searchbar input.uniform-search-input{width:100%!important;max-width:100%!important;flex:1 1 100%!important}}
