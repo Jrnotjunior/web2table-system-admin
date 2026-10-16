@@ -1158,7 +1158,7 @@ function AppContent() {
             </label>
             {inviteSetupError && <div className="error-banner">{inviteSetupError}</div>}
             <button type="submit" disabled={inviteSettingPassword}>
-              {inviteSettingPassword ? 'Activating account...' : 'Create password & continue'}
+              {inviteSettingPassword ? 'Creating password...' : 'Create password'}
             </button>
           </form>
         </section>
