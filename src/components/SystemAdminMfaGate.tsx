@@ -133,11 +133,23 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       }, 0);
     });
 
+    const handleAdminAccessActivated = () => {
+      if (!active) return;
+      setState({ kind: 'checking' });
+      // The invitation activation RPC changes the database access record
+      // without emitting a Supabase auth event. Re-check MFA immediately.
+      window.setTimeout(() => {
+        if (active) runInspection();
+      }, 0);
+    };
+    window.addEventListener('system-admin-access-activated', handleAdminAccessActivated);
+
     runInspection();
 
     return () => {
       active = false;
       subscription.unsubscribe();
+      window.removeEventListener('system-admin-access-activated', handleAdminAccessActivated);
       window.clearTimeout(timeoutId);
     };
   }, [inspect]);
