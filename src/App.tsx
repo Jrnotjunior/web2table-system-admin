@@ -4,6 +4,7 @@ import { supabase } from './lib/supabase';
 import { buildNavigationSearch, getNavigationFromSearch, type AdminPage } from './app/navigation';
 import DashboardOverview from './features/dashboard/DashboardOverview';
 import AuditLogsPanel from './features/audit/AuditLogsPanel';
+import TotpResetPanel from './features/totp-reset/TotpResetPanel';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -1559,61 +1560,31 @@ function AppContent() {
         <SystemAdminSidebar activePage="totp-reset" accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
         <main className="admin-main">
           <header className="workspace-topbar"><div><span className="topbar-kicker">ACCOUNT SECURITY</span><strong>TOTP Reset</strong></div><div className="topbar-right"><span className="topbar-status">System Admin Owner</span></div></header>
-          <section className="page-content totp-reset-page">
-
-            {totpResetError && <div className="form-error" role="alert">{totpResetError}</div>}
-            <div className="totp-reset-searchbar">
-              <label htmlFor="totp-reset-search">Search accounts</label>
-              <input id="totp-reset-search" className="uniform-search-input" type="search" value={totpResetSearch} onChange={(event) => setTotpResetSearch(event.target.value)} placeholder="Search by name, email, restaurant, or role…" autoComplete="off" />
-              <span className="totp-reset-result-count">{totpResetAccounts.filter((account) => [account.displayName, account.email, account.restaurantName, account.role === 'restaurant_owner' ? 'restaurant owner owner' : 'staff', account.staffRole || '', account.userId].join(' ').toLowerCase().includes(totpResetSearch.trim().toLowerCase())).length} accounts</span>
-            </div>
-            {totpResetLoading ? <p>Loading restaurant owners and staff…</p> : (
-              <div className="table-wrap"><table><thead><tr><th>Account</th><th>Role</th><th>Restaurant</th><th>Action</th></tr></thead>
-                <tbody>{totpResetAccounts.filter((account) => [account.displayName, account.email, account.restaurantName, account.role === 'restaurant_owner' ? 'restaurant owner owner' : 'staff', account.staffRole || '', account.userId].join(' ').toLowerCase().includes(totpResetSearch.trim().toLowerCase())).map((account) => <tr key={account.role + ':' + account.userId + ':' + account.restaurantId}>
-                  <td>{account.displayName}{account.email ? <div className="muted-text">{account.email}</div> : null}</td>
-                  <td>{account.role === 'restaurant_owner' ? 'Restaurant owner' : (account.staffRole || 'Staff')}</td><td>{account.restaurantName}</td>
-                  <td><button className="secondary-button" type="button" disabled={staffActionId !== null} onClick={() => void resetRestaurantUserTotp(account.userId, account.displayName, account.role, account.restaurantId)}>{staffActionId === account.userId ? 'Resetting…' : 'Reset TOTP'}</button></td>
-                </tr>)}
-                {totpResetAccounts.length === 0 && <tr><td colSpan={4}>No linked restaurant owner or staff Auth accounts were found.</td></tr>}</tbody>
-              </table></div>
-            )}
-          </section>
+          <TotpResetPanel
+            accounts={totpResetAccounts}
+            loading={totpResetLoading}
+            search={totpResetSearch}
+            onSearchChange={setTotpResetSearch}
+            error={totpResetError}
+            staffActionId={staffActionId}
+            onRequestReset={(account) => void resetRestaurantUserTotp(account.userId, account.displayName, account.role, account.restaurantId)}
+            pendingReset={pendingTotpReset}
+            success={totpResetSuccess}
+            actionError={staffActionError}
+            onCloseConfirmation={() => setPendingTotpReset(null)}
+            onConfirmReset={() => {
+              if (!pendingTotpReset) return;
+              void resetRestaurantUserTotp(pendingTotpReset.userId, pendingTotpReset.displayName, pendingTotpReset.role, pendingTotpReset.restaurantId, true);
+            }}
+            onDone={() => { setPendingTotpReset(null); setTotpResetSuccess(''); }}
+          />
         </main>
-        {pendingTotpReset && (
-          <div className="modal-backdrop totp-reset-confirm-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && staffActionId === null) setPendingTotpReset(null); }}>
-            <section className="modal-card totp-reset-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="totp-reset-confirm-title">
-              <div className="modal-heading">
-                <div><div className="eyebrow">ACCOUNT SECURITY</div><h2 id="totp-reset-confirm-title">Reset authenticator?</h2></div>
-                <button className="icon-button" type="button" onClick={() => setPendingTotpReset(null)} disabled={staffActionId !== null} aria-label="Close">×</button>
-              </div>
-              <div className="totp-reset-confirm-content">
-                {totpResetSuccess ? (
-                  <div className="totp-reset-success" role="status"><strong>Reset successful</strong><p>{totpResetSuccess}</p></div>
-                ) : (
-                  <>
-                    <p>You're about to reset the authenticator for <strong>{pendingTotpReset.displayName}</strong>.</p>
-                    <p>They'll need to sign in and set up a new authenticator before accessing Web2Table.</p>
-                    <p className="totp-reset-confirm-note">Their password and account role will remain unchanged.</p>
-                    {staffActionError && <div className="error-banner" role="alert">{staffActionError}</div>}
-                  </>
-                )}
-              </div>
-              <div className="modal-actions">
-                {totpResetSuccess ? (
-                  <button type="button" className="danger-button" onClick={() => { setPendingTotpReset(null); setTotpResetSuccess(''); }}>Done</button>
-                ) : (
-                  <>
-                    <button type="button" className="secondary-button" onClick={() => setPendingTotpReset(null)} disabled={staffActionId !== null}>Cancel</button>
-                    <button type="button" className="danger-button" onClick={async () => { const target = pendingTotpReset; await resetRestaurantUserTotp(target.userId, target.displayName, target.role, target.restaurantId, true); }} disabled={staffActionId !== null}>
-                      {staffActionId === pendingTotpReset.userId ? 'Resetting…' : 'Reset authenticator'}
-                    </button>
-                  </>
-                )}
-              </div>
-            </section>
-          </div>
-        )}
         {renderRestaurantDeleteModal()}
+      </div>
+    );
+  }
+
+
       </div>
     );
   }
