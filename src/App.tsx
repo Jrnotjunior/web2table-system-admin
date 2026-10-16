@@ -1563,7 +1563,7 @@ function AppContent() {
             {totpResetError && <div className="form-error" role="alert">{totpResetError}</div>}
             <div className="totp-reset-searchbar">
               <label htmlFor="totp-reset-search">Search accounts</label>
-              <input id="totp-reset-search" type="search" value={totpResetSearch} onChange={(event) => setTotpResetSearch(event.target.value)} placeholder="Search by name, email, restaurant, role, or Auth user ID…" autoComplete="off" />
+              <input id="totp-reset-search" className="uniform-search-input" type="search" value={totpResetSearch} onChange={(event) => setTotpResetSearch(event.target.value)} placeholder="Search by name, email, restaurant, role, or Auth user ID…" autoComplete="off" />
               <span className="totp-reset-result-count">{totpResetAccounts.filter((account) => [account.displayName, account.email, account.restaurantName, account.role === 'restaurant_owner' ? 'restaurant owner owner' : 'staff', account.staffRole || '', account.userId].join(' ').toLowerCase().includes(totpResetSearch.trim().toLowerCase())).length} accounts</span>
             </div>
             {totpResetLoading ? <p>Loading restaurant owners and staff…</p> : (
@@ -1713,7 +1713,7 @@ function AppContent() {
         <section className="dashboard-card administrators-card">
           <div className="administrators-toolbar">
             <input
-              className="search-input administrators-search-input"
+              className="search-input uniform-search-input administrators-search-input"
               type="search"
               placeholder="Search administrators..."
               aria-label="Search administrators"
@@ -1851,7 +1851,7 @@ function AppContent() {
 
           <div className="audit-toolbar">
             <input
-              className="search-input"
+              className="search-input uniform-search-input"
               type="search"
               placeholder="Search administrator, restaurant, action..."
               value={auditSearch}
@@ -2943,7 +2943,7 @@ function AppContent() {
 
         <div className="toolbar restaurants-search-toolbar">
           <input
-            className="search-input"
+            className="search-input uniform-search-input"
             type="search"
             placeholder="Search restaurants..."
             value={search}
