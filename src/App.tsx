@@ -1212,7 +1212,7 @@ function AppContent() {
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System administrators</strong></div>
-        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span></div>
+        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Live updates</span><span className="header-account-email">{currentUserEmail}</span><button type="button" className="header-sign-out header-sign-out-icon" aria-label="Sign out" title="Sign out" onClick={() => void signOut()}>↗</button></div>
       </header>
       <main className="admin-shell admin-shell-with-sidebar">
        {accountMenuOpen && (
