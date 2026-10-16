@@ -930,3 +930,10 @@ body{min-width:320px}
 .header-sign-out{flex:0 0 auto;padding:7px 12px!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:7px!important;background:transparent!important;color:#fff!important;font-size:.82rem!important;font-weight:600;line-height:1.2;cursor:pointer}
 .header-sign-out:hover{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.35)!important}
 @media(max-width:520px){.workspace-topbar{gap:10px}.topbar-right{gap:8px}.header-sign-out{padding:6px 9px!important;font-size:.78rem!important}}
+
+
+/* Match the Ticket Dashboard account header: email plus red arrow sign-out. */
+.header-account-email{color:var(--text-primary,#f5f5f5);font-size:.88rem;white-space:nowrap;max-width:min(34vw,320px);overflow:hidden;text-overflow:ellipsis}
+.header-sign-out-icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0!important;border:0!important;border-radius:5px!important;background:transparent!important;color:#ff1d2d!important;font-size:1.3rem!important;font-weight:700;line-height:1;cursor:pointer}
+.header-sign-out-icon:hover{background:rgba(255,29,45,.1)!important;color:#ff4653!important}
+@media(max-width:640px){.header-account-email{max-width:42vw;font-size:.78rem}.header-sign-out-icon{width:28px;height:28px;font-size:1.15rem!important}}
