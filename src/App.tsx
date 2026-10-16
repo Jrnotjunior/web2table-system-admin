@@ -14,6 +14,7 @@ import { useSystemAdminAuthListener } from './features/administrators/hooks/useS
 import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
+import { setRestaurantCustomDomain } from './features/restaurants/services/restaurantDomainService';
 import { saveRestaurantProfile, updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
@@ -741,10 +742,10 @@ function AppContent() {
     if (!selectedRestaurant) return;
     setDomainSaving(true);
     setDomainError('');
-    const { data, error } = await supabase.rpc('system_admin_set_restaurant_domain', {
-      p_restaurant_id: selectedRestaurant.id,
-      p_custom_domain: domain.trim(),
-    });
+    const { data, error } = await setRestaurantCustomDomain(
+      selectedRestaurant.id,
+      domain.trim(),
+    );
     if (error) {
       setDomainError(error.message);
     } else {
