@@ -2341,11 +2341,6 @@ function AppContent() {
               </div>
             </div>
 
-            <div className="overview-section">
-              <div className="eyebrow">Management</div>
-              <h3>Platform controls</h3>
-              <p>Use the tabs above to manage the restaurant owner, custom domain, operational settings, and staff accounts.</p>
-            </div>
           </div>
           ) : manageTab === 'owner' ? (
             <div className="manage-overview">
