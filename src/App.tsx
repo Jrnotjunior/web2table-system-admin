@@ -6,7 +6,7 @@ import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
 import AuditLogsPage from './features/audit/AuditLogsPage';
-import TotpResetPanel from './features/totp-reset/TotpResetPanel';
+import TotpResetPage from './features/totp-reset/TotpResetPage';
 import AdministratorsPage from './features/administrators/AdministratorsPage';
 import RestaurantManagementHeader from './features/restaurants/components/RestaurantManagementHeader';
 import RestaurantOverview from './features/restaurants/components/RestaurantOverview';
@@ -1567,7 +1567,7 @@ function AppContent() {
         <SystemAdminSidebar activePage="totp-reset" accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
         <main className="admin-main">
           <header className="workspace-topbar"><div><span className="topbar-kicker">ACCOUNT SECURITY</span><strong>TOTP Reset</strong></div><div className="topbar-right"><span className="topbar-status">System Admin Owner</span></div></header>
-          <TotpResetPanel
+          <TotpResetPage
             accounts={totpResetAccounts}
             loading={totpResetLoading}
             search={totpResetSearch}
