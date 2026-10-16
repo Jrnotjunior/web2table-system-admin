@@ -968,3 +968,12 @@ body{min-width:320px}
 .admin-sidebar{
   padding-top:0 !important;
 }
+
+
+/* Compact restaurant access status in restaurant details. */
+.restaurant-access-section{padding:12px 16px!important;margin-top:12px!important;margin-bottom:12px!important}
+.restaurant-access-section h3{margin:3px 0 8px!important}
+.restaurant-access-status-panel{min-height:0!important;padding:10px 14px!important;gap:12px!important}
+.restaurant-access-status-panel span{margin-top:2px!important;font-size:.8rem!important}
+.restaurant-access-status-panel button{padding:.58rem .85rem!important;font-size:.8rem!important;line-height:1.2!important}
+@media(max-width:640px){.restaurant-access-status-panel{align-items:flex-start!important;flex-direction:column!important}.restaurant-access-status-panel button{align-self:flex-start}}
