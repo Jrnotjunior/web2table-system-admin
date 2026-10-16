@@ -20,6 +20,7 @@ import { fetchRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffAct
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 import { fetchAdministrators, revokeAdministratorAccess, restoreAdministratorAccess, deleteRevokedAdministratorAccess, updateAdministratorAccessLevel } from './features/administrators/services/administratorService';
 import { fetchMySystemAdminAccessLevel } from './features/administrators/services/currentAdminAccessService';
+import { activateSystemAdminInvitation } from './features/administrators/services/systemAdminInvitationService';
 import { fetchTotpResetAccounts } from './features/totp-reset/services/totpResetService';
 import { resetRestaurantUserTotp as resetRestaurantUserTotpService } from './features/totp-reset/services/totpResetService';
 import useAppNavigation from './app/useAppNavigation';
@@ -429,22 +430,10 @@ function AppContent() {
 
     setInviteSettingPassword(true);
 
-    const { error: passwordError } = await supabase.auth.updateUser({
-      password: invitePassword,
-    });
+    const result = await activateSystemAdminInvitation(invitePassword);
 
-    if (passwordError) {
-      setInviteSetupError(passwordError.message);
-      setInviteSettingPassword(false);
-      return;
-    }
-
-    const { error: activationError } = await supabase.rpc(
-      'system_admin_activate_my_pending_access',
-    );
-
-    if (activationError) {
-      setInviteSetupError(activationError.message);
+    if (result.error) {
+      setInviteSetupError(result.error.message);
       setInviteSettingPassword(false);
       return;
     }
