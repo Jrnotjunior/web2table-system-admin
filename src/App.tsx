@@ -8,6 +8,7 @@ import type { AuditLog } from './shared/types/audit';
 import type { TotpResetAccount, PendingTotpReset } from './features/totp-reset/types';
 import { recordAuthAuditEvent, recordAdminAudit } from './shared/services/auditService';
 import { fetchAuditLogs } from './features/audit/services/auditLogService';
+import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
@@ -953,20 +954,7 @@ function AppContent() {
     setDashboardLoading(true);
     setDashboardError('');
 
-    const [summaryResult, monitoringResult, logsResult, healthResult] = await Promise.all([
-      supabase.rpc('system_admin_get_dashboard_summary'),
-      supabase.rpc('system_admin_get_restaurant_monitoring'),
-      supabase.rpc('system_admin_get_audit_logs', {
-        p_restaurant_id: null,
-        p_event_type: null,
-        p_limit: 6,
-        p_offset: 0,
-        p_search: null,
-        p_start_date: null,
-        p_end_date: null,
-      }),
-      supabase.functions.invoke('system-admin-platform-health', { body: {} }),
-    ]);
+    const [summaryResult, monitoringResult, logsResult, healthResult] = await fetchDashboardData();
 
     if (summaryResult.error) {
       setDashboardError(summaryResult.error.message);
