@@ -1961,23 +1961,23 @@ function AppContent() {
                   Restaurant name
                   <input
                     value={inviteTenantRestaurantName}
-                    onChange={(event) => setInviteTenantRestaurantName(event.target.value)}
+                    onChange={(event) => {
+                      const name = event.target.value;
+                      setInviteTenantRestaurantName(name);
+                      setInviteTenantSlug(
+                        name
+                          .normalize('NFKD')
+                          .replace(/[\u0300-\u036f]/g, '')
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, '-')
+                          .replace(/^-+|-+$/g, ''),
+                      );
+                    }}
                     
                     disabled={inviteTenantSaving}
                   />
                 </label>
 
-                <label>
-                  Restaurant slug
-                  <input
-                    value={inviteTenantSlug}
-                    onChange={(event) => setInviteTenantSlug(event.target.value.toLowerCase())}
-                    
-                    pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-                    title="Use lowercase letters, numbers, and single hyphens."
-                    disabled={inviteTenantSaving}
-                  />
-                </label>
               </div>
 
               <div className="form-grid">
