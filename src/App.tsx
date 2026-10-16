@@ -1564,7 +1564,6 @@ function AppContent() {
               <label htmlFor="totp-reset-search">Search accounts</label>
               <input id="totp-reset-search" type="search" value={totpResetSearch} onChange={(event) => setTotpResetSearch(event.target.value)} placeholder="Search by name, email, restaurant, role, or Auth user ID…" autoComplete="off" />
               <span className="totp-reset-result-count">{totpResetAccounts.filter((account) => [account.displayName, account.email, account.restaurantName, account.role === 'restaurant_owner' ? 'restaurant owner owner' : 'staff', account.staffRole || '', account.userId].join(' ').toLowerCase().includes(totpResetSearch.trim().toLowerCase())).length} accounts</span>
-              <button className="secondary-button totp-reset-refresh-button" type="button" onClick={() => void loadTotpResetAccounts()} disabled={totpResetLoading}>{totpResetLoading ? 'Refreshing…' : 'Refresh list'}</button>
             </div>
             {totpResetLoading ? <p>Loading restaurant owners and staff…</p> : (
               <div className="table-wrap"><table><thead><tr><th>Account</th><th>Account type</th><th>Restaurant</th><th>Staff role</th><th>Auth user ID</th><th>Action</th></tr></thead>
