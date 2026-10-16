@@ -1051,7 +1051,7 @@ function AppContent() {
     return (
       <main className="auth-shell">
         <section className="auth-card">
-          <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table%20(1).png" alt="WEB2TABLE" />
+          <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE Platform</div>
           <h1>Set up your account</h1>
           <p>You have been invited as a System Administrator. Create your password to activate your account.</p>
@@ -1092,7 +1092,7 @@ function AppContent() {
     return (
       <main className="auth-shell">
         <section className="auth-card">
-          <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table%20(1).png" alt="WEB2TABLE" />
+          <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE Platform</div>
           <h1>System Admin</h1>
           <p>Sign in to manage restaurants and platform settings.</p>
