@@ -2090,58 +2090,6 @@ function AppContent() {
               onRequestDelete={requestDeleteRestaurantStaff}
             />
           ) : (
-                  <>
-                    {staffActionError && <div className="error-banner">{staffActionError}</div>}
-                    <div className="staff-table-wrap">
-                    <table className="staff-table">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Role</th>
-                          <th>Email</th>
-                          <th>Mobile</th>
-                          <th>Status</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {restaurantStaff.map((staff) => (
-                          <tr key={staff.id}>
-                            <td>{staff.name || '—'}</td>
-                            <td>{staff.role.charAt(0).toUpperCase() + staff.role.slice(1)}</td>
-                            <td>{staff.email || '—'}</td>
-                            <td>{staff.mobile_number || '—'}</td>
-                            <td><span className={staff.is_active ? 'status active' : 'status inactive'}>{staff.is_active ? 'Active' : 'Inactive'}</span></td>
-                            <td>
-                              <div className="staff-actions">{canManage && <><button
-                                  className="secondary-button"
-                                  type="button"
-                                  onClick={() => void setRestaurantStaffActive(staff.id, !staff.is_active)}
-                                  disabled={staffActionId !== null}
-                                >
-                                  {staffActionId === staff.id ? 'Saving...' : staff.is_active ? 'Deactivate' : 'Activate'}
-                                </button>
-
-                                <button
-                                  className="danger-button"
-                                  type="button"
-                                  onClick={() => requestDeleteRestaurantStaff(staff)}
-                                  disabled={staffActionId !== null}
-                                >
-                                  {staffActionId === staff.id ? 'Working...' : 'Delete'}
-                                </button></>}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  </>
-                )}
-              </div>
-            </div>
-          ) : (
             <RestaurantSettingsPanel
               canManage={canManage}
               settingsLoading={settingsLoading}
