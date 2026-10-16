@@ -1945,16 +1945,6 @@ function AppContent() {
 
               <div className="form-grid">
                 <label>
-                  Owner full name
-                  <input
-                    value={inviteTenantOwnerName}
-                    onChange={(event) => setInviteTenantOwnerName(event.target.value)}
-                    
-                    required
-                    disabled={inviteTenantSaving}
-                  />
-                </label>
-                <label>
                   Restaurant name
                   <input
                     value={inviteTenantRestaurantName}
@@ -1971,6 +1961,16 @@ function AppContent() {
                       );
                     }}
                     
+                    disabled={inviteTenantSaving}
+                  />
+                </label>
+                <label>
+                  Owner full name
+                  <input
+                    value={inviteTenantOwnerName}
+                    onChange={(event) => setInviteTenantOwnerName(event.target.value)}
+                    
+                    required
                     disabled={inviteTenantSaving}
                   />
                 </label>
