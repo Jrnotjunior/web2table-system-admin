@@ -964,3 +964,7 @@ body{min-width:320px}
 .auth-card .invite-password-input .invite-password-toggle:hover{background:#d8e3f6!important;color:#1f2937!important}
 .auth-card .invite-password-input .invite-password-toggle:active{background:#cbd9ef!important}
 .auth-card .invite-password-input .invite-password-toggle:focus-visible{outline:2px solid #64748b!important;outline-offset:2px}
+
+/* Precisely center the eye glyph inside the show-password control. */
+.auth-card .invite-password-input .invite-password-toggle{display:flex!important;align-items:center!important;justify-content:center!important;line-height:0!important;text-align:center!important;padding:0!important}
+.auth-card .invite-password-input .invite-password-toggle svg{width:20px;height:20px;flex:0 0 20px;margin:0!important;position:static!important;transform:none!important}
