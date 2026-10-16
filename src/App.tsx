@@ -1949,7 +1949,7 @@ function AppContent() {
                   <input
                     value={inviteTenantOwnerName}
                     onChange={(event) => setInviteTenantOwnerName(event.target.value)}
-                    placeholder="e.g. Juan Dela Cruz"
+                    
                     required
                     disabled={inviteTenantSaving}
                   />
@@ -1962,7 +1962,7 @@ function AppContent() {
                   <input
                     value={inviteTenantRestaurantName}
                     onChange={(event) => setInviteTenantRestaurantName(event.target.value)}
-                    placeholder="Required for a new tenant"
+                    
                     disabled={inviteTenantSaving}
                   />
                 </label>
@@ -1972,7 +1972,7 @@ function AppContent() {
                   <input
                     value={inviteTenantSlug}
                     onChange={(event) => setInviteTenantSlug(event.target.value.toLowerCase())}
-                    placeholder="my-restaurant"
+                    
                     pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
                     title="Use lowercase letters, numbers, and single hyphens."
                     disabled={inviteTenantSaving}
@@ -2004,7 +2004,7 @@ function AppContent() {
                     type="email"
                     value={inviteTenantEmail}
                     onChange={(event) => setInviteTenantEmail(event.target.value)}
-                    placeholder="owner@example.com"
+                    
                     required
                     disabled={inviteTenantSaving}
                   />
