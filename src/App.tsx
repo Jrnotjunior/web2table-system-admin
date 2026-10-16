@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { supabase } from './lib/supabase';
 import { buildNavigationSearch, getNavigationFromSearch, type AdminPage } from './app/navigation';
 import DashboardOverview from './features/dashboard/DashboardOverview';
+import AuditLogsPanel from './features/audit/AuditLogsPanel';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -1811,133 +1812,27 @@ function AppContent() {
           </div>
         )}
 
-        <section className="dashboard-card audit-page-card">
-          <div className="audit-summary-row">
-            <div className="stat-card"><span>Total records</span><strong>{auditLogs.length}</strong></div>
-            <div className="stat-card"><span>Administrative actions</span><strong>{auditLogs.filter((log) => log.event_type === 'ADMIN_ACTION').length}</strong></div>
-            <div className="stat-card"><span>Authentication events</span><strong>{auditLogs.filter((log) => log.event_type !== 'ADMIN_ACTION').length}</strong></div>
-          </div>
-
-          <div className="audit-toolbar">
-            <input
-              className="search-input uniform-search-input"
-              type="search"
-              placeholder="Search administrator, restaurant, action..."
-              value={auditSearch}
-              onChange={(event) => setAuditSearch(event.target.value)}
-            />
-            <select value={auditEventFilter} onChange={(event) => setAuditEventFilter(event.target.value)}>
-              <option value="ALL">All events</option>
-              <option value="ADMIN_ACTION">Administrative actions</option>
-              <option value="LOGIN_SUCCESS">Login success</option>
-              <option value="LOGOUT">Logout</option>
-              <option value="ACCESS_DENIED">Access denied</option>
-            </select>
-            <select value={auditDatePreset} onChange={(event) => setAuditDatePreset(event.target.value as typeof auditDatePreset)}>
-              <option value="ALL">All dates</option>
-              <option value="TODAY">Today</option>
-              <option value="7_DAYS">Last 7 days</option>
-              <option value="30_DAYS">Last 30 days</option>
-              <option value="CUSTOM">Custom range</option>
-            </select>
-            {auditDatePreset === 'CUSTOM' && (
-              <>
-                <input type="date" value={auditStartDate} onChange={(event) => setAuditStartDate(event.target.value)} aria-label="Audit start date" />
-                <input type="date" value={auditEndDate} onChange={(event) => setAuditEndDate(event.target.value)} aria-label="Audit end date" />
-              </>
-            )}
-             <button className="secondary-button audit-export-button" type="button" onClick={exportAuditLogs} disabled={filteredAuditLogs.length === 0}>Export CSV</button>
-          </div>
-
-          {auditError && <div className="error-banner">{auditError}</div>}
-
-          {auditLoading ? (
-            <div className="empty-state">Loading audit logs...</div>
-          ) : filteredAuditLogs.length === 0 ? (
-            <div className="empty-state">
-              <strong>No audit records found</strong>
-              <span>Try a different search or filter.</span>
-            </div>
-          ) : (
-            <div className="audit-table-wrap">
-              <table className="audit-table">
-                <thead>
-                  <tr>
-                    <th>Date &amp; Time</th>
-                    <th>Administrator</th>
-                    <th>Restaurant</th>
-                    <th>Event</th>
-                    <th>Action</th>
-                    <th>Changes / Details</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredAuditLogs.map((log) => {
-                    const changes = (log.details?.changes ?? null) as Record<string, unknown> | null;
-                    const createdValues = (log.details?.created_values ?? null) as Record<string, unknown> | null;
-
-                    return (
-                      <tr key={log.id}>
-                        <td className="audit-date">{new Date(log.created_at).toLocaleString()}</td>
-                        <td>
-                          <strong>{log.admin_name || log.admin_email || 'Unknown administrator'}</strong>
-                          {log.admin_name && log.admin_email && <span className="audit-subtext">{log.admin_email}</span>}
-                        </td>
-                        <td>{log.restaurant_name || '—'}</td>
-                        <td><span className={log.event_type === 'ADMIN_ACTION' ? 'audit-event admin' : 'audit-event'}>{log.event_type}</span></td>
-                        <td>{log.action}</td>
-                        <td>
-                          {changes && Object.keys(changes).length > 0 ? (
-                            <div className="audit-change-list">
-                              {Object.entries(changes).map(([field, value]) => {
-                                const pair = Array.isArray(value) ? value : [];
-                                return (
-                                  <div className="audit-change" key={field}>
-                                    <strong>{field.replaceAll('_', ' ')}</strong>
-                                    <span>{String(pair[0] ?? '—')} → {String(pair[1] ?? '—')}</span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          ) : createdValues ? (
-                            <div className="audit-change-list">
-                              <div className="audit-change"><strong>Created with</strong><span>{String(createdValues.name ?? 'restaurant')}</span></div>
-                            </div>
-                          ) : (
-                            <span className="audit-subtext">{String(log.details?.source ?? '—')}</span>
-                          )}
-                        </td>
-                         <td>
-                           <button className="secondary-button audit-view-button" type="button" onClick={() => openAuditLog(log)}>View</button>
-                         </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          <div className="audit-pagination">
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={() => void loadAuditLogs(Math.max(0, auditPageNumber - 1))}
-              disabled={auditLoading || auditPageNumber === 0}
-            >
-              Previous
-            </button>
-            <span>Page {auditPageNumber + 1}</span>
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={() => void loadAuditLogs(auditPageNumber + 1)}
-              disabled={auditLoading || !auditHasMore}
-            >
-              Next
-            </button>
-          </div>
-        </section>
+        <AuditLogsPanel
+          logs={auditLogs}
+          filteredLogs={filteredAuditLogs}
+          search={auditSearch}
+          setSearch={setAuditSearch}
+          eventFilter={auditEventFilter}
+          setEventFilter={setAuditEventFilter}
+          datePreset={auditDatePreset}
+          setDatePreset={setAuditDatePreset}
+          startDate={auditStartDate}
+          setStartDate={setAuditStartDate}
+          endDate={auditEndDate}
+          setEndDate={setAuditEndDate}
+          onExport={exportAuditLogs}
+          error={auditError}
+          loading={auditLoading}
+          pageNumber={auditPageNumber}
+          onLoadPage={(page) => void loadAuditLogs(page)}
+          hasMore={auditHasMore}
+          onOpenLog={(log) => openAuditLog(log as typeof auditLogs[number])}
+        />
       </main></div></div>
     );
   }
