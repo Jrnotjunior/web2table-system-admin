@@ -2,6 +2,7 @@ import { supabase } from '../../../lib/supabase';
 
 export interface InviteRestaurantTenantInput {
   email: string;
+  ownerName: string;
   name: string;
   slug: string;
   packageId: number;
@@ -14,6 +15,7 @@ export async function inviteRestaurantTenant(
   const { data, error } = await supabase.functions.invoke('system-admin-invite-tenant', {
     body: {
       email: input.email,
+      owner_name: input.ownerName,
       name: input.name,
       slug: input.slug,
       package_id: input.packageId,
