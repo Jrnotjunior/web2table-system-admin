@@ -20,6 +20,7 @@ import { fetchRestaurantSettings, updateRestaurantSettings } from './features/re
 import { fetchRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 import { fetchAdministrators, revokeAdministratorAccess, restoreAdministratorAccess, deleteRevokedAdministratorAccess, updateAdministratorAccessLevel } from './features/administrators/services/administratorService';
+import { inviteSystemAdministrator } from './features/administrators/services/systemAdminInviteService';
 import { fetchMySystemAdminAccessLevel } from './features/administrators/services/currentAdminAccessService';
 import { activateSystemAdminInvitation } from './features/administrators/services/systemAdminInvitationService';
 import { fetchTotpResetAccounts } from './features/totp-reset/services/totpResetService';
@@ -287,35 +288,13 @@ function AppContent() {
     setInviteAdminError('');
     setInviteAdminSuccess('');
 
-    const { data, error } = await supabase.functions.invoke('web2table-invite-user', {
-      body: {
-        invitation_type: 'system_admin',
-        email: inviteAdminEmail.trim(),
-        access_level: inviteAdminAccessLevel,
-      },
+    const result = await inviteSystemAdministrator({
+      email: inviteAdminEmail.trim(),
+      accessLevel: inviteAdminAccessLevel,
     });
 
-    if (error) {
-      let message = error.message;
-
-      try {
-        const response = (error as { context?: Response }).context;
-        if (response) {
-          const responseBody = await response.clone().json() as { error?: unknown };
-          if (typeof responseBody.error === 'string' && responseBody.error.trim()) {
-            message = responseBody.error;
-          }
-        }
-      } catch {
-        // Keep the original FunctionsHttpError message if the response body cannot be parsed.
-      }
-
-      setInviteAdminError(message);
-      setInviteAdminSaving(false);
-      return;
-    }
-    if (data?.error) {
-      setInviteAdminError(String(data.error));
+    if (result.error) {
+      setInviteAdminError(result.error);
       setInviteAdminSaving(false);
       return;
     }
