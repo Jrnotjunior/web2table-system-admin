@@ -1832,14 +1832,6 @@ function AppContent() {
         )}
 
         <section className="dashboard-card audit-page-card">
-          <div className="section-heading">
-            <div>
-              <div className="eyebrow">Accountability</div>
-              <h2>Audit Logs</h2>
-              <p>Review System Administrator sign-ins and administrative changes across the platform.</p>
-            </div>
-          </div>
-
           <div className="audit-summary-row">
             <div className="stat-card"><span>Total records</span><strong>{auditLogs.length}</strong></div>
             <div className="stat-card"><span>Administrative actions</span><strong>{auditLogs.filter((log) => log.event_type === 'ADMIN_ACTION').length}</strong></div>
