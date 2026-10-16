@@ -37,7 +37,7 @@ export default function SystemAdminSidebar({
         {item('maps', '◎', 'Mapbox Usage', onMapboxUsage)}
         {accessLevel != null && item('totp-reset', '♧', 'TOTP Reset', onTotpResets)}
       </nav>
-      <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console{onSignOut && <button type="button" onClick={onSignOut}>Sign out</button>}</div>
+      <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console</div>
     </aside>
   );
 }
