@@ -1928,14 +1928,16 @@ function AppContent() {
                 <div className="eyebrow">Tenant onboarding</div>
                 <h2 id="tenant-invite-title">Invite a tenant</h2>
               </div>
-              <button
-                className="icon-button"
-                type="button"
-                onClick={() => setShowInviteTenant(false)}
-                disabled={inviteTenantSaving}
-                aria-label="Close invite tenant modal"
-                title="Close"
-              >×</button>
+              {!inviteTenantSuccess && (
+                <button
+                  className="icon-button"
+                  type="button"
+                  onClick={() => setShowInviteTenant(false)}
+                  disabled={inviteTenantSaving}
+                  aria-label="Close invite tenant modal"
+                  title="Close"
+                >×</button>
+              )}
             </div>
 
             <form className="restaurant-form" onSubmit={inviteTenant}>
