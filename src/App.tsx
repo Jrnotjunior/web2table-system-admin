@@ -23,26 +23,13 @@ import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
+import RestaurantsPage, { type Restaurant } from './features/restaurants/RestaurantsPage';
 
 function isAdminPage(current: AdminPage, target: AdminPage) {
   return current === target;
 }
 
-type Restaurant = {
-  id: string;
-  owner_id: string | null;
-  custom_domain: string | null;
-  slug: string;
-  name: string;
-  tagline: string;
-  logo_url: string | null;
-  location_text: string | null;
-  contact_number: string | null;
-  email: string | null;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-};
+
 
 type RestaurantForm = {
   name: string;
@@ -2312,94 +2299,20 @@ function AppContent() {
           </div>
         )}
 
-      <section className="dashboard-card">
-        <div className="stats-row">
-          <div className="stat-card">
-            <span>Total restaurants</span>
-            <strong>{restaurants.length}</strong>
-          </div>
-          <div className="stat-card">
-            <span>Active</span>
-            <strong>{restaurants.filter((restaurant) => restaurant.is_active).length}</strong>
-          </div>
-          <div className="stat-card">
-            <span>Inactive</span>
-            <strong>{restaurants.filter((restaurant) => !restaurant.is_active).length}</strong>
-          </div>
-        </div>
-
-        <div className="toolbar restaurants-search-toolbar">
-          <input
-            className="search-input uniform-search-input"
-            type="search"
-            placeholder="Search restaurants..."
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-          <span className="live-indicator"><span className="live-dot" /> Live</span>
-          {adminAccessLevel === 'owner' && (
-            <button className="restaurants-invite-button" onClick={() => {
-              setInviteTenantError('');
-              setInviteTenantSuccess('');
-              setInviteTenantEmail('');
-              setShowInviteTenant(true);
-            }}>
-              Invite tenant
-            </button>
-          )}
-        </div>
-
-        {restaurantError && <div className="error-banner">{restaurantError}</div>}
-
-        {restaurantLoading ? (
-          <div className="empty-state">Loading restaurants...</div>
-        ) : filteredRestaurants.length === 0 ? (
-          <div className="empty-state">
-            <strong>{restaurants.length === 0 ? 'No restaurants yet' : 'No matching restaurants'}</strong>
-            <span>{restaurants.length === 0 ? 'Add the first restaurant to start building the platform.' : 'Try a different search term.'}</span>
-          </div>
-        ) : (
-          <div className="restaurant-list">
-            {filteredRestaurants.map((restaurant) => (
-              <article className="restaurant-row" key={restaurant.id}>
-                <div className="restaurant-main">
-                  <div className="restaurant-logo">
-                    {restaurant.logo_url ? <img src={restaurant.logo_url} alt="" /> : <span>{restaurant.name.charAt(0).toUpperCase()}</span>}
-                  </div>
-                  <div>
-                    <div className="restaurant-title-line">
-                      <h3>{restaurant.name}</h3>
-                      <span className={restaurant.is_active ? 'status active' : 'status inactive'}>
-                        {restaurant.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    <div className="restaurant-slug">/{restaurant.slug}</div>
-                    {restaurant.tagline && <p>{restaurant.tagline}</p>}
-                    <div className="restaurant-meta">
-                      {restaurant.location_text && <span>{restaurant.location_text}</span>}
-                      {restaurant.email && <span>{restaurant.email}</span>}
-                      {restaurant.contact_number && <span>{restaurant.contact_number}</span>}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row-actions">
-                  <button className="secondary-button" onClick={() => openRestaurant(restaurant)}>Manage</button>
-                  {canManage && <button className="secondary-button" onClick={() => startEdit(restaurant)}>Edit</button>}
-
-                  {canManage && <button type="button" className="danger-button" onClick={(event) => {
-                     event.preventDefault();
-                     event.stopPropagation();
-                     requestDeleteRestaurant(restaurant);
-                   }}>
-                     Delete
-                   </button>}
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
+      <RestaurantsPage
+        restaurants={restaurants}
+        filteredRestaurants={filteredRestaurants}
+        search={search}
+        onSearchChange={setSearch}
+        accessLevel={adminAccessLevel}
+        canManage={canManage}
+        loading={restaurantLoading}
+        error={restaurantError}
+        onInviteTenant={() => { setInviteTenantError(''); setInviteTenantSuccess(''); setInviteTenantEmail(''); setShowInviteTenant(true); }}
+        onManage={openRestaurant}
+        onEdit={startEdit}
+        onDelete={requestDeleteRestaurant}
+      />
 
       {renderRestaurantDeleteModal()}
 
