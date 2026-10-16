@@ -11,6 +11,7 @@ import { fetchAuditLogs } from './features/audit/services/auditLogService';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
+import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -598,9 +599,7 @@ function AppContent() {
     setSettingsLoading(true);
     setSettingsError('');
 
-    const { data, error } = await supabase.rpc('system_admin_get_restaurant_settings', {
-      p_restaurant_id: restaurantId,
-    });
+    const { data, error } = await fetchRestaurantSettings(restaurantId);
 
     if (error) {
       setSettingsError(error.message);
@@ -622,13 +621,12 @@ function AppContent() {
     setSettingsSaving(true);
     setSettingsError('');
 
-    const { data, error } = await supabase.rpc('system_admin_update_restaurant_settings', {
-      p_restaurant_id: selectedRestaurant.id,
-      p_cash_on_delivery_enabled: cashOnDeliveryEnabled,
-      p_automatic_rider_assignment_enabled: automaticRiderAssignmentEnabled,
-      p_tax_vat_registered: vatRegistered,
-      p_tax_prices_vat_inclusive: pricesVatInclusive,
-      p_tax_vat_rate: Number(vatRate),
+    const { data, error } = await updateRestaurantSettings(selectedRestaurant.id, {
+      cashOnDeliveryEnabled,
+      automaticRiderAssignmentEnabled,
+      vatRegistered,
+      pricesVatInclusive,
+      vatRate: Number(vatRate),
     });
 
     if (error) {
