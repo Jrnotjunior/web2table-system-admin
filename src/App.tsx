@@ -1250,7 +1250,6 @@ function AppContent() {
               row.email = ownerEmailData.emails[row.userId] || '';
               const ownerName = ownerEmailData.names?.[row.userId];
               if (typeof ownerName === 'string' && ownerName.trim()) row.displayName = ownerName.trim();
-              else if (row.email) row.displayName = row.email.split('@')[0];
             }
           }
         } else if (ownerEmailError) {
