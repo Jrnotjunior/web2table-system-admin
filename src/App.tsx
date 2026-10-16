@@ -1954,9 +1954,6 @@ function AppContent() {
                     disabled={inviteTenantSaving}
                   />
                 </label>
-              </div>
-
-              <div className="form-grid">
                 <label>
                   Restaurant name
                   <input
@@ -1977,7 +1974,6 @@ function AppContent() {
                     disabled={inviteTenantSaving}
                   />
                 </label>
-
               </div>
 
               <div className="form-grid">
