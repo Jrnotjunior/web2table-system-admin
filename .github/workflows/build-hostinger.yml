@@ -1,0 +1,46 @@
+name: Build System Admin for Hostinger
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build for Hostinger root domain
+        run: npm run build:hostinger
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Copy company logo
+        run: cp web2table.png dist/web2table.png
+
+      - name: Verify Hostinger artifact paths
+        run: |
+          test -f dist/index.html
+          grep -q 'src="/assets/' dist/index.html
+          find dist -maxdepth 2 -type f -print
+
+      - name: Upload Hostinger build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: system-admin-hostinger-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
