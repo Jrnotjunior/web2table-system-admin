@@ -5,7 +5,7 @@ import { type AdminPage } from './app/navigation';
 import type { Administrator, PendingAdministratorAction } from './features/administrators/types';
 import type { DashboardPlatformHealth, DashboardRestaurantMonitoring, DashboardSummary } from './features/dashboard/types';
 import type { AuditLog } from './shared/types/audit';
-import type { TotpResetAccount, PendingTotpReset } from './features/totp-reset/types';
+import { useTotpResetManagement } from './features/totp-reset/hooks/useTotpResetManagement';
 import { recordAuthAuditEvent, recordAdminAudit } from './shared/services/auditService';
 import { fetchAuditLogs } from './features/audit/services/auditLogService';
 import { getAuditDateRange } from './features/audit/utils/auditDateRange';
@@ -25,8 +25,7 @@ import { fetchAdministrators, revokeAdministratorAccess, restoreAdministratorAcc
 import { inviteSystemAdministrator } from './features/administrators/services/systemAdminInviteService';
 import { fetchMySystemAdminAccessLevel } from './features/administrators/services/currentAdminAccessService';
 import { activateSystemAdminInvitation } from './features/administrators/services/systemAdminInvitationService';
-import { fetchTotpResetAccounts } from './features/totp-reset/services/totpResetService';
-import { resetRestaurantUserTotp as resetRestaurantUserTotpService } from './features/totp-reset/services/totpResetService';
+
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -120,8 +119,6 @@ function AppContent() {
   const [staffError, setStaffError] = useState('');
   const [restaurantStaff, setRestaurantStaff] = useState<RestaurantStaff[]>([]);
   const [staffActionId, setStaffActionId] = useState<string | null>(null);
-  const [pendingTotpReset, setPendingTotpReset] = useState<PendingTotpReset | null>(null);
-  const [totpResetSuccess, setTotpResetSuccess] = useState('');
   const [staffActionError, setStaffActionError] = useState('');
   const [pendingDeleteStaff, setPendingDeleteStaff] = useState<typeof restaurantStaff[number] | null>(null);
   const [settingsLoading, setSettingsLoading] = useState(false);
@@ -144,6 +141,24 @@ function AppContent() {
   const [ownerName, setOwnerName] = useState('');
   const [ownerUserId, setOwnerUserId] = useState('');
   const [ownerError, setOwnerError] = useState('');
+  const {
+    accounts: totpResetAccounts,
+    loading: totpResetLoading,
+    search: totpResetSearch,
+    setSearch: setTotpResetSearch,
+    error: totpResetError,
+    pendingReset: pendingTotpReset,
+    setPendingReset: setPendingTotpReset,
+    success: totpResetSuccess,
+    setSuccess: setTotpResetSuccess,
+    loadAccounts: loadTotpResetAccounts,
+    requestReset: resetRestaurantUserTotp,
+  } = useTotpResetManagement({
+    adminAccessLevel,
+    setStaffActionId,
+    setStaffActionError,
+    setOwnerError,
+  });
   const [pendingAssignOwner, setPendingAssignOwner] = useState(false);
   const [ownerInvitationNotice, setOwnerInvitationNotice] = useState('');
   const [pendingRemoveOwner, setPendingRemoveOwner] = useState(false);
@@ -152,10 +167,6 @@ function AppContent() {
   const [restaurantDeleteSaving, setRestaurantDeleteSaving] = useState(false);
   const [pendingRestaurantFormSave, setPendingRestaurantFormSave] = useState(false);
   const [adminPage, setAdminPage] = useState<AdminPage>('dashboard');
-  const [totpResetAccounts, setTotpResetAccounts] = useState<TotpResetAccount[]>([]);
-  const [totpResetLoading, setTotpResetLoading] = useState(false);
-  const [totpResetSearch, setTotpResetSearch] = useState('');
-  const [totpResetError, setTotpResetError] = useState('');
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [dashboardError, setDashboardError] = useState('');
   const [dashboardSummary, setDashboardSummary] = useState<DashboardSummary | null>(null);
@@ -659,39 +670,7 @@ function AppContent() {
     setPendingDeleteStaff(staff);
   }
 
-  async function resetRestaurantUserTotp(targetUserId: string, displayName: string, role: 'restaurant_owner' | 'staff', restaurantId: string, confirmed = false): Promise<boolean> {
-    if (adminAccessLevel !== 'owner') {
-      setStaffActionError('Only the System Administrator Owner can reset restaurant account authenticators.');
-      setOwnerError('Only the System Administrator Owner can reset restaurant account authenticators.');
-      return false;
-    }
-    if (!targetUserId || !restaurantId) {
-      setStaffActionError('This account is not linked to a Supabase Auth user.');
-      setOwnerError('This account is not linked to a Supabase Auth user.');
-      return false;
-    }
-    if (!confirmed) {
-      setTotpResetSuccess('');
-      setPendingTotpReset({ userId: targetUserId, displayName, role, restaurantId });
-      return false;
-    }
-    setStaffActionId(targetUserId);
-    setStaffActionError('');
-    setOwnerError('');
-    try {
-      await resetRestaurantUserTotpService(targetUserId, restaurantId, role);
-      await recordAdminAudit('Restaurant account TOTP reset', restaurantId, role, targetUserId, { target_user_id: targetUserId, target_role: role, account_label: displayName, factor_type: 'totp' });
-      setTotpResetSuccess('Authenticator reset for ' + displayName + '. They must sign in and enroll a new authenticator before accessing their workspace.');
-      return true;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unable to reset this authenticator.';
-      setStaffActionError(message);
-      setOwnerError(message);
-      return false;
-    } finally {
-      setStaffActionId(null);
-    }
-  }
+
   async function confirmDeleteRestaurantStaff() {
     if (!pendingDeleteStaff) return;
 
@@ -952,20 +931,6 @@ function AppContent() {
     setAccountMenuOpen(false);
     setAdminPage('restaurants');
     void loadRestaurants();
-  }
-
-  async function loadTotpResetAccounts() {
-    setTotpResetLoading(true);
-    setTotpResetError('');
-    try {
-      const rows = await fetchTotpResetAccounts();
-      setTotpResetAccounts(rows);
-    } catch (error) {
-      setTotpResetError(error instanceof Error ? error.message : 'Unable to load restaurant accounts.');
-      setTotpResetAccounts([]);
-    } finally {
-      setTotpResetLoading(false);
-    }
   }
 
   function openTotpReset(pushHistory = true) {
