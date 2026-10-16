@@ -1711,8 +1711,7 @@ function AppContent() {
           </div>
         )}
         <section className="dashboard-card administrators-card">
-          <div className="section-heading">
-            <div><div className="eyebrow">Access Control</div><h2>System Administrators</h2><p>Manage who can access the WEB2TABLE System Admin platform.</p></div>
+          <div className="administrators-toolbar">
             <button onClick={() => { setInviteAdminError(''); setInviteAdminSuccess(''); setShowInviteAdmin(true); }}>+ Invite Administrator</button>
           </div>
           {administratorsError && <div className="error-banner">{administratorsError}</div>}
