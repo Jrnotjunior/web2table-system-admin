@@ -1216,6 +1216,7 @@ function AppContent() {
           </div>
         )}
         <AdministratorsPage
+          canManage={adminAccessLevel === 'owner'}
           administrators={administrators}
           search={administratorSearch}
           onSearchChange={setAdministratorSearch}
