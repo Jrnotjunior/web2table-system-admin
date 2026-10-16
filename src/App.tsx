@@ -8,6 +8,7 @@ import TotpResetPanel from './features/totp-reset/TotpResetPanel';
 import AdministratorsPanel from './features/administrators/AdministratorsPanel';
 import RestaurantManagementHeader from './features/restaurants/RestaurantManagementHeader';
 import RestaurantOverview from './features/restaurants/RestaurantOverview';
+import RestaurantOwnerPanel from './features/restaurants/RestaurantOwnerPanel';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -2037,30 +2038,18 @@ function AppContent() {
               onRequestStatusChange={() => setPendingRestaurantStatus(selectedRestaurant)}
             />
           ) : manageTab === 'owner' ? (
-            <div className="manage-overview">
-              <div className="overview-section">
-                <div className="eyebrow">Restaurant Owner</div>
-                <h3>Owner account</h3>
-                <p>Assign an existing Supabase account as the owner of this restaurant. A new account is not created here.</p>
-                {ownerLoading ? <div className="empty-state owner-loading">Loading owner...</div> : ownerUserId ? (
-                  <div className="owner-current">
-                    <div className="owner-avatar">{(ownerName || ownerEmail).charAt(0).toUpperCase()}</div>
-                    <div className="owner-current-details"><strong>{ownerName || 'Restaurant Owner'}</strong><span>{ownerEmail}</span><small>User ID: {ownerUserId}</small></div>
-                    {canManage && <button className="danger-button" onClick={() => { setOwnerError(''); setPendingRemoveOwner(true); }} disabled={ownerSaving}>Remove owner</button>}
-                  </div>
-                ) : (
-                  canManage ? (
-                  <div className="owner-form">
-                    <label>Owner account email<input type="email" value={ownerEmail} onChange={(event) => setOwnerEmail(event.target.value)} placeholder="owner@example.com" /></label>
-                    <button onClick={() => { setOwnerError(''); setPendingAssignOwner(true); }} disabled={ownerSaving || !ownerEmail.trim()}>Assign owner</button>
-                  </div>
-                  ) : (
-                    <div className="empty-state">No restaurant owner is assigned. View Only access cannot change ownership.</div>
-                  )
-                )}
-                {ownerError && <div className="error-banner">{ownerError}</div>}
-              </div>
-            </div>
+            <RestaurantOwnerPanel
+              loading={ownerLoading}
+              ownerUserId={ownerUserId}
+              ownerName={ownerName}
+              ownerEmail={ownerEmail}
+              canManage={canManage}
+              ownerSaving={ownerSaving}
+              error={ownerError}
+              onEmailChange={setOwnerEmail}
+              onRequestAssign={() => { setOwnerError(''); setPendingAssignOwner(true); }}
+              onRequestRemove={() => { setOwnerError(''); setPendingRemoveOwner(true); }}
+            />
           ) : manageTab === 'domain' ? (
             <div className="manage-overview">
               <div className="overview-section">
