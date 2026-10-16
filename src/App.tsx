@@ -9,6 +9,7 @@ import AdministratorsPanel from './features/administrators/AdministratorsPanel';
 import RestaurantManagementHeader from './features/restaurants/RestaurantManagementHeader';
 import RestaurantOverview from './features/restaurants/RestaurantOverview';
 import RestaurantOwnerPanel from './features/restaurants/RestaurantOwnerPanel';
+import RestaurantDomainPanel from './features/restaurants/RestaurantDomainPanel';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -2051,39 +2052,14 @@ function AppContent() {
               onRequestRemove={() => { setOwnerError(''); setPendingRemoveOwner(true); }}
             />
           ) : manageTab === 'domain' ? (
-            <div className="manage-overview">
-              <div className="overview-section">
-                <div className="eyebrow">Custom Domain</div>
-                <h3>Restaurant domain</h3>
-                <p>Assign the public domain that will identify this restaurant on the ordering platform.</p>
-                <div className="domain-status-panel">
-                  <div>
-                    <strong>{domain ? 'Custom domain configured' : 'No custom domain configured'}</strong>
-                    <span>
-                      {domain
-                        ? <>This restaurant is configured to use <strong>{domain}</strong>.</>
-                        : 'The restaurant is currently using its WEB2TABLE platform URL.'}
-                    </span>
-                  </div>
-                  <span className={domain ? 'status active' : 'status inactive'}>{domain ? 'Configured' : 'Not configured'}</span>
-                </div>
-
-                {canManage && <div className="domain-form">
-                  <label>
-                    Custom domain
-                    <input value={domain} onChange={(event) => setDomain(event.target.value)} placeholder="restaurant.com" />
-                  </label>
-                  <button onClick={() => { setDomainError(''); setPendingSaveDomain(true); }} disabled={domainSaving || !domain.trim()}>
-                    {domainSaving ? 'Saving...' : 'Save domain'}
-                  </button>
-                </div>}
-                {!canManage && <div className="empty-state">View Only access can view the domain configuration but cannot change it.</div>}
-                <div className="domain-help">
-                  Add a custom domain only when one is available. Enter only the hostname, for example <strong>restaurant.com</strong>. Do not include https:// or a path.
-                </div>
-                {domainError && <div className="error-banner">{domainError}</div>}
-              </div>
-            </div>
+            <RestaurantDomainPanel
+              domain={domain}
+              onDomainChange={setDomain}
+              canManage={canManage}
+              domainSaving={domainSaving}
+              domainError={domainError}
+              onRequestSave={() => { setDomainError(''); setPendingSaveDomain(true); }}
+            />
           ) : manageTab === 'package' ? (
             <div className="manage-overview package-access-page">
               <div className="overview-section package-access-section">
