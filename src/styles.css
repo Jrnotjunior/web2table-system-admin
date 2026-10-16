@@ -564,7 +564,11 @@ body{min-width:320px}
 }
 .totp-reset-page .table-wrap td .secondary-button{
   white-space:nowrap;
-  min-width:112px;
+  min-width:0;
+  padding:7px 11px;
+  font-size:.82rem;
+  line-height:1.2;
+  border-radius:7px;
 }
 @media(max-width:760px){
   .totp-reset-page{padding:18px 14px !important}
