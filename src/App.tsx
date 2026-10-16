@@ -7,6 +7,7 @@ import type { DashboardPlatformHealth, DashboardRestaurantMonitoring, DashboardS
 import type { AuditLog } from './shared/types/audit';
 import type { TotpResetAccount, PendingTotpReset } from './features/totp-reset/types';
 import { recordAuthAuditEvent, recordAdminAudit } from './shared/services/auditService';
+import { fetchRestaurants } from './features/restaurants/services/restaurantService';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -1177,10 +1178,7 @@ function AppContent() {
     setRestaurantLoading(true);
     setRestaurantError('');
 
-    const { data, error } = await supabase
-      .from('restaurants')
-      .select('id,owner_id,custom_domain,slug,name,tagline,logo_url,location_text,contact_number,email,is_active,created_at,updated_at')
-      .order('created_at', { ascending: false });
+    const { data, error } = await fetchRestaurants();
 
     if (error) {
       setRestaurantError(error.message);
