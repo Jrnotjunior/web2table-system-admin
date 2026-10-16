@@ -2289,9 +2289,6 @@ function AppContent() {
               </div>
             </div>
             <div className="restaurant-hero-actions">
-              <span className={selectedRestaurant.is_active ? 'status active' : 'status inactive'}>
-                {selectedRestaurant.is_active ? 'Active' : 'Inactive'}
-              </span>
               <button
                 className="icon-button restaurant-manage-close"
                 type="button"
