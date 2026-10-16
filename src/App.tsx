@@ -13,6 +13,7 @@ import { fetchRestaurants } from './features/restaurants/services/restaurantServ
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
 import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
+import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -859,7 +860,7 @@ function AppContent() {
   async function loadRestaurantOwner(restaurantId: string) {
     setOwnerLoading(true);
     setOwnerError('');
-    const { data, error } = await supabase.rpc('system_admin_get_restaurant_owner', { p_restaurant_id: restaurantId });
+    const { data, error } = await fetchRestaurantOwner(restaurantId);
     if (error) {
       setOwnerError(error.message);
       setOwnerEmail('');
@@ -878,10 +879,7 @@ function AppContent() {
     if (!selectedRestaurant || !ownerEmail.trim()) return;
     setOwnerSaving(true);
     setOwnerError('');
-    const { data, error } = await supabase.rpc('system_admin_assign_restaurant_owner', {
-      p_restaurant_id: selectedRestaurant.id,
-      p_email: ownerEmail.trim(),
-    });
+    const { data, error } = await assignRestaurantOwnerService(selectedRestaurant.id, ownerEmail.trim());
     if (error) {
       const missingAuthAccount = /no auth account was found/i.test(error.message);
       if (!missingAuthAccount) {
@@ -924,7 +922,7 @@ function AppContent() {
     if (!selectedRestaurant) return;
     setOwnerSaving(true);
     setOwnerError('');
-    const { error } = await supabase.rpc('system_admin_remove_restaurant_owner', { p_restaurant_id: selectedRestaurant.id });
+    const { error } = await removeRestaurantOwner(selectedRestaurant.id);
     if (error) {
       setOwnerError(error.message);
     } else {
