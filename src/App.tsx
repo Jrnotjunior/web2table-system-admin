@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from './lib/supabase';
 import { type AdminPage } from './app/navigation';
-import type { Administrator, PendingAdministratorAction } from './features/administrators/types';
+import { useAdministratorManagement } from './features/administrators/hooks/useAdministratorManagement';
 import type { DashboardPlatformHealth, DashboardRestaurantMonitoring, DashboardSummary } from './features/dashboard/types';
 import type { AuditLog } from './shared/types/audit';
 import { useTotpResetManagement } from './features/totp-reset/hooks/useTotpResetManagement';
@@ -21,8 +21,7 @@ import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPack
 import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, deleteRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, inviteRestaurantOwner, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
-import { fetchAdministrators, revokeAdministratorAccess, restoreAdministratorAccess, deleteRevokedAdministratorAccess, updateAdministratorAccessLevel } from './features/administrators/services/administratorService';
-import { inviteSystemAdministrator } from './features/administrators/services/systemAdminInviteService';
+
 import { fetchMySystemAdminAccessLevel } from './features/administrators/services/currentAdminAccessService';
 import { activateSystemAdminInvitation } from './features/administrators/services/systemAdminInvitationService';
 
@@ -72,19 +71,32 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [adminAccessLevel, setAdminAccessLevel] = useState<'owner' | 'administrator' | 'view_only' | null>(null);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
-  const [administratorsLoading, setAdministratorsLoading] = useState(false);
-  const [administratorSearch, setAdministratorSearch] = useState('');
-  const [administratorsError, setAdministratorsError] = useState('');
-  const [administrators, setAdministrators] = useState<Administrator[]>([]);
-  const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdministratorAction | null>(null);
-  const [adminActionSaving, setAdminActionSaving] = useState(false);
-  const [showInviteAdmin, setShowInviteAdmin] = useState(false);
-  const [inviteAdminEmail, setInviteAdminEmail] = useState('');
-  const [inviteAdminAccessLevel, setInviteAdminAccessLevel] = useState<'administrator' | 'view_only'>('administrator');
-  const [inviteAdminSaving, setInviteAdminSaving] = useState(false);
-  const [inviteAdminError, setInviteAdminError] = useState('');
-  const [inviteAdminSuccess, setInviteAdminSuccess] = useState('');
-  const [inviteAdminConfirmationEmail, setInviteAdminConfirmationEmail] = useState('');
+  const {
+    administratorsLoading,
+    administratorSearch,
+    setAdministratorSearch,
+    administratorsError,
+    administrators,
+    pendingAdminAction,
+    setPendingAdminAction,
+    adminActionSaving,
+    showInviteAdmin,
+    setShowInviteAdmin,
+    inviteAdminEmail,
+    setInviteAdminEmail,
+    inviteAdminAccessLevel,
+    setInviteAdminAccessLevel,
+    inviteAdminSaving,
+    inviteAdminError,
+    inviteAdminSuccess,
+    inviteAdminConfirmationEmail,
+    setInviteAdminConfirmationEmail,
+    setInviteAdminError,
+    setInviteAdminSuccess,
+    loadAdministrators,
+    inviteAdministrator,
+    confirmAdministratorAction,
+  } = useAdministratorManagement();
   const [showInviteTenant, setShowInviteTenant] = useState(false);
   const [inviteTenantEmail, setInviteTenantEmail] = useState('');
   const [inviteTenantRestaurantName, setInviteTenantRestaurantName] = useState('');
@@ -218,19 +230,6 @@ function AppContent() {
     return level;
   }
 
-  async function loadAdministrators() {
-    setAdministratorsLoading(true);
-    setAdministratorsError('');
-    const { data, error } = await fetchAdministrators();
-    if (error) {
-      setAdministratorsError(error.message);
-      setAdministrators([]);
-    } else {
-      setAdministrators((Array.isArray(data) ? data : []) as typeof administrators);
-    }
-    setAdministratorsLoading(false);
-  }
-
   function applyNavigationFromUrl() {
     const navigation = getNavigationFromUrl();
     setAccountMenuOpen(false);
@@ -293,66 +292,6 @@ function AppContent() {
     setInviteAdminSuccess('');
     setInviteAdminConfirmationEmail('');
     void loadAdministrators();
-  }
-
-  async function inviteAdministrator(event: FormEvent) {
-    event.preventDefault();
-    setInviteAdminSaving(true);
-    setInviteAdminError('');
-    setInviteAdminSuccess('');
-
-    const result = await inviteSystemAdministrator({
-      email: inviteAdminEmail.trim(),
-      accessLevel: inviteAdminAccessLevel,
-    });
-
-    if (result.error) {
-      setInviteAdminError(result.error);
-      setInviteAdminSaving(false);
-      return;
-    }
-
-    const sentEmail = inviteAdminEmail.trim();
-    setInviteAdminSuccess(`Invitation sent to ${sentEmail}.`);
-    setInviteAdminConfirmationEmail(sentEmail);
-    setShowInviteAdmin(false);
-    setInviteAdminEmail('');
-    setInviteAdminAccessLevel('administrator');
-    setInviteAdminSaving(false);
-    await loadAdministrators();
-  }
-
-  async function confirmAdministratorAction() {
-    if (!pendingAdminAction) return;
-    setAdminActionSaving(true);
-    setAdministratorsError('');
-
-    const { type, admin, nextAccessLevel } = pendingAdminAction;
-    let error: { message: string } | null = null;
-
-    if (type === 'revoke') {
-      const result = await revokeAdministratorAccess(admin.admin_user_id);
-      error = result.error;
-    } else if (type === 'restore') {
-      const result = await restoreAdministratorAccess(admin.admin_user_id);
-      error = result.error;
-    } else if (type === 'delete') {
-      const result = await deleteRevokedAdministratorAccess(admin.admin_user_id);
-      error = result.error;
-    } else if (nextAccessLevel) {
-      const result = await updateAdministratorAccessLevel(admin.admin_user_id, nextAccessLevel);
-      error = result.error;
-    }
-
-    if (error) {
-      setAdministratorsError(error.message);
-      setAdminActionSaving(false);
-      return;
-    }
-
-    setPendingAdminAction(null);
-    setAdminActionSaving(false);
-    await loadAdministrators();
   }
 
   async function checkAdminSession() {
