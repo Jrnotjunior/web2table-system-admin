@@ -13,3 +13,14 @@ export type Restaurant = {
   created_at: string;
   updated_at: string;
 };
+
+export type RestaurantForm = {
+  name: string;
+  slug: string;
+  tagline: string;
+  logo_url: string;
+  location_text: string;
+  contact_number: string;
+  email: string;
+  is_active: boolean;
+};
