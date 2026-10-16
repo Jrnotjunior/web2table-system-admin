@@ -1,3 +1,4 @@
+import type { FormEvent } from 'react';
 export type ManagedAdministrator = {
  id: string; admin_user_id: string; email: string | null; name: string | null;
  access_level: 'owner' | 'administrator' | 'view_only'; is_active: boolean;
@@ -12,7 +13,7 @@ type Props = {
  onRequestAction: (action: PendingAdministratorAction) => void; onCloseAction: () => void; onConfirmAction: () => void;
  showInvite: boolean; inviteEmail: string; onInviteEmailChange: (value: string) => void;
  inviteAccessLevel: 'administrator' | 'view_only'; onInviteAccessLevelChange: (value: 'administrator' | 'view_only') => void;
- inviteSaving: boolean; inviteError: string; onSubmitInvite: (event: React.FormEvent<HTMLFormElement>) => void;
+ inviteSaving: boolean; inviteError: string; onSubmitInvite: (event: FormEvent<HTMLFormElement>) => void;
  onCloseInvite: () => void; confirmationEmail: string; onCloseInviteConfirmation: () => void;
 };
 export default function AdministratorsPanel(p: Props) {
