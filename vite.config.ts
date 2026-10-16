@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
-  base: '/web2table-system-admin/',
-});
+  // Keep GitHub Pages working while allowing a root-domain Hostinger build.
+  base: mode === 'hostinger' ? '/' : '/web2table-system-admin/',
+}));
