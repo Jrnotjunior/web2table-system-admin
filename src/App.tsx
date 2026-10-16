@@ -1644,10 +1644,6 @@ function AppContent() {
           )}
           <main className="admin-workspace">
         <section className="dashboard-card system-dashboard-card">
-          <div className="section-heading">
-            <div><div className="eyebrow">Platform Command Center</div><h2>System Dashboard</h2><p>See platform health, operational activity, and anything that needs your attention.</p></div>
-            
-          </div>
           {dashboardError && <div className="error-banner">{dashboardError}</div>}
           {dashboardLoading && !dashboardSummary ? <div className="empty-state">Loading platform command center...</div> : (
             <>
