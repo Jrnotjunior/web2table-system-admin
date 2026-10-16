@@ -2292,9 +2292,7 @@ function AppContent() {
               <span className={selectedRestaurant.is_active ? 'status active' : 'status inactive'}>
                 {selectedRestaurant.is_active ? 'Active' : 'Inactive'}
               </span>
-              {canManage && <button className="secondary-button" type="button" onClick={() => startEdit(selectedRestaurant)}>
-                Edit restaurant
-              </button>}
+
 
             </div>
           </div>
