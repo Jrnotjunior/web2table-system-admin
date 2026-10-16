@@ -982,3 +982,9 @@ body{min-width:320px}
 /* Keep TOTP refresh available without the oversized page heading. */
 .totp-reset-refresh-button{grid-column:2;justify-self:end;white-space:nowrap;padding:.6rem .85rem!important;font-size:.82rem!important}
 @media(max-width:560px){.totp-reset-refresh-button{grid-column:1;justify-self:start}}
+
+
+/* Compact toolbar for restaurant management actions after removing the oversized page heading. */
+.restaurants-toolbar{display:flex;justify-content:flex-end;align-items:center;margin:0 0 14px}
+.restaurants-toolbar button{padding:.62rem .9rem;font-size:.84rem;line-height:1.2}
+@media(max-width:640px){.restaurants-toolbar{margin-bottom:12px}}
