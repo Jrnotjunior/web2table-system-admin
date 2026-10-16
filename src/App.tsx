@@ -4,7 +4,7 @@ import { supabase } from './lib/supabase';
 import { type AdminPage } from './app/navigation';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
-import DashboardOverview from './features/dashboard/DashboardOverview';
+import DashboardPage from './features/dashboard/DashboardPage';
 import AuditLogsPanel from './features/audit/AuditLogsPanel';
 import TotpResetPanel from './features/totp-reset/TotpResetPanel';
 import AdministratorsPanel from './features/administrators/AdministratorsPanel';
@@ -1614,7 +1614,7 @@ function AppContent() {
             </div>
           )}
           <main className="admin-workspace">
-        <DashboardOverview
+        <DashboardPage
           error={dashboardError}
           loading={dashboardLoading}
           summary={dashboardSummary}
