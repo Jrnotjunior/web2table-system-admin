@@ -102,6 +102,7 @@ function AppContent() {
   } = useAdministratorManagement();
   const [showInviteTenant, setShowInviteTenant] = useState(false);
   const [inviteTenantEmail, setInviteTenantEmail] = useState('');
+  const [inviteTenantOwnerName, setInviteTenantOwnerName] = useState('');
   const [inviteTenantRestaurantName, setInviteTenantRestaurantName] = useState('');
   const [inviteTenantSlug, setInviteTenantSlug] = useState('');
   const [inviteTenantPackageId, setInviteTenantPackageId] = useState('1');
@@ -670,9 +671,16 @@ function AppContent() {
     setInviteTenantSuccess('');
 
     const email = inviteTenantEmail.trim().toLowerCase();
+    const ownerName = inviteTenantOwnerName.trim();
     const restaurantName = inviteTenantRestaurantName.trim();
     const slug = inviteTenantSlug.trim().toLowerCase();
     const packageId = Number(inviteTenantPackageId);
+
+    if (!ownerName) {
+      setInviteTenantError('Owner full name is required.');
+      setInviteTenantSaving(false);
+      return;
+    }
 
     if (!email) {
       setInviteTenantError('Owner email is required.');
@@ -682,6 +690,7 @@ function AppContent() {
 
     const result = await inviteRestaurantTenant({
       email,
+      ownerName,
       name: restaurantName,
       slug,
       packageId,
@@ -697,6 +706,7 @@ function AppContent() {
       `Restaurant "${restaurantName}" was created and package ${packageId} was assigned. The invitation email was sent to ${email}.`,
     );
     setInviteTenantEmail('');
+    setInviteTenantOwnerName('');
     setInviteTenantRestaurantName('');
     setInviteTenantSlug('');
     setInviteTenantPackageId('1');
@@ -1856,6 +1866,19 @@ function AppContent() {
                 Enter the new restaurant details and owner email. Web2Table will create the tenant
                 and automatically send the owner a secure invitation email.
               </p>
+
+              <div className="form-grid">
+                <label>
+                  Owner full name
+                  <input
+                    value={inviteTenantOwnerName}
+                    onChange={(event) => setInviteTenantOwnerName(event.target.value)}
+                    placeholder="e.g. Juan Dela Cruz"
+                    required
+                    disabled={inviteTenantSaving}
+                  />
+                </label>
+              </div>
 
               <div className="form-grid">
                 <label>
