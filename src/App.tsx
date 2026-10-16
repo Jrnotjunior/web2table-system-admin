@@ -67,6 +67,7 @@ function AppContent() {
   const [currentUserEmail, setCurrentUserEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [authDialogMessage, setAuthDialogMessage] = useState('');
   const [signedIn, setSignedIn] = useState(false);
   const [authorized, setAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -420,13 +421,13 @@ function AppContent() {
 
     if (error) {
       setLoading(false);
-      window.alert(error.message);
+      setAuthDialogMessage(error.message === 'Invalid login credentials' ? 'Invalid login credentials. Please check your email address and password.' : error.message);
       return;
     }
 
     if (!signInData.session) {
       setLoading(false);
-      window.alert('Sign in succeeded but no authenticated session was established.');
+      setAuthDialogMessage('Sign in succeeded but no authenticated session was established.');
       return;
     }
 
@@ -437,7 +438,7 @@ function AppContent() {
 
     if (sessionError) {
       setLoading(false);
-      window.alert(sessionError.message);
+      setAuthDialogMessage(sessionError.message);
       return;
     }
 
@@ -448,7 +449,7 @@ function AppContent() {
       setSignedIn(false);
       setAuthorized(false);
       setLoading(false);
-      window.alert('This account does not have active System Administrator access.');
+      setAuthDialogMessage('This account does not have active System Administrator access.');
       return;
     }
 
@@ -1066,6 +1067,17 @@ function AppContent() {
   if (inviteSetup) {
     return (
       <main className="auth-shell">
+        {authDialogMessage && (
+          <div className="auth-dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setAuthDialogMessage(''); }}>
+            <section className="auth-dialog" role="alertdialog" aria-modal="true" aria-labelledby="auth-dialog-title" aria-describedby="auth-dialog-description">
+              <div className="auth-dialog-mark" aria-hidden="true">!</div>
+              <div className="eyebrow">WEB2TABLE Platform</div>
+              <h2 id="auth-dialog-title">Unable to sign in</h2>
+              <p id="auth-dialog-description">{authDialogMessage}</p>
+              <button type="button" autoFocus onClick={() => setAuthDialogMessage('')}>OK</button>
+            </section>
+          </div>
+        )}
         <section className="auth-card">
           <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE Platform</div>
