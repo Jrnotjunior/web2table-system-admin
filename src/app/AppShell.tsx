@@ -3,11 +3,12 @@ import type { ReactNode } from 'react';
 type AppShellProps = {
   sidebar: ReactNode;
   title: string;
+  email: string;
   onSignOut: () => void;
   children: ReactNode;
 };
 
-export default function AppShell({ sidebar, title, onSignOut, children }: AppShellProps) {
+export default function AppShell({ sidebar, title, email, onSignOut, children }: AppShellProps) {
   return (
     <div className="admin-layout">
       {sidebar}
@@ -20,9 +21,10 @@ export default function AppShell({ sidebar, title, onSignOut, children }: AppShe
           <div className="topbar-right">
             <span className="topbar-status">
               <span className="sidebar-online-dot" />
-              Administration
+              Live updates
             </span>
-            <button type="button" className="header-sign-out" onClick={onSignOut}>Sign out</button>
+            <span className="header-account-email">{email}</span>
+            <button type="button" className="header-sign-out header-sign-out-icon" aria-label="Sign out" title="Sign out" onClick={onSignOut}>↗</button>
           </div>
         </header>
         {children}
