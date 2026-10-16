@@ -2010,9 +2010,22 @@ function AppContent() {
               {inviteTenantError && <div className="error-banner">{inviteTenantError}</div>}
               {inviteTenantSuccess && <div className="success-banner">{inviteTenantSuccess}</div>}
               <div className="modal-actions">
-                <button type="submit" disabled={inviteTenantSaving}>
-                  {inviteTenantSaving ? 'Sending invitation...' : 'Invite tenant'}
-                </button>
+                {inviteTenantSuccess ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowInviteTenant(false);
+                      setInviteTenantSuccess('');
+                      setInviteTenantError('');
+                    }}
+                  >
+                    Done
+                  </button>
+                ) : (
+                  <button type="submit" disabled={inviteTenantSaving}>
+                    {inviteTenantSaving ? 'Sending invitation...' : 'Invite tenant'}
+                  </button>
+                )}
               </div>
             </form>
           </section>
