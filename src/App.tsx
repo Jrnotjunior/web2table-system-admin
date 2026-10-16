@@ -435,6 +435,9 @@ function AppContent() {
 
     setInvitePassword('');
     setInvitePasswordConfirm('');
+    // The access activation RPC does not emit an auth event. Tell the
+    // mounted MFA gate to re-check access and start TOTP setup immediately.
+    window.dispatchEvent(new Event('system-admin-access-activated'));
     setInviteSetup(false);
     setAuthorized(true);
     setInviteSettingPassword(false);
