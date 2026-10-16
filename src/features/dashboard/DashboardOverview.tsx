@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 type DashboardSummary = {
   total_restaurants: number;
   active_restaurants: number;
@@ -90,7 +88,7 @@ export default function DashboardOverview({
                   <button className="stat-card dashboard-stat-button dashboard-kpi-card" type="button" onClick={() => onOpenRestaurants()}><span>Restaurants</span><strong>{summary?.active_restaurants ?? 0}<small> active</small></strong><em>{summary?.total_restaurants ?? 0} total</em></button>
                   <div className="stat-card dashboard-kpi-card"><span>Orders today</span><strong>{restaurantMonitoring.reduce((sum, item) => sum + (item.orders_today ?? 0), 0)}</strong><em>{restaurantMonitoring.reduce((sum, item) => sum + (item.processing_orders ?? 0), 0)} processing now</em></div>
                   <div className="stat-card dashboard-kpi-card"><span>Customer activity</span><strong>{restaurantMonitoring.reduce((sum, item) => sum + (item.customers_ordered_today ?? 0), 0)}</strong><em>customers ordered today</em></div>
-                  <button className="stat-card dashboard-stat-button dashboard-kpi-card" type="button" onClick={() => onOpenAdministrators()} disabled={adminAccessLevel !== 'owner'}><span>Administrators</span><strong>{summary?.active_system_administrators ?? 0}</strong><em>{summary?.pending_system_administrators ?? 0} pending invitation{summary?.pending_system_administrators === 1 ? '' : 's'}</em></button>
+                  <button className="stat-card dashboard-stat-button dashboard-kpi-card" type="button" onClick={() => onOpenAdministrators()} disabled={!canManageAdministrators}><span>Administrators</span><strong>{summary?.active_system_administrators ?? 0}</strong><em>{summary?.pending_system_administrators ?? 0} pending invitation{summary?.pending_system_administrators === 1 ? '' : 's'}</em></button>
                 </div>
                 <div className="dashboard-command-columns">
                   <div className="dashboard-monitoring">
