@@ -977,3 +977,8 @@ body{min-width:320px}
 .restaurant-access-status-panel span{margin-top:2px!important;font-size:.8rem!important}
 .restaurant-access-status-panel button{padding:.58rem .85rem!important;font-size:.8rem!important;line-height:1.2!important}
 @media(max-width:640px){.restaurant-access-status-panel{align-items:flex-start!important;flex-direction:column!important}.restaurant-access-status-panel button{align-self:flex-start}}
+
+
+/* Keep TOTP refresh available without the oversized page heading. */
+.totp-reset-refresh-button{grid-column:2;justify-self:end;white-space:nowrap;padding:.6rem .85rem!important;font-size:.82rem!important}
+@media(max-width:560px){.totp-reset-refresh-button{grid-column:1;justify-self:start}}
