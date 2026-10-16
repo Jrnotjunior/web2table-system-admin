@@ -12,6 +12,7 @@ import { fetchDashboardData } from './features/dashboard/services/dashboardServi
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
 import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
+import { fetchRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -648,9 +649,7 @@ function AppContent() {
     setStaffLoading(true);
     setStaffError('');
 
-    const { data, error } = await supabase.rpc('system_admin_get_restaurant_staff', {
-      p_restaurant_id: restaurantId,
-    });
+    const { data, error } = await fetchRestaurantStaff(restaurantId);
 
     if (error) {
       setStaffError(error.message);
@@ -666,10 +665,7 @@ function AppContent() {
     setStaffActionId(staffId);
     setStaffActionError('');
 
-    const { error } = await supabase.rpc('system_admin_set_restaurant_staff_active', {
-      p_staff_id: staffId,
-      p_is_active: isActive,
-    });
+    const { error } = await setRestaurantStaffActiveService(staffId, isActive);
 
     if (error) {
       setStaffActionError(error.message);
