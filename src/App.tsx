@@ -10,6 +10,7 @@ import { recordAuthAuditEvent, recordAdminAudit } from './shared/services/auditS
 import { fetchAuditLogs } from './features/audit/services/auditLogService';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
+import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -544,9 +545,7 @@ function AppContent() {
     setPackageLoading(true);
     setPackageError('');
 
-    const { data, error } = await supabase.rpc('system_admin_get_restaurant_package', {
-      p_restaurant_id: restaurantId,
-    });
+    const { data, error } = await fetchRestaurantPackage(restaurantId);
 
     if (error) {
       setPackageError(error.message);
@@ -567,10 +566,7 @@ function AppContent() {
     setPackageSaving(true);
     setPackageError('');
 
-    const { error } = await supabase.rpc('system_admin_assign_restaurant_package', {
-      p_restaurant_id: selectedRestaurant.id,
-      p_package_id: packageId,
-    });
+    const { error } = await assignRestaurantPackageService(selectedRestaurant.id, packageId);
 
     if (error) {
       setPackageError(error.message);
@@ -587,11 +583,7 @@ function AppContent() {
     setPackageSaving(true);
     setPackageError('');
 
-    const { error } = await supabase.rpc('system_admin_set_restaurant_module_override', {
-      p_restaurant_id: selectedRestaurant.id,
-      p_module_key: moduleKey,
-      p_enabled: enabled,
-    });
+    const { error } = await setRestaurantModuleOverride(selectedRestaurant.id, moduleKey, enabled);
 
     if (error) {
       setPackageError(error.message);
