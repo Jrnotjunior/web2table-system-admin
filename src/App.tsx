@@ -64,6 +64,7 @@ const emptyForm: RestaurantForm = {
 function AppContent() {
   const { getNavigationFromUrl, pushNavigation } = useAppNavigation();
   const [email, setEmail] = useState('');
+  const [currentUserEmail, setCurrentUserEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
@@ -301,12 +302,15 @@ function AppContent() {
     const session = sessionData.session;
 
     if (!session) {
+      setCurrentUserEmail('');
       setSignedIn(false);
       setAuthorized(false);
       setInviteSetup(false);
       setLoading(false);
       return false;
     }
+
+    setCurrentUserEmail(session.user.email ?? '');
 
     const isSessionCurrent = async () => {
       const { data: currentSessionData } = await supabase.auth.getSession();
@@ -1132,7 +1136,7 @@ function AppContent() {
       <div className="admin-layout">
         <SystemAdminSidebar activePage="totp-reset" accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
         <main className="admin-main">
-          <header className="workspace-topbar"><div><span className="topbar-kicker">ACCOUNT SECURITY</span><strong>TOTP Reset</strong></div><div className="topbar-right"><span className="topbar-status">{adminAccessLevel === 'owner' ? 'System Admin Owner' : adminAccessLevel === 'administrator' ? 'Administrator — Full Access' : 'View Only'}</span><button type="button" className="header-sign-out" onClick={() => void signOut()}>Sign out</button></div></header>
+          <header className="workspace-topbar"><div><span className="topbar-kicker">ACCOUNT SECURITY</span><strong>TOTP Reset</strong></div><div className="topbar-right"><span className="topbar-status">{currentUserEmail}</span><button type="button" className="header-sign-out header-sign-out-icon" aria-label="Sign out" title="Sign out" onClick={() => void signOut()}>↗</button></div></header>
           <TotpResetPage
             canReset={adminAccessLevel === 'owner' || adminAccessLevel === 'administrator'}
             accounts={totpResetAccounts}
@@ -1171,7 +1175,7 @@ function AppContent() {
         <div className="admin-main">
           <header className="workspace-topbar">
             <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System overview</strong></div>
-            <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="header-sign-out" onClick={() => void signOut()}>Sign out</button></div>
+            <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Live updates</span><span className="header-account-email">{currentUserEmail}</span><button type="button" className="header-sign-out header-sign-out-icon" aria-label="Sign out" title="Sign out" onClick={() => void signOut()}>↗</button></div>
           </header>
           {accountMenuOpen && (
             <div className="account-menu">
@@ -1799,6 +1803,7 @@ function AppContent() {
     <AppShell
       sidebar={<SystemAdminSidebar activePage={adminPage} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />}
       onSignOut={() => void signOut()}
+      email={currentUserEmail}
       title={isAdminPage(adminPage, 'restaurants') ? 'Restaurant management' : isAdminPage(adminPage, 'administrators') ? 'System administrators' : 'Activity logs'}
     >
       <main className="admin-shell admin-shell-with-sidebar">
