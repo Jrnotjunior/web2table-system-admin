@@ -9,6 +9,7 @@ import type { TotpResetAccount, PendingTotpReset } from './features/totp-reset/t
 import { recordAuthAuditEvent, recordAdminAudit } from './shared/services/auditService';
 import { fetchAuditLogs } from './features/audit/services/auditLogService';
 import { getAuditDateRange } from './features/audit/utils/auditDateRange';
+import { useAuditLogRealtime } from './features/audit/hooks/useAuditLogRealtime';
 import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
@@ -171,6 +172,8 @@ function AppContent() {
   restaurantsRef.current = restaurants;
   auditLogsRef.current = auditLogs;
   adminAccessLevelRef.current = adminAccessLevel;
+
+  useAuditLogRealtime(authorized && adminPage === 'audit', setAuditLogs);
 
     function isSystemAdminInvitation() {
     const queryParams = new URLSearchParams(window.location.search);
@@ -1128,45 +1131,6 @@ function AppContent() {
       void supabase.removeChannel(channel);
     };
   }, [authorized, selectedRestaurant?.id]);
-
-  useEffect(() => {
-    if (!authorized || adminPage !== 'audit') return;
-
-    const channel = supabase
-      .channel('system-admin-audit-logs')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'system_admin_audit_logs' },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            const newLog = payload.new as typeof auditLogs[number];
-            setAuditLogs((current) => {
-              if (current.some((log) => log.id === newLog.id)) return current;
-              return [newLog, ...current];
-            });
-          }
-
-          if (payload.eventType === 'UPDATE') {
-            const updatedLog = payload.new as typeof auditLogs[number];
-            setAuditLogs((current) =>
-              current
-                .map((log) => log.id === updatedLog.id ? updatedLog : log)
-                .sort((a, b) => b.created_at.localeCompare(a.created_at)),
-            );
-          }
-
-          if (payload.eventType === 'DELETE') {
-            const deletedLog = payload.old as typeof auditLogs[number];
-            setAuditLogs((current) => current.filter((log) => log.id !== deletedLog.id));
-          }
-        },
-      )
-      .subscribe();
-
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [authorized, adminPage]);
 
   useEffect(() => {
     if (!authorized || adminPage !== 'audit') return;
