@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from './lib/supabase';
-import { buildNavigationSearch, getNavigationFromSearch, type AdminPage } from './app/navigation';
+import { type AdminPage } from './app/navigation';
+import useAppNavigation from './app/useAppNavigation';
 import DashboardOverview from './features/dashboard/DashboardOverview';
 import AuditLogsPanel from './features/audit/AuditLogsPanel';
 import TotpResetPanel from './features/totp-reset/TotpResetPanel';
@@ -65,6 +66,7 @@ const emptyForm: RestaurantForm = {
 };
 
 function AppContent() {
+  const { getNavigationFromUrl, pushNavigation } = useAppNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -304,14 +306,6 @@ function AppContent() {
       setAdministrators((Array.isArray(data) ? data : []) as typeof administrators);
     }
     setAdministratorsLoading(false);
-  }
-
-  function getNavigationFromUrl() {
-    return getNavigationFromSearch(window.location.search);
-  }
-
-  function pushNavigation(page: 'dashboard' | 'restaurants' | 'audit' | 'administrators' | 'health' | 'maps' | 'totp-reset' | 'restaurant', options: { restaurantId?: string; auditId?: string } = {}) {
-    window.history.pushState({}, '', buildNavigationSearch(page, options));
   }
 
   function applyNavigationFromUrl() {
