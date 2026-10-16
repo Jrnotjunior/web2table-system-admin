@@ -949,22 +949,3 @@ body{min-width:320px}
 .auth-dialog button{min-width:104px;min-height:42px;padding:10px 24px;border:0;border-radius:8px;background:#ED1C24;color:#fff;font:inherit;font-weight:700;cursor:pointer}
 .auth-dialog button:hover{background:#c9161d}
 .auth-dialog button:focus-visible{outline:2px solid #fff;outline-offset:3px}
-
-
-/* Show/hide controls for the administrator invitation password form. */
-.invite-password-input{position:relative;display:block;width:100%}
-.invite-password-input input{box-sizing:border-box;width:100%;padding-right:48px!important}
-.invite-password-toggle{position:absolute!important;top:50%;right:8px;transform:translateY(-50%);display:inline-flex!important;align-items:center;justify-content:center;width:34px!important;min-width:34px!important;height:34px!important;min-height:34px!important;padding:0!important;border:0!important;border-radius:6px!important;background:transparent!important;color:#344054!important;cursor:pointer}
-.invite-password-toggle:hover{background:rgba(15,23,42,.08)!important;color:#111827!important}
-.invite-password-toggle:focus-visible{outline:2px solid #ED1C24!important;outline-offset:1px}
-.invite-password-toggle svg{display:block;pointer-events:none}
-
-/* Keep invitation show/hide controls neutral; global auth button styles must not turn them red. */
-.auth-card .invite-password-input .invite-password-toggle{background:#e7eefb!important;color:#344054!important;border:0!important;box-shadow:none!important}
-.auth-card .invite-password-input .invite-password-toggle:hover{background:#d8e3f6!important;color:#1f2937!important}
-.auth-card .invite-password-input .invite-password-toggle:active{background:#cbd9ef!important}
-.auth-card .invite-password-input .invite-password-toggle:focus-visible{outline:2px solid #64748b!important;outline-offset:2px}
-
-/* Precisely center the eye glyph inside the show-password control. */
-.auth-card .invite-password-input .invite-password-toggle{display:flex!important;align-items:center!important;justify-content:center!important;line-height:0!important;text-align:center!important;padding:0!important}
-.auth-card .invite-password-input .invite-password-toggle svg{width:20px;height:20px;flex:0 0 20px;margin:0!important;position:static!important;transform:none!important}
