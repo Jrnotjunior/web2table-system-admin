@@ -11,6 +11,7 @@ import RestaurantOverview from './features/restaurants/RestaurantOverview';
 import RestaurantOwnerPanel from './features/restaurants/RestaurantOwnerPanel';
 import RestaurantDomainPanel from './features/restaurants/RestaurantDomainPanel';
 import RestaurantSettingsPanel from './features/restaurants/RestaurantSettingsPanel';
+import RestaurantStaffPanel from './features/restaurants/RestaurantStaffPanel';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -2151,18 +2152,17 @@ function AppContent() {
               </div>
             </div>
           ) : manageTab === 'staff' ? (
-            <div className="manage-overview">
-              <div className="overview-section">
-                <div className="eyebrow">Staff</div>
-                <h3>Restaurant staff</h3>
-                <p>View the staff accounts associated with this restaurant. Staff invitations and account management remain part of the restaurant owner's workflow.</p>
-                {staffLoading ? (
-                  <div className="empty-state">Loading staff...</div>
-                ) : staffError ? (
-                  <div className="error-banner">{staffError}</div>
-                ) : restaurantStaff.length === 0 ? (
-                  <div className="empty-state">No staff accounts found for this restaurant.</div>
-                ) : (
+            <RestaurantStaffPanel
+              canManage={canManage}
+              staffLoading={staffLoading}
+              staffError={staffError}
+              restaurantStaff={restaurantStaff}
+              staffActionError={staffActionError}
+              staffActionId={staffActionId}
+              onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
+              onRequestDelete={requestDeleteRestaurantStaff}
+            />
+          ) : (
                   <>
                     {staffActionError && <div className="error-banner">{staffActionError}</div>}
                     <div className="staff-table-wrap">
