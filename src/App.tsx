@@ -2,6 +2,11 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from './lib/supabase';
 import { type AdminPage } from './app/navigation';
+import type { Administrator, PendingAdministratorAction } from './features/administrators/types';
+import type { DashboardPlatformHealth, DashboardRestaurantMonitoring, DashboardSummary } from './features/dashboard/types';
+import type { AuditLog } from './shared/types/audit';
+import type { TotpResetAccount, PendingTotpReset } from './features/totp-reset/types';
+import { recordAuthAuditEvent, recordAdminAudit } from './shared/services/auditService';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -17,7 +22,7 @@ import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
 import RestaurantsPage from './features/restaurants/RestaurantsPage';
-import type { Restaurant, RestaurantForm, RestaurantPackageRow } from './features/restaurants/types';
+import type { Restaurant, RestaurantForm, RestaurantPackageRow, RestaurantStaff } from './features/restaurants/types';
 import RestaurantDetailsPage from './features/restaurants/RestaurantDetailsPage';
 
 function isAdminPage(current: AdminPage, target: AdminPage) {
@@ -51,17 +56,8 @@ function AppContent() {
   const [administratorsLoading, setAdministratorsLoading] = useState(false);
   const [administratorSearch, setAdministratorSearch] = useState('');
   const [administratorsError, setAdministratorsError] = useState('');
-  const [administrators, setAdministrators] = useState<Array<{
-    id: string; admin_user_id: string; email: string | null; name: string | null;
-    access_level: 'owner' | 'administrator' | 'view_only'; is_active: boolean;
-    status: 'pending' | 'active' | 'revoked'; granted_by: string | null;
-    granted_by_email: string | null; created_at: string; updated_at: string;
-  }>>([]);
-  const [pendingAdminAction, setPendingAdminAction] = useState<{
-    type: 'revoke' | 'restore' | 'change' | 'delete';
-    admin: typeof administrators[number];
-    nextAccessLevel?: 'administrator' | 'view_only';
-  } | null>(null);
+  const [administrators, setAdministrators] = useState<Administrator[]>([]);
+  const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdministratorAction | null>(null);
   const [adminActionSaving, setAdminActionSaving] = useState(false);
   const [showInviteAdmin, setShowInviteAdmin] = useState(false);
   const [inviteAdminEmail, setInviteAdminEmail] = useState('');
@@ -102,9 +98,9 @@ function AppContent() {
   const [packageError, setPackageError] = useState('');
   const [staffLoading, setStaffLoading] = useState(false);
   const [staffError, setStaffError] = useState('');
-  const [restaurantStaff, setRestaurantStaff] = useState<Array<{ id: string; name: string; mobile_number: string; email: string; role: string; is_active: boolean; auth_user_id: string | null }>>([]);
+  const [restaurantStaff, setRestaurantStaff] = useState<RestaurantStaff[]>([]);
   const [staffActionId, setStaffActionId] = useState<string | null>(null);
-  const [pendingTotpReset, setPendingTotpReset] = useState<{ userId: string; displayName: string; role: 'restaurant_owner' | 'staff'; restaurantId: string } | null>(null);
+  const [pendingTotpReset, setPendingTotpReset] = useState<PendingTotpReset | null>(null);
   const [totpResetSuccess, setTotpResetSuccess] = useState('');
   const [staffActionError, setStaffActionError] = useState('');
   const [pendingDeleteStaff, setPendingDeleteStaff] = useState<typeof restaurantStaff[number] | null>(null);
@@ -136,48 +132,19 @@ function AppContent() {
   const [restaurantDeleteSaving, setRestaurantDeleteSaving] = useState(false);
   const [pendingRestaurantFormSave, setPendingRestaurantFormSave] = useState(false);
   const [adminPage, setAdminPage] = useState<AdminPage>('dashboard');
-  const [totpResetAccounts, setTotpResetAccounts] = useState<Array<{userId:string; restaurantId:string; restaurantName:string; displayName:string; email:string; role:'restaurant_owner'|'staff'; staffRole?:string}>>([]);
+  const [totpResetAccounts, setTotpResetAccounts] = useState<TotpResetAccount[]>([]);
   const [totpResetLoading, setTotpResetLoading] = useState(false);
   const [totpResetSearch, setTotpResetSearch] = useState('');
   const [totpResetError, setTotpResetError] = useState('');
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [dashboardError, setDashboardError] = useState('');
-  const [dashboardSummary, setDashboardSummary] = useState<{ total_restaurants: number; active_restaurants: number; inactive_restaurants: number; active_system_administrators: number; pending_system_administrators: number; } | null>(null);
-  const [dashboardRestaurantMonitoring, setDashboardRestaurantMonitoring] = useState<Array<{
-    restaurant_id: string;
-    restaurant_name: string;
-    is_active: boolean;
-    customer_accounts: number;
-    customers_ordered_today: number;
-    orders_today: number;
-    processing_orders: number;
-    last_activity: string | null;
-    logged_in_now: number | null;
-  }>>([]);
+  const [dashboardSummary, setDashboardSummary] = useState<DashboardSummary | null>(null);
+  const [dashboardRestaurantMonitoring, setDashboardRestaurantMonitoring] = useState<DashboardRestaurantMonitoring[]>([]);
   const [dashboardRecentLogs, setDashboardRecentLogs] = useState<typeof auditLogs>([]);
-  const [dashboardPlatformHealth, setDashboardPlatformHealth] = useState<{
-    overallStatus: 'healthy' | 'degraded' | 'critical' | 'unknown';
-    generatedAt: string;
-    services: Array<{ key: string; name: string; status: 'healthy' | 'degraded' | 'critical' | 'unknown'; latencyMs: number | null; message: string }>;
-    incidents: Array<{ severity: 'info' | 'warning' | 'critical'; service: string; title: string; summary: string; recommendation?: string }>;
-    configurationWarnings: string[];
-  } | null>(null);
+  const [dashboardPlatformHealth, setDashboardPlatformHealth] = useState<DashboardPlatformHealth | null>(null);
   const [auditLoading, setAuditLoading] = useState(false);
   const [auditError, setAuditError] = useState('');
-  const [auditLogs, setAuditLogs] = useState<Array<{
-    id: string;
-    admin_user_id: string | null;
-    admin_email: string | null;
-    admin_name: string | null;
-    restaurant_id: string | null;
-    restaurant_name: string | null;
-    event_type: string;
-    action: string;
-    entity_type: string | null;
-    entity_id: string | null;
-    details: Record<string, unknown>;
-    created_at: string;
-  }>>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [auditSearch, setAuditSearch] = useState('');
   const [auditEventFilter, setAuditEventFilter] = useState('ALL');
   const [auditDatePreset, setAuditDatePreset] = useState<'ALL' | 'TODAY' | '7_DAYS' | '30_DAYS' | 'CUSTOM'>('ALL');
@@ -185,7 +152,7 @@ function AppContent() {
   const [auditEndDate, setAuditEndDate] = useState('');
   const [auditPageNumber, setAuditPageNumber] = useState(0);
   const [auditHasMore, setAuditHasMore] = useState(false);
-  const [selectedAuditLog, setSelectedAuditLog] = useState<typeof auditLogs[number] | null>(null);
+  const [selectedAuditLog, setSelectedAuditLog] = useState<AuditLog | null>(null);
   const restaurantsRef = useRef(restaurants);
   const auditLogsRef = useRef(auditLogs);
   const adminAccessLevelRef = useRef(adminAccessLevel);
@@ -193,44 +160,7 @@ function AppContent() {
   auditLogsRef.current = auditLogs;
   adminAccessLevelRef.current = adminAccessLevel;
 
-  async function recordAuthAuditEvent(
-    eventType: 'LOGIN_SUCCESS' | 'LOGOUT',
-    action: string,
-    details: Record<string, unknown> = {},
-  ) {
-    const { error } = await supabase.rpc('system_admin_record_auth_event', {
-      p_event_type: eventType,
-      p_action: action,
-      p_details: details,
-    });
-
-    if (error) {
-      console.error('Unable to record System Administrator audit event:', error);
-    }
-  }
-
-  async function recordAdminAudit(
-    action: string,
-    restaurantId: string | null,
-    entityType: string,
-    entityId: string | null,
-    details: Record<string, unknown> = {},
-  ) {
-    const { error } = await supabase.rpc('system_admin_write_audit_log', {
-      p_event_type: 'ADMIN_ACTION',
-      p_action: action,
-      p_restaurant_id: restaurantId,
-      p_entity_type: entityType,
-      p_entity_id: entityId,
-      p_details: details,
-    });
-
-    if (error) {
-      console.error('Unable to record System Administrator audit event:', error);
-    }
-  }
-
-  function isSystemAdminInvitation() {
+    function isSystemAdminInvitation() {
     const queryParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
     return queryParams.get('type') === 'invite' || hashParams.get('type') === 'invite';

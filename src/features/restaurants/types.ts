@@ -36,3 +36,13 @@ export type RestaurantPackageRow = {
   override_enabled: boolean | null;
   effective_enabled: boolean;
 };
+
+export type RestaurantStaff = {
+  id: string;
+  name: string;
+  mobile_number: string;
+  email: string;
+  role: string;
+  is_active: boolean;
+  auth_user_id: string | null;
+};
