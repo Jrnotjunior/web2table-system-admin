@@ -1582,14 +1582,7 @@ function AppContent() {
         {renderRestaurantDeleteModal()}
       </div>
     );
-  }
-
-
-      </div>
-    );
-  }
-
-  if (isAdminPage(adminPage, 'health')) {
+  }  if (isAdminPage(adminPage, 'health')) {
     return <PlatformHealthPage onBack={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} accessLevel={adminAccessLevel} onSignOut={() => void signOut()} />;
   }
 
