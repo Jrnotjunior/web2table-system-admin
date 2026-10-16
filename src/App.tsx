@@ -16,6 +16,7 @@ import RestaurantFormPanel from './features/restaurants/RestaurantFormPanel';
 import RestaurantPackagePanel from './features/restaurants/RestaurantPackagePanel';
 import RestaurantDomainConfirmation from './features/restaurants/RestaurantDomainConfirmation';
 import RestaurantSettingsConfirmation from './features/restaurants/RestaurantSettingsConfirmation';
+import RestaurantOwnerAssignmentConfirmation from './features/restaurants/RestaurantOwnerAssignmentConfirmation';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -2222,29 +2223,14 @@ function AppContent() {
           )}
 
           {pendingAssignOwner && (
-            <div className="modal-backdrop owner-confirm-backdrop" role="presentation">
-              <section className="modal-card owner-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="assign-owner-title">
-                <div className="modal-heading">
-                  <div>
-                    <div className="eyebrow">Assign Owner</div>
-                    <h2 id="assign-owner-title">Assign this owner?</h2>
-                  </div>
-                  <button className="icon-button" type="button" onClick={() => setPendingAssignOwner(false)} disabled={ownerSaving} aria-label="Close">×</button>
-                </div>
-                <div className="owner-confirm-content">
-                  <p>You are about to assign <strong>{ownerEmail.trim()}</strong> as the owner of <strong>{selectedRestaurant.name}</strong>.</p>
-                  <div className="owner-confirm-warning">
-                    <strong>This will assign the restaurant owner.</strong>
-                    <span>If the email already has an account, it will be assigned. If not, Web2Table will send an invitation to create an account.</span>
-                  </div>
-                  {ownerError && <div className="error-banner">{ownerError}</div>}
-                </div>
-                <div className="modal-actions">
-                  <button type="button" className="secondary-button" onClick={() => setPendingAssignOwner(false)} disabled={ownerSaving}>Cancel</button>
-                  <button type="button" onClick={() => void assignOwner()} disabled={ownerSaving}>{ownerSaving ? 'Processing...' : 'Confirm & Assign / Invite'}</button>
-                </div>
-              </section>
-            </div>
+            <RestaurantOwnerAssignmentConfirmation
+              restaurantName={selectedRestaurant?.name ?? ''}
+              ownerEmail={ownerEmail}
+              ownerSaving={ownerSaving}
+              ownerError={ownerError}
+              onClose={() => setPendingAssignOwner(false)}
+              onConfirm={() => void assignOwner()}
+            />
           )}
 
           {ownerInvitationNotice && (
