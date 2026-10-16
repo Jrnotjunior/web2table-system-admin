@@ -994,3 +994,8 @@ body{min-width:320px}
 .administrators-toolbar{display:flex;justify-content:flex-end;align-items:center;margin:0 0 14px}
 .administrators-toolbar button{padding:.62rem .9rem;font-size:.84rem;line-height:1.2}
 @media(max-width:640px){.administrators-toolbar{margin-bottom:12px}}
+
+
+/* Keep Mapbox range and refresh controls without the oversized page heading. */
+.mapbox-usage-toolbar-compact{justify-content:flex-end!important;align-items:center!important;gap:10px!important;min-height:0!important;margin-bottom:14px}
+@media(max-width:900px){.mapbox-usage-toolbar-compact{flex-direction:row!important;justify-content:flex-end!important;flex-wrap:wrap}}
