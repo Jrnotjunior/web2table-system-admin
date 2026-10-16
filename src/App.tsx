@@ -2295,13 +2295,7 @@ function AppContent() {
               {canManage && <button className="secondary-button" type="button" onClick={() => startEdit(selectedRestaurant)}>
                 Edit restaurant
               </button>}
-              {canManage && <button className="danger-button" type="button" onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                requestDeleteRestaurant(selectedRestaurant);
-              }}>
-                Delete restaurant
-              </button>}
+
             </div>
           </div>
 
