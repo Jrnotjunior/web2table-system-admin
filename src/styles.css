@@ -937,3 +937,15 @@ body{min-width:320px}
 .header-sign-out-icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0!important;border:0!important;border-radius:5px!important;background:transparent!important;color:#ff1d2d!important;font-size:1.3rem!important;font-weight:700;line-height:1;cursor:pointer}
 .header-sign-out-icon:hover{background:rgba(255,29,45,.1)!important;color:#ff4653!important}
 @media(max-width:640px){.header-account-email{max-width:42vw;font-size:.78rem}.header-sign-out-icon{width:28px;height:28px;font-size:1.15rem!important}}
+
+
+/* Web2Table-branded authentication error dialog. */
+.auth-dialog-backdrop{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.78);backdrop-filter:blur(3px)}
+.auth-dialog{box-sizing:border-box;width:min(420px,100%);padding:28px;border:1px solid rgba(255,255,255,.16);border-radius:12px;background:#080808;color:#fff;box-shadow:0 24px 80px rgba(0,0,0,.65);text-align:center}
+.auth-dialog-mark{display:grid;place-items:center;width:42px;height:42px;margin:0 auto 16px;border:1px solid rgba(237,28,36,.45);border-radius:50%;background:rgba(237,28,36,.12);color:#ff3942;font-size:1.35rem;font-weight:800}
+.auth-dialog .eyebrow{margin-bottom:8px;color:#ff3942!important;font-size:.7rem}
+.auth-dialog h2{margin:0 0 10px;color:#fff;font-family:Manrope,Inter,sans-serif;font-size:1.35rem}
+.auth-dialog p{margin:0 0 24px;color:#d0d0d0;line-height:1.6;overflow-wrap:anywhere}
+.auth-dialog button{min-width:104px;min-height:42px;padding:10px 24px;border:0;border-radius:8px;background:#ED1C24;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.auth-dialog button:hover{background:#c9161d}
+.auth-dialog button:focus-visible{outline:2px solid #fff;outline-offset:3px}
