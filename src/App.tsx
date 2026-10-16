@@ -8,7 +8,7 @@ import DashboardPage from './features/dashboard/DashboardPage';
 import AuditLogsPanel from './features/audit/AuditLogsPanel';
 import TotpResetPanel from './features/totp-reset/TotpResetPanel';
 import AdministratorsPanel from './features/administrators/AdministratorsPanel';
-import RestaurantManagementHeader from './features/restaurants/RestaurantManagementHeader';
+import RestaurantManagementHeader from './features/restaurants/components/RestaurantManagementHeader';
 import RestaurantOverview from './features/restaurants/RestaurantOverview';
 import RestaurantOwnerPanel from './features/restaurants/RestaurantOwnerPanel';
 import RestaurantDomainPanel from './features/restaurants/RestaurantDomainPanel';
