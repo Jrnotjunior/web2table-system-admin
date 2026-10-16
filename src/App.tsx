@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from './lib/supabase';
+import { buildNavigationSearch, getNavigationFromSearch, type AdminPage } from './app/navigation';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
-
-type AdminPage = 'dashboard' | 'restaurants' | 'audit' | 'administrators' | 'health' | 'maps' | 'totp-reset';
 
 function isAdminPage(current: AdminPage, target: AdminPage) {
   return current === target;
@@ -293,30 +292,11 @@ function AppContent() {
   }
 
   function getNavigationFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const page = params.get('page');
-    const restaurantId = params.get('restaurantId');
-    const auditId = params.get('auditId');
-
-    if (page === 'restaurant' && restaurantId) {
-      return { page: 'restaurant' as const, restaurantId, auditId: null };
-    }
-
-    if (page === 'restaurants') return { page: 'restaurants' as const, restaurantId: null, auditId: null };
-    if (page === 'audit') return { page: 'audit' as const, restaurantId: null, auditId };
-    if (page === 'administrators') return { page: 'administrators' as const, restaurantId: null, auditId: null };
-    if (page === 'health') return { page: 'health' as const, restaurantId: null, auditId: null };
-    if (page === 'maps') return { page: 'maps' as const, restaurantId: null, auditId: null };
-    if (page === 'totp-reset') return { page: 'totp-reset' as const, restaurantId: null, auditId: null };
-    return { page: 'dashboard' as const, restaurantId: null, auditId: null };
+    return getNavigationFromSearch(window.location.search);
   }
 
   function pushNavigation(page: 'dashboard' | 'restaurants' | 'audit' | 'administrators' | 'health' | 'maps' | 'totp-reset' | 'restaurant', options: { restaurantId?: string; auditId?: string } = {}) {
-    const params = new URLSearchParams();
-    params.set('page', page);
-    if (options.restaurantId) params.set('restaurantId', options.restaurantId);
-    if (options.auditId) params.set('auditId', options.auditId);
-    window.history.pushState({}, '', `?${params.toString()}`);
+    window.history.pushState({}, '', buildNavigationSearch(page, options));
   }
 
   function applyNavigationFromUrl() {
