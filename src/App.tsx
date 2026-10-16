@@ -1134,7 +1134,7 @@ function AppContent() {
         <main className="admin-main">
           <header className="workspace-topbar"><div><span className="topbar-kicker">ACCOUNT SECURITY</span><strong>TOTP Reset</strong></div><div className="topbar-right"><span className="topbar-status">{adminAccessLevel === 'owner' ? 'System Admin Owner' : adminAccessLevel === 'administrator' ? 'Administrator — Full Access' : 'View Only'}</span></div></header>
           <TotpResetPage
-            canReset={adminAccessLevel === 'owner'}
+            canReset={adminAccessLevel === 'owner' || adminAccessLevel === 'administrator'}
             accounts={totpResetAccounts}
             loading={totpResetLoading}
             search={totpResetSearch}
