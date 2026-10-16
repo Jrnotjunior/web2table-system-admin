@@ -7,6 +7,7 @@ import type { DashboardPlatformHealth, DashboardRestaurantMonitoring, DashboardS
 import type { AuditLog } from './shared/types/audit';
 import type { TotpResetAccount, PendingTotpReset } from './features/totp-reset/types';
 import { recordAuthAuditEvent, recordAdminAudit } from './shared/services/auditService';
+import { fetchAuditLogs } from './features/audit/services/auditLogService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
@@ -1048,14 +1049,13 @@ function AppContent() {
     }
 
     const pageSize = 50;
-    const { data, error } = await supabase.rpc('system_admin_get_audit_logs', {
-      p_restaurant_id: null,
-      p_event_type: auditEventFilter === 'ALL' ? null : auditEventFilter,
-      p_limit: pageSize,
-      p_offset: pageNumber * pageSize,
-      p_search: auditSearch.trim() || null,
-      p_start_date: startDate,
-      p_end_date: endDate,
+    const { data, error } = await fetchAuditLogs({
+      eventType: auditEventFilter === 'ALL' ? null : auditEventFilter,
+      limit: pageSize,
+      offset: pageNumber * pageSize,
+      search: auditSearch.trim() || null,
+      startDate,
+      endDate,
     });
 
     if (error) {
