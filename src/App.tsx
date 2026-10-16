@@ -300,6 +300,35 @@ function AppContent() {
   }
 
   async function checkAdminSession() {
+    // Supabase invitation emails can arrive with a token_hash in the query
+    // string. Verify it first so the invite token becomes an authenticated
+    // session and the password-setup screen is shown instead of sign-in.
+    const invitationParams = new URLSearchParams(window.location.search);
+    const invitationTokenHash = invitationParams.get('token_hash');
+    if (invitationParams.get('type') === 'invite' && invitationTokenHash) {
+      const { error: invitationVerificationError } = await supabase.auth.verifyOtp({
+        token_hash: invitationTokenHash,
+        type: 'invite',
+      });
+
+      if (invitationVerificationError) {
+        setInviteSetupError(invitationVerificationError.message);
+        setInviteSetup(false);
+        setSignedIn(false);
+        setAuthorized(false);
+        setLoading(false);
+        return false;
+      }
+
+      invitationParams.delete('token_hash');
+      const remainingQuery = invitationParams.toString();
+      window.history.replaceState(
+        window.history.state,
+        '',
+        `${window.location.pathname}${remainingQuery ? `?${remainingQuery}` : ''}${window.location.hash}`,
+      );
+    }
+
     const { data: sessionData } = await supabase.auth.getSession();
     const session = sessionData.session;
 
