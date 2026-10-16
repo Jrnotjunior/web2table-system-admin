@@ -14,6 +14,7 @@ import { useSystemAdminAuthListener } from './features/administrators/hooks/useS
 import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
+import { saveRestaurantProfile, updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
 import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
@@ -1501,9 +1502,7 @@ function AppContent() {
       is_active: form.is_active,
     };
 
-    const result = editingRestaurant
-      ? await supabase.from('restaurants').update(payload).eq('id', editingRestaurant.id)
-      : await supabase.from('restaurants').insert(payload).select('id').single();
+    const result = await saveRestaurantProfile(editingRestaurant?.id ?? null, payload);
 
     if (result.error) {
       setRestaurantError(result.error.message);
@@ -1511,7 +1510,7 @@ function AppContent() {
       return;
     }
 
-    const restaurantId = editingRestaurant?.id ?? (result.data as { id: string } | null)?.id ?? null;
+    const restaurantId = result.id;
 
     const restaurantChanges = editingRestaurant
       ? Object.fromEntries(
@@ -1560,10 +1559,7 @@ function AppContent() {
     const nextStatus = !restaurant.is_active;
     setRestaurantError('');
 
-    const { error } = await supabase
-      .from('restaurants')
-      .update({ is_active: nextStatus })
-      .eq('id', restaurant.id);
+    const { error } = await updateRestaurantActiveStatus(restaurant.id, nextStatus);
 
     if (error) {
       setRestaurantError(error.message);
