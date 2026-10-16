@@ -7,6 +7,7 @@ import AuditLogsPanel from './features/audit/AuditLogsPanel';
 import TotpResetPanel from './features/totp-reset/TotpResetPanel';
 import AdministratorsPanel from './features/administrators/AdministratorsPanel';
 import RestaurantManagementHeader from './features/restaurants/RestaurantManagementHeader';
+import RestaurantOverview from './features/restaurants/RestaurantOverview';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -2030,37 +2031,11 @@ function AppContent() {
           />
 
           {manageTab === 'overview' ? (
-          <div className="manage-overview">
-            <div className="overview-section">
-              <div className="eyebrow">Restaurant Information</div>
-              <h3>Basic details</h3>
-              <div className="detail-grid">
-                <div className="detail-item"><span>Restaurant name</span><strong>{selectedRestaurant.name}</strong></div>
-                <div className="detail-item"><span>Slug</span><strong>/{selectedRestaurant.slug}</strong></div>
-                <div className="detail-item"><span>Tagline</span><strong>{selectedRestaurant.tagline || '—'}</strong></div>
-                <div className="detail-item"><span>Location</span><strong>{selectedRestaurant.location_text || '—'}</strong></div>
-                <div className="detail-item"><span>Contact number</span><strong>{selectedRestaurant.contact_number || '—'}</strong></div>
-                <div className="detail-item"><span>Email</span><strong>{selectedRestaurant.email || '—'}</strong></div>
-                <div className="detail-item"><span>Custom domain</span><strong>{selectedRestaurant.custom_domain || 'Not configured'}</strong></div>
-                <div className="detail-item"><span>Created</span><strong>{new Date(selectedRestaurant.created_at).toLocaleDateString()}</strong></div>
-              </div>
-            </div>
-
-            <div className="overview-section restaurant-access-section">
-              <div className="eyebrow">Platform Status</div>
-              <h3>Restaurant access</h3>
-              <div className="status-panel restaurant-access-status-panel">
-                <div>
-                  <strong>{selectedRestaurant.is_active ? 'Restaurant is active' : 'Restaurant is inactive'}</strong>
-                  <span>{selectedRestaurant.is_active ? 'Customers can access this restaurant.' : 'Customers cannot access this restaurant while inactive.'}</span>
-                </div>
-                {canManage && <button className={selectedRestaurant.is_active ? 'danger-button' : 'secondary-button'} onClick={() => setPendingRestaurantStatus(selectedRestaurant)}>
-                  {selectedRestaurant.is_active ? 'Deactivate restaurant' : 'Activate restaurant'}
-                </button>}
-              </div>
-            </div>
-
-          </div>
+            <RestaurantOverview
+              restaurant={selectedRestaurant}
+              canManage={canManage}
+              onRequestStatusChange={() => setPendingRestaurantStatus(selectedRestaurant)}
+            />
           ) : manageTab === 'owner' ? (
             <div className="manage-overview">
               <div className="overview-section">
