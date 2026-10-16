@@ -2327,10 +2327,10 @@ function AppContent() {
               </div>
             </div>
 
-            <div className="overview-section">
+            <div className="overview-section restaurant-access-section">
               <div className="eyebrow">Platform Status</div>
               <h3>Restaurant access</h3>
-              <div className="status-panel">
+              <div className="status-panel restaurant-access-status-panel">
                 <div>
                   <strong>{selectedRestaurant.is_active ? 'Restaurant is active' : 'Restaurant is inactive'}</strong>
                   <span>{selectedRestaurant.is_active ? 'Customers can access this restaurant.' : 'Customers cannot access this restaurant while inactive.'}</span>
