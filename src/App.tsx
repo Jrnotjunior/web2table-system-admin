@@ -1109,7 +1109,7 @@ function AppContent() {
           <form onSubmit={completeSystemAdminInvitation}>
             <label>
               Password
-              <span className="invite-password-input">
+              <span className="password-input-wrap">
                 <input
                   type={showInvitePassword ? 'text' : 'password'}
                   value={invitePassword}
@@ -1119,7 +1119,7 @@ function AppContent() {
                   required
                 />
                 <button
-                  className="invite-password-toggle"
+                  className="password-visibility-toggle"
                   type="button"
                   onClick={() => setShowInvitePassword((visible) => !visible)}
                   aria-label={showInvitePassword ? 'Hide password' : 'Show password'}
@@ -1135,7 +1135,7 @@ function AppContent() {
             </label>
             <label>
               Confirm password
-              <span className="invite-password-input">
+              <span className="password-input-wrap">
                 <input
                   type={showInvitePasswordConfirm ? 'text' : 'password'}
                   value={invitePasswordConfirm}
@@ -1145,7 +1145,7 @@ function AppContent() {
                   required
                 />
                 <button
-                  className="invite-password-toggle"
+                  className="password-visibility-toggle"
                   type="button"
                   onClick={() => setShowInvitePasswordConfirm((visible) => !visible)}
                   aria-label={showInvitePasswordConfirm ? 'Hide confirm password' : 'Show confirm password'}
