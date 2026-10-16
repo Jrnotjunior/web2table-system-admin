@@ -1225,7 +1225,7 @@ function AppContent() {
       for (const restaurant of tenantRows) {
         if (restaurant.owner_id) rows.push({
           userId: restaurant.owner_id, restaurantId: restaurant.id, restaurantName: restaurant.name || 'Restaurant',
-          displayName: (restaurant.name || 'Restaurant') + ' — Owner', email: '', role: 'restaurant_owner',
+          displayName: 'Restaurant owner', email: '', role: 'restaurant_owner',
         });
         const { data: staffData, error: staffError } = await supabase.rpc('system_admin_get_restaurant_staff', { p_restaurant_id: restaurant.id });
         if (staffError) throw new Error('Could not load staff for ' + (restaurant.name || 'restaurant') + ': ' + staffError.message);
