@@ -2915,19 +2915,6 @@ function AppContent() {
         )}
 
       <section className="dashboard-card">
-        {adminAccessLevel === 'owner' && (
-          <div className="restaurants-toolbar">
-            <button onClick={() => {
-              setInviteTenantError('');
-              setInviteTenantSuccess('');
-              setInviteTenantEmail('');
-              setShowInviteTenant(true);
-            }}>
-              Invite tenant
-            </button>
-          </div>
-        )}
-
         <div className="stats-row">
           <div className="stat-card">
             <span>Total restaurants</span>
@@ -2943,7 +2930,7 @@ function AppContent() {
           </div>
         </div>
 
-        <div className="toolbar">
+        <div className="toolbar restaurants-search-toolbar">
           <input
             className="search-input"
             type="search"
@@ -2952,6 +2939,16 @@ function AppContent() {
             onChange={(event) => setSearch(event.target.value)}
           />
           <span className="live-indicator"><span className="live-dot" /> Live</span>
+          {adminAccessLevel === 'owner' && (
+            <button className="restaurants-invite-button" onClick={() => {
+              setInviteTenantError('');
+              setInviteTenantSuccess('');
+              setInviteTenantEmail('');
+              setShowInviteTenant(true);
+            }}>
+              Invite tenant
+            </button>
+          )}
         </div>
 
         {restaurantError && <div className="error-banner">{restaurantError}</div>}
