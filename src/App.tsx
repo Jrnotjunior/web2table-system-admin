@@ -6,6 +6,7 @@ import DashboardOverview from './features/dashboard/DashboardOverview';
 import AuditLogsPanel from './features/audit/AuditLogsPanel';
 import TotpResetPanel from './features/totp-reset/TotpResetPanel';
 import AdministratorsPanel from './features/administrators/AdministratorsPanel';
+import RestaurantManagementHeader from './features/restaurants/RestaurantManagementHeader';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -2016,42 +2017,17 @@ function AppContent() {
         )}
 
         <section className="dashboard-card restaurant-manage-card">
-          <div className="restaurant-manage-hero">
-            <div className="restaurant-hero-main">
-              <div className="restaurant-hero-logo">
-                {selectedRestaurant.logo_url ? (
-                  <img src={selectedRestaurant.logo_url} alt="" />
-                ) : (
-                  <span>{selectedRestaurant.name.charAt(0).toUpperCase()}</span>
-                )}
-              </div>
-              <div>
-                <div className="eyebrow">Restaurant Management</div>
-                <h2>{selectedRestaurant.name}</h2>
-                <div className="restaurant-slug">/{selectedRestaurant.slug}</div>
-              </div>
-            </div>
-            <div className="restaurant-hero-actions">
-              <button
-                className="icon-button restaurant-manage-close"
-                type="button"
-                onClick={() => openRestaurants()}
-                aria-label="Close restaurant management"
-                title="Back to restaurants"
-              >
-                ×
-              </button>
-            </div>
-          </div>
-
-          <nav className="manage-tabs" aria-label="Restaurant management sections">
-            <button className={`manage-tab ${manageTab === 'overview' ? 'active' : ''}`} type="button" onClick={() => setManageTab('overview')}>Overview</button>
-            <button className={`manage-tab ${manageTab === 'owner' ? 'active' : ''}`} type="button" onClick={() => { setManageTab('owner'); void loadRestaurantOwner(selectedRestaurant.id); }}>Owner</button>
-            <button className={`manage-tab ${manageTab === 'domain' ? 'active' : ''}`} type="button" onClick={() => { setManageTab('domain'); setDomain(selectedRestaurant.custom_domain ?? ''); setDomainError(''); }}>Domain</button>
-            <button className={`manage-tab ${manageTab === 'settings' ? 'active' : ''}`} type="button" onClick={() => { setManageTab('settings'); void loadRestaurantSettings(selectedRestaurant.id); }}>Settings</button>
-            <button className={`manage-tab ${manageTab === 'staff' ? 'active' : ''}`} type="button" onClick={() => { setManageTab('staff'); void loadRestaurantStaff(selectedRestaurant.id); }}>Staff</button>
-            <button className={`manage-tab ${manageTab === 'package' ? 'active' : ''}`} type="button" onClick={() => { setManageTab('package'); void loadRestaurantPackage(selectedRestaurant.id); }}>Package</button>
-          </nav>
+          <RestaurantManagementHeader
+            restaurant={selectedRestaurant}
+            manageTab={manageTab}
+            onSelectTab={setManageTab}
+            onClose={() => openRestaurants()}
+            onLoadOwner={() => void loadRestaurantOwner(selectedRestaurant.id)}
+            onSelectDomain={() => { setDomain(selectedRestaurant.custom_domain ?? ''); setDomainError(''); }}
+            onLoadSettings={() => void loadRestaurantSettings(selectedRestaurant.id)}
+            onLoadStaff={() => void loadRestaurantStaff(selectedRestaurant.id)}
+            onLoadPackage={() => void loadRestaurantPackage(selectedRestaurant.id)}
+          />
 
           {manageTab === 'overview' ? (
           <div className="manage-overview">
