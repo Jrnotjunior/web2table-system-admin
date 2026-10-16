@@ -17,7 +17,7 @@ import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
 import RestaurantsPage from './features/restaurants/RestaurantsPage';
-import type { Restaurant, RestaurantForm } from './features/restaurants/types';
+import type { Restaurant, RestaurantForm, RestaurantPackageRow } from './features/restaurants/types';
 import RestaurantDetailsPage from './features/restaurants/RestaurantDetailsPage';
 
 function isAdminPage(current: AdminPage, target: AdminPage) {
@@ -96,18 +96,7 @@ function AppContent() {
   const canManage = adminAccessLevel === 'owner' || adminAccessLevel === 'administrator';
   const [manageTab, setManageTab] = useState<'overview' | 'owner' | 'domain' | 'settings' | 'staff' | 'package'>('overview');
   const [restaurantPackageId, setRestaurantPackageId] = useState<number | null>(null);
-  const [restaurantPackageRows, setRestaurantPackageRows] = useState<Array<{
-    package_id: number | null;
-    package_key: string | null;
-    package_name: string | null;
-    package_description: string | null;
-    subscription_status: string;
-    module_key: string;
-    module_name: string;
-    included_by_package: boolean;
-    override_enabled: boolean | null;
-    effective_enabled: boolean;
-  }>>([]);
+  const [restaurantPackageRows, setRestaurantPackageRows] = useState<RestaurantPackageRow[]>([]);
   const [packageLoading, setPackageLoading] = useState(false);
   const [packageSaving, setPackageSaving] = useState(false);
   const [packageError, setPackageError] = useState('');
