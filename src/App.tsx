@@ -16,7 +16,8 @@ import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
-import RestaurantsPage, { type Restaurant } from './features/restaurants/RestaurantsPage';
+import RestaurantsPage from './features/restaurants/RestaurantsPage';
+import type { Restaurant } from './features/restaurants/types';
 import RestaurantDetailsPage from './features/restaurants/RestaurantDetailsPage';
 
 function isAdminPage(current: AdminPage, target: AdminPage) {
