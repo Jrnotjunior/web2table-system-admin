@@ -1563,18 +1563,17 @@ function AppContent() {
             {totpResetError && <div className="form-error" role="alert">{totpResetError}</div>}
             <div className="totp-reset-searchbar">
               <label htmlFor="totp-reset-search">Search accounts</label>
-              <input id="totp-reset-search" className="uniform-search-input" type="search" value={totpResetSearch} onChange={(event) => setTotpResetSearch(event.target.value)} placeholder="Search by name, email, restaurant, role, or Auth user ID…" autoComplete="off" />
+              <input id="totp-reset-search" className="uniform-search-input" type="search" value={totpResetSearch} onChange={(event) => setTotpResetSearch(event.target.value)} placeholder="Search by name, email, restaurant, or role…" autoComplete="off" />
               <span className="totp-reset-result-count">{totpResetAccounts.filter((account) => [account.displayName, account.email, account.restaurantName, account.role === 'restaurant_owner' ? 'restaurant owner owner' : 'staff', account.staffRole || '', account.userId].join(' ').toLowerCase().includes(totpResetSearch.trim().toLowerCase())).length} accounts</span>
             </div>
             {totpResetLoading ? <p>Loading restaurant owners and staff…</p> : (
-              <div className="table-wrap"><table><thead><tr><th>Account</th><th>Account type</th><th>Restaurant</th><th>Staff role</th><th>Auth user ID</th><th>Action</th></tr></thead>
+              <div className="table-wrap"><table><thead><tr><th>Account</th><th>Account type</th><th>Restaurant</th><th>Staff role</th><th>Action</th></tr></thead>
                 <tbody>{totpResetAccounts.filter((account) => [account.displayName, account.email, account.restaurantName, account.role === 'restaurant_owner' ? 'restaurant owner owner' : 'staff', account.staffRole || '', account.userId].join(' ').toLowerCase().includes(totpResetSearch.trim().toLowerCase())).map((account) => <tr key={account.role + ':' + account.userId + ':' + account.restaurantId}>
                   <td>{account.displayName}{account.email ? <div className="muted-text">{account.email}</div> : null}</td>
                   <td>{account.role === 'restaurant_owner' ? 'Restaurant Owner' : 'Staff'}</td><td>{account.restaurantName}</td><td>{account.staffRole || '—'}</td>
-                  <td><code>{account.userId}</code></td>
                   <td><button className="secondary-button" type="button" disabled={staffActionId !== null} onClick={() => void resetRestaurantUserTotp(account.userId, account.displayName, account.role, account.restaurantId)}>{staffActionId === account.userId ? 'Resetting…' : 'Reset TOTP'}</button></td>
                 </tr>)}
-                {totpResetAccounts.length === 0 && <tr><td colSpan={6}>No linked restaurant owner or staff Auth accounts were found.</td></tr>}</tbody>
+                {totpResetAccounts.length === 0 && <tr><td colSpan={5}>No linked restaurant owner or staff Auth accounts were found.</td></tr>}</tbody>
               </table></div>
             )}
           </section>
