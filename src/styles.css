@@ -1005,3 +1005,7 @@ body{min-width:320px}
 .restaurants-search-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .restaurants-search-toolbar .restaurants-invite-button{margin-left:auto;padding:.62rem .9rem;font-size:.84rem;line-height:1.2;white-space:nowrap}
 @media(max-width:560px){.restaurants-search-toolbar .restaurants-invite-button{margin-left:0}}
+
+
+/* Compact restaurant row actions to match the Invite tenant text size. */
+.restaurant-row .row-actions button{font-size:.84rem!important;line-height:1.2!important;padding:.48rem .72rem!important;min-height:36px!important;border-radius:8px!important}
