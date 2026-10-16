@@ -19,7 +19,7 @@ import { inviteRestaurantTenant } from './features/restaurants/services/restaura
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
 import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
-import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
+import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, inviteRestaurantOwner, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 import { fetchAdministrators, revokeAdministratorAccess, restoreAdministratorAccess, deleteRevokedAdministratorAccess, updateAdministratorAccessLevel } from './features/administrators/services/administratorService';
 import { inviteSystemAdministrator } from './features/administrators/services/systemAdminInviteService';
 import { fetchMySystemAdminAccessLevel } from './features/administrators/services/currentAdminAccessService';
@@ -825,13 +825,10 @@ function AppContent() {
         return;
       }
 
-      const { data: invitationData, error: invitationError } = await supabase.functions.invoke('web2table-invite-user', {
-        body: {
-          email: ownerEmail.trim(),
-          invitation_type: 'restaurant_owner',
-          restaurant_id: selectedRestaurant.id,
-        },
-      });
+      const { data: invitationData, error: invitationError } = await inviteRestaurantOwner(
+        selectedRestaurant.id,
+        ownerEmail.trim(),
+      );
 
       if (invitationError || invitationData?.error || !invitationData?.success) {
         setOwnerError(invitationData?.error || invitationError?.message || 'Unable to invite the restaurant owner.');

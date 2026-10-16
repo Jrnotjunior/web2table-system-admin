@@ -18,3 +18,14 @@ export async function removeRestaurantOwner(restaurantId: string) {
     p_restaurant_id: restaurantId,
   });
 }
+
+/** Send a restaurant-owner invitation through the trusted invitation Edge Function. */
+export async function inviteRestaurantOwner(restaurantId: string, email: string) {
+  return supabase.functions.invoke('web2table-invite-user', {
+    body: {
+      email,
+      invitation_type: 'restaurant_owner',
+      restaurant_id: restaurantId,
+    },
+  });
+}
