@@ -1009,3 +1009,11 @@ body{min-width:320px}
 
 /* Compact restaurant row actions to match the Invite tenant text size. */
 .restaurant-row .row-actions button{font-size:.84rem!important;line-height:1.2!important;padding:.48rem .72rem!important;min-height:36px!important;border-radius:8px!important}
+
+
+/* Align administrator search and invite action in one compact toolbar. */
+.administrators-toolbar{display:flex;align-items:center;gap:12px;justify-content:stretch;margin:0 0 14px}
+.administrators-search-input{flex:1;min-width:180px;width:auto}
+.administrators-result-count{white-space:nowrap;color:rgba(255,255,255,.68);font-size:.82rem}
+.administrators-toolbar button{margin-left:auto;white-space:nowrap;padding:.62rem .9rem;font-size:.84rem;line-height:1.2}
+@media(max-width:640px){.administrators-toolbar{flex-wrap:wrap}.administrators-search-input{flex-basis:100%}.administrators-result-count{margin-right:auto}.administrators-toolbar button{margin-left:0}}
