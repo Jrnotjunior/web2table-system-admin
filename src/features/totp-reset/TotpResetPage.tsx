@@ -1,5 +1,5 @@
-export type TotpResetAccount = { userId: string; restaurantId: string; restaurantName: string; displayName: string; email: string; role: 'restaurant_owner' | 'staff'; staffRole?: string };
-export type PendingTotpReset = { userId: string; displayName: string; role: 'restaurant_owner' | 'staff'; restaurantId: string };
+export type TotpResetAccount = { userId: string; restaurantId: string; restaurantName: string; displayName: string; email: string; role: 'restaurant_owner' | 'staff' | 'system_admin'; staffRole?: string; accessLevel?: string };
+export type PendingTotpReset = { userId: string; displayName: string; role: 'restaurant_owner' | 'staff' | 'system_admin'; restaurantId: string; accessLevel?: string };
 type Props = {
  accounts: TotpResetAccount[]; loading: boolean; search: string; onSearchChange: (value: string) => void;
  error: string; staffActionId: string | null; onRequestReset: (account: TotpResetAccount) => void;
