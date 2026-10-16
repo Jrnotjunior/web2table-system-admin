@@ -60,6 +60,7 @@ function AppContent() {
   const [adminAccessLevel, setAdminAccessLevel] = useState<'owner' | 'administrator' | 'view_only' | null>(null);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [administratorsLoading, setAdministratorsLoading] = useState(false);
+  const [administratorSearch, setAdministratorSearch] = useState('');
   const [administratorsError, setAdministratorsError] = useState('');
   const [administrators, setAdministrators] = useState<Array<{
     id: string; admin_user_id: string; email: string | null; name: string | null;
@@ -1711,18 +1712,29 @@ function AppContent() {
         )}
         <section className="dashboard-card administrators-card">
           <div className="administrators-toolbar">
+            <input
+              className="search-input administrators-search-input"
+              type="search"
+              placeholder="Search administrators..."
+              aria-label="Search administrators"
+              value={administratorSearch}
+              onChange={(event) => setAdministratorSearch(event.target.value)}
+            />
+            <span className="administrators-result-count">{administrators.filter((admin) => [admin.name || '', admin.email || '', admin.access_level, admin.status, admin.granted_by_email || ''].join(' ').toLowerCase().includes(administratorSearch.trim().toLowerCase())).length} administrators</span>
             <button onClick={() => { setInviteAdminError(''); setInviteAdminSuccess(''); setShowInviteAdmin(true); }}>+ Invite Administrator</button>
           </div>
           {administratorsError && <div className="error-banner">{administratorsError}</div>}
           {inviteAdminSuccess && <div className="success-banner">{inviteAdminSuccess}</div>}
           {administratorsLoading ? <div className="empty-state">Loading administrators...</div> : administrators.length === 0 ? (
             <div className="empty-state"><strong>No administrators found</strong><span>Invite an administrator to get started.</span></div>
+          ) : administrators.filter((admin) => [admin.name || '', admin.email || '', admin.access_level, admin.status, admin.granted_by_email || ''].join(' ').toLowerCase().includes(administratorSearch.trim().toLowerCase())).length === 0 ? (
+            <div className="empty-state"><strong>No matching administrators</strong><span>Try a different search term.</span></div>
           ) : (
             <div className="administrators-table-wrap">
               <table className="administrators-table">
                 <thead><tr><th>Administrator</th><th>Access</th><th>Status</th><th>Granted by</th><th>Actions</th></tr></thead>
                 <tbody>
-                  {administrators.map((admin) => (
+                  {administrators.filter((admin) => [admin.name || '', admin.email || '', admin.access_level, admin.status, admin.granted_by_email || ''].join(' ').toLowerCase().includes(administratorSearch.trim().toLowerCase())).map((admin) => (
                     <tr key={admin.id}>
                       <td><strong>{admin.name || admin.email || 'Unnamed administrator'}</strong>{admin.name && admin.email && <span className="audit-subtext">{admin.email}</span>}</td>
                       <td><span className="access-badge">{admin.access_level === 'owner' ? 'Owner' : admin.access_level === 'administrator' ? 'Administrator — Full Access' : 'View Only'}</span></td>
