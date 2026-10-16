@@ -10,6 +10,7 @@ import RestaurantManagementHeader from './features/restaurants/RestaurantManagem
 import RestaurantOverview from './features/restaurants/RestaurantOverview';
 import RestaurantOwnerPanel from './features/restaurants/RestaurantOwnerPanel';
 import RestaurantDomainPanel from './features/restaurants/RestaurantDomainPanel';
+import RestaurantSettingsPanel from './features/restaurants/RestaurantSettingsPanel';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -2214,96 +2215,23 @@ function AppContent() {
               </div>
             </div>
           ) : (
-            <div className="manage-overview">
-              <div className="overview-section">
-                <div className="eyebrow">Restaurant Settings</div>
-                <h3>Operational controls</h3>
-                <p>These are platform-controlled financial and workflow settings. Restaurant owners can view their status, but only the System Administrator can change them.</p>
-
-                {settingsLoading ? (
-                  <div className="empty-state">Loading settings...</div>
-                ) : (
-                  <>
-                    <div className="detail-grid">
-                      <div className="detail-item">
-                        <span>VAT registered</span>
-                        <label className="toggle-row">
-                          <input
-                            className="toggle-input"
-                            type="checkbox"
-                            checked={vatRegistered}
-                            onChange={(event) => setVatRegistered(event.target.checked)}
-                            disabled={!canManage}
-                          />
-                          <span className="toggle-switch" aria-hidden="true"><span /></span>
-                          <span className="toggle-label">{vatRegistered ? 'Enabled' : 'Disabled'}</span>
-                        </label>
-                      </div>
-                      <div className="detail-item">
-                        <span>VAT rate</span>
-                        <label>
-                          <input type="number" min="0" max="100" step="0.01" value={vatRate} onChange={(event) => setVatRate(event.target.value)} disabled={!canManage} />
-                        </label>
-                      </div>
-                      <div className="detail-item">
-                        <span>Prices are VAT-inclusive</span>
-                        <label className="toggle-row">
-                          <input
-                            className="toggle-input"
-                            type="checkbox"
-                            checked={pricesVatInclusive}
-                            onChange={(event) => setPricesVatInclusive(event.target.checked)}
-                            disabled={!canManage}
-                          />
-                          <span className="toggle-switch" aria-hidden="true"><span /></span>
-                          <span className="toggle-label">{pricesVatInclusive ? 'Enabled' : 'Disabled'}</span>
-                        </label>
-                      </div>
-                      <div className="detail-item">
-                        <span>Cash on Delivery</span>
-                        <label className="toggle-row">
-                          <input
-                            className="toggle-input"
-                            type="checkbox"
-                            checked={cashOnDeliveryEnabled}
-                            onChange={(event) => setCashOnDeliveryEnabled(event.target.checked)}
-                            disabled={!canManage}
-                          />
-                          <span className="toggle-switch" aria-hidden="true"><span /></span>
-                          <span className="toggle-label">{cashOnDeliveryEnabled ? 'Enabled' : 'Disabled'}</span>
-                        </label>
-                      </div>
-                      <div className="detail-item">
-                        <span>Automatic rider assignment</span>
-                        <label className="toggle-row">
-                          <input
-                            className="toggle-input"
-                            type="checkbox"
-                            checked={automaticRiderAssignmentEnabled}
-                            onChange={(event) => setAutomaticRiderAssignmentEnabled(event.target.checked)}
-                            disabled={!canManage}
-                          />
-                          <span className="toggle-switch" aria-hidden="true"><span /></span>
-                          <span className="toggle-label">{automaticRiderAssignmentEnabled ? 'Enabled' : 'Disabled'}</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    {settingsError && <div className="error-banner">{settingsError}</div>}
-
-                    <div className="status-panel">
-                      <div>
-                        <strong>Platform-level restaurant controls</strong>
-                        <span>{canManage ? 'System Administrator changes are saved through protected database functions.' : 'View Only access can review these settings but cannot change them.'}</span>
-                      </div>
-                      {canManage && <button onClick={() => setPendingSaveSettings(true)} disabled={settingsSaving}>
-                        {settingsSaving ? 'Saving...' : 'Save settings'}
-                      </button>}
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
+            <RestaurantSettingsPanel
+              canManage={canManage}
+              settingsLoading={settingsLoading}
+              vatRegistered={vatRegistered}
+              onVatRegisteredChange={setVatRegistered}
+              vatRate={vatRate}
+              onVatRateChange={setVatRate}
+              pricesVatInclusive={pricesVatInclusive}
+              onPricesVatInclusiveChange={setPricesVatInclusive}
+              cashOnDeliveryEnabled={cashOnDeliveryEnabled}
+              onCashOnDeliveryChange={setCashOnDeliveryEnabled}
+              automaticRiderAssignmentEnabled={automaticRiderAssignmentEnabled}
+              onAutomaticRiderAssignmentChange={setAutomaticRiderAssignmentEnabled}
+              settingsError={settingsError}
+              settingsSaving={settingsSaving}
+              onRequestSave={() => setPendingSaveSettings(true)}
+            />
           )}
         </section>
           {pendingRestaurantStatus && (
