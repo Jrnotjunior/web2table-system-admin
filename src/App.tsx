@@ -5,7 +5,7 @@ import { type AdminPage } from './app/navigation';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
-import AuditLogsPanel from './features/audit/AuditLogsPanel';
+import AuditLogsPage from './features/audit/AuditLogsPage';
 import TotpResetPanel from './features/totp-reset/TotpResetPanel';
 import AdministratorsPage from './features/administrators/AdministratorsPage';
 import RestaurantManagementHeader from './features/restaurants/components/RestaurantManagementHeader';
@@ -1699,7 +1699,7 @@ function AppContent() {
           </div>
         )}
 
-        <AuditLogsPanel
+        <AuditLogsPage
           logs={auditLogs}
           filteredLogs={filteredAuditLogs}
           search={auditSearch}
