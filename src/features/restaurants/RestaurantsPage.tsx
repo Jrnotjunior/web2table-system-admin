@@ -15,8 +15,6 @@ type Props = {
   onDelete: (restaurant: Restaurant) => void;
 };
 
-export type { Restaurant } from './types';
-
 export default function RestaurantsPage({ restaurants, filteredRestaurants, search, onSearchChange, accessLevel, canManage, loading, error, onInviteTenant, onManage, onEdit, onDelete }: Props) {
   return (
     <section className="dashboard-card">
