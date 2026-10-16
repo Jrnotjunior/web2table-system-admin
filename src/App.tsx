@@ -2924,13 +2924,8 @@ function AppContent() {
         )}
 
       <section className="dashboard-card">
-        <div className="section-heading">
-          <div>
-            <div className="eyebrow">Platform Management</div>
-            <h2>Restaurants</h2>
-            <p>Manage restaurants connected to this ordering platform.</p>
-          </div>
-          {adminAccessLevel === 'owner' && (
+        {adminAccessLevel === 'owner' && (
+          <div className="restaurants-toolbar">
             <button onClick={() => {
               setInviteTenantError('');
               setInviteTenantSuccess('');
@@ -2939,8 +2934,8 @@ function AppContent() {
             }}>
               Invite tenant
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="stats-row">
           <div className="stat-card">
