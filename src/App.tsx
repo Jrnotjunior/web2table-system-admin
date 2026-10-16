@@ -14,6 +14,7 @@ import { useSystemAdminAuthListener } from './features/administrators/hooks/useS
 import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
+import { deleteRestaurant as deleteRestaurantService } from './features/restaurants/services/restaurantService';
 import { setRestaurantCustomDomain } from './features/restaurants/services/restaurantDomainService';
 import { saveRestaurantProfile, updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
@@ -1593,28 +1594,10 @@ function AppContent() {
     setRestaurantError('');
 
     try {
-      const { data, error } = await supabase.functions.invoke('system-admin-delete-restaurant', {
-        body: {
-          restaurant_id: restaurant.id,
-        },
-      });
+      const { data, error } = await deleteRestaurantService(restaurant.id);
 
       if (error) {
-        let message = error.message;
-
-        try {
-          const response = (error as { context?: Response }).context;
-          if (response) {
-            const responseBody = await response.clone().json() as { error?: unknown };
-            if (typeof responseBody.error === 'string' && responseBody.error.trim()) {
-              message = responseBody.error;
-            }
-          }
-        } catch {
-          // Keep the original FunctionsHttpError message when the response body cannot be parsed.
-        }
-
-        setRestaurantError(message);
+        setRestaurantError(error.message);
         return;
       }
 
