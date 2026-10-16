@@ -24,6 +24,7 @@ import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
 import RestaurantsPage, { type Restaurant } from './features/restaurants/RestaurantsPage';
+import RestaurantDetailsPage from './features/restaurants/RestaurantDetailsPage';
 
 function isAdminPage(current: AdminPage, target: AdminPage) {
   return current === target;
@@ -2008,89 +2009,41 @@ function AppContent() {
           </div>
         )}
 
-        <section className="dashboard-card restaurant-manage-card">
-          <RestaurantManagementHeader
-            restaurant={selectedRestaurant}
-            manageTab={manageTab}
-            onSelectTab={setManageTab}
-            onClose={() => openRestaurants()}
-            onLoadOwner={() => void loadRestaurantOwner(selectedRestaurant.id)}
-            onSelectDomain={() => { setDomain(selectedRestaurant.custom_domain ?? ''); setDomainError(''); }}
-            onLoadSettings={() => void loadRestaurantSettings(selectedRestaurant.id)}
-            onLoadStaff={() => void loadRestaurantStaff(selectedRestaurant.id)}
-            onLoadPackage={() => void loadRestaurantPackage(selectedRestaurant.id)}
-          />
-
-          {manageTab === 'overview' ? (
-            <RestaurantOverview
-              restaurant={selectedRestaurant}
-              canManage={canManage}
-              onRequestStatusChange={() => setPendingRestaurantStatus(selectedRestaurant)}
-            />
-          ) : manageTab === 'owner' ? (
-            <RestaurantOwnerPanel
-              loading={ownerLoading}
-              ownerUserId={ownerUserId}
-              ownerName={ownerName}
-              ownerEmail={ownerEmail}
-              canManage={canManage}
-              ownerSaving={ownerSaving}
-              error={ownerError}
-              onEmailChange={setOwnerEmail}
-              onRequestAssign={() => { setOwnerError(''); setPendingAssignOwner(true); }}
-              onRequestRemove={() => { setOwnerError(''); setPendingRemoveOwner(true); }}
-            />
-          ) : manageTab === 'domain' ? (
-            <RestaurantDomainPanel
-              domain={domain}
-              onDomainChange={setDomain}
-              canManage={canManage}
-              domainSaving={domainSaving}
-              domainError={domainError}
-              onRequestSave={() => { setDomainError(''); setPendingSaveDomain(true); }}
-            />
-          ) : manageTab === 'package' ? (
-            <RestaurantPackagePanel
-              canManage={canManage}
-              packageLoading={packageLoading}
-              packageSaving={packageSaving}
-              packageError={packageError}
-              restaurantPackageId={restaurantPackageId}
-              restaurantPackageRows={restaurantPackageRows}
-              onAssignPackage={(packageId) => void assignRestaurantPackage(packageId)}
-              onSetModuleEnabled={(moduleKey, enabled) => void setRestaurantModuleEnabled(moduleKey, enabled)}
-            />
-          ) : manageTab === 'staff' ? (
-            <RestaurantStaffPanel
-              canManage={canManage}
-              staffLoading={staffLoading}
-              staffError={staffError}
-              restaurantStaff={restaurantStaff}
-              staffActionError={staffActionError}
-              staffActionId={staffActionId}
-              onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
-              onRequestDelete={requestDeleteRestaurantStaff}
-            />
-          ) : (
-            <RestaurantSettingsPanel
-              canManage={canManage}
-              settingsLoading={settingsLoading}
-              vatRegistered={vatRegistered}
-              onVatRegisteredChange={setVatRegistered}
-              vatRate={vatRate}
-              onVatRateChange={setVatRate}
-              pricesVatInclusive={pricesVatInclusive}
-              onPricesVatInclusiveChange={setPricesVatInclusive}
-              cashOnDeliveryEnabled={cashOnDeliveryEnabled}
-              onCashOnDeliveryChange={setCashOnDeliveryEnabled}
-              automaticRiderAssignmentEnabled={automaticRiderAssignmentEnabled}
-              onAutomaticRiderAssignmentChange={setAutomaticRiderAssignmentEnabled}
-              settingsError={settingsError}
-              settingsSaving={settingsSaving}
-              onRequestSave={() => setPendingSaveSettings(true)}
-            />
-          )}
-        </section>
+        <RestaurantDetailsPage
+          restaurant={selectedRestaurant}
+          canManage={canManage}
+          manageTab={manageTab}
+          onSelectTab={setManageTab}
+          onClose={() => openRestaurants()}
+          onLoadOwner={() => void loadRestaurantOwner(selectedRestaurant.id)}
+          onSelectDomain={() => { setDomain(selectedRestaurant.custom_domain ?? ''); setDomainError(''); }}
+          onLoadSettings={() => void loadRestaurantSettings(selectedRestaurant.id)}
+          onLoadStaff={() => void loadRestaurantStaff(selectedRestaurant.id)}
+          onLoadPackage={() => void loadRestaurantPackage(selectedRestaurant.id)}
+          onRequestStatusChange={() => setPendingRestaurantStatus(selectedRestaurant)}
+          owner={{ loading: ownerLoading, ownerUserId, ownerName, ownerEmail, ownerSaving, error: ownerError }}
+          onOwnerEmailChange={setOwnerEmail}
+          onRequestAssignOwner={() => { setOwnerError(''); setPendingAssignOwner(true); }}
+          onRequestRemoveOwner={() => { setOwnerError(''); setPendingRemoveOwner(true); }}
+          domain={domain}
+          onDomainChange={setDomain}
+          domainSaving={domainSaving}
+          domainError={domainError}
+          onRequestSaveDomain={() => { setDomainError(''); setPendingSaveDomain(true); }}
+          packageState={{ packageLoading, packageSaving, packageError, restaurantPackageId, restaurantPackageRows }}
+          onAssignPackage={(packageId) => void assignRestaurantPackage(packageId)}
+          onSetModuleEnabled={(moduleKey, enabled) => void setRestaurantModuleEnabled(moduleKey, enabled)}
+          staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
+          onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
+          onRequestDeleteStaff={requestDeleteRestaurantStaff}
+          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, automaticRiderAssignmentEnabled, settingsError, settingsSaving }}
+          onVatRegisteredChange={setVatRegistered}
+          onVatRateChange={setVatRate}
+          onPricesVatInclusiveChange={setPricesVatInclusive}
+          onCashOnDeliveryChange={setCashOnDeliveryEnabled}
+          onAutomaticRiderAssignmentChange={setAutomaticRiderAssignmentEnabled}
+          onRequestSaveSettings={() => setPendingSaveSettings(true)}
+        />
           {pendingRestaurantStatus && (
             <div className="modal-backdrop restaurant-status-confirm-backdrop" role="presentation">
               <section className="modal-card restaurant-status-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="restaurant-status-title">
