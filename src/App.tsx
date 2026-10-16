@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { supabase } from './lib/supabase';
 import { type AdminPage } from './app/navigation';
 import useAppNavigation from './app/useAppNavigation';
+import AppShell from './app/AppShell';
 import DashboardOverview from './features/dashboard/DashboardOverview';
 import AuditLogsPanel from './features/audit/AuditLogsPanel';
 import TotpResetPanel from './features/totp-reset/TotpResetPanel';
@@ -2296,14 +2297,11 @@ function AppContent() {
   }
 
   return (
-    <div className="admin-layout">
-      <SystemAdminSidebar activePage={adminPage} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
-      <div className="admin-main">
-        <header className="workspace-topbar">
-          <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>{isAdminPage(adminPage, 'restaurants') ? 'Restaurant management' : isAdminPage(adminPage, 'administrators') ? 'System administrators' : 'Activity logs'}</strong></div>
-          <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span></div>
-        </header>
-    <main className="admin-shell admin-shell-with-sidebar">
+    <AppShell
+      sidebar={<SystemAdminSidebar activePage={adminPage} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />}
+      title={isAdminPage(adminPage, 'restaurants') ? 'Restaurant management' : isAdminPage(adminPage, 'administrators') ? 'System administrators' : 'Activity logs'}
+    >
+      <main className="admin-shell admin-shell-with-sidebar">
       
 
         {accountMenuOpen && (
@@ -2535,8 +2533,7 @@ function AppContent() {
         </div>
       )}
     </main>
-      </div>
-    </div>
+    </AppShell>
   );
 }
 
