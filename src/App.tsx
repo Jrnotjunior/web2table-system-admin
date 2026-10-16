@@ -3017,9 +3017,7 @@ function AppContent() {
                 <div className="row-actions">
                   <button className="secondary-button" onClick={() => openRestaurant(restaurant)}>Manage</button>
                   {canManage && <button className="secondary-button" onClick={() => startEdit(restaurant)}>Edit</button>}
-                  {canManage && <button className={restaurant.is_active ? 'danger-button' : 'secondary-button'} onClick={() => setPendingRestaurantStatus(restaurant)}>
-                    {restaurant.is_active ? 'Deactivate' : 'Activate'}
-                  </button>}
+
                   {canManage && <button type="button" className="danger-button" onClick={(event) => {
                      event.preventDefault();
                      event.stopPropagation();
