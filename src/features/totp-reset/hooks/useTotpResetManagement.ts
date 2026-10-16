@@ -65,12 +65,12 @@ export function useTotpResetManagement({
     confirmed = false,
   ): Promise<boolean> {
     if (adminAccessLevel !== 'owner') {
-      const message = 'Only the System Administrator Owner can reset restaurant account authenticators.';
+      const message = 'Only the System Administrator Owner can reset account authenticators.';
       setStaffActionError(message);
       setOwnerError(message);
       return false;
     }
-    if (!targetUserId || !restaurantId) {
+    if (!targetUserId || (role !== 'system_admin' && !restaurantId)) {
       const message = 'This account is not linked to a Supabase Auth user.';
       setStaffActionError(message);
       setOwnerError(message);
