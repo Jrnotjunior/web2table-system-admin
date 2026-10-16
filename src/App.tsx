@@ -14,7 +14,7 @@ import RestaurantOwnerPanel from './features/restaurants/components/RestaurantOw
 import RestaurantDomainPanel from './features/restaurants/components/RestaurantDomainPanel';
 import RestaurantSettingsPanel from './features/restaurants/components/RestaurantSettingsPanel';
 import RestaurantStaffPanel from './features/restaurants/RestaurantStaffPanel';
-import RestaurantFormPanel from './features/restaurants/RestaurantFormPanel';
+import RestaurantFormPanel from './features/restaurants/components/RestaurantFormPanel';
 import RestaurantPackagePanel from './features/restaurants/RestaurantPackagePanel';
 import RestaurantDomainConfirmation from './features/restaurants/RestaurantDomainConfirmation';
 import RestaurantSettingsConfirmation from './features/restaurants/RestaurantSettingsConfirmation';
