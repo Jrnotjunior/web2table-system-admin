@@ -14,6 +14,7 @@ import { useSystemAdminAuthListener } from './features/administrators/hooks/useS
 import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
+import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
 import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
@@ -772,35 +773,15 @@ function AppContent() {
       return;
     }
 
-    const { data, error } = await supabase.functions.invoke('system-admin-invite-tenant', {
-      body: {
-        email,
-        name: restaurantName,
-        slug,
-        package_id: packageId,
-      },
+    const result = await inviteRestaurantTenant({
+      email,
+      name: restaurantName,
+      slug,
+      packageId,
     });
 
-    if (error) {
-      let message = error.message;
-      try {
-        const response = (error as { context?: Response }).context;
-        if (response) {
-          const responseBody = await response.clone().json() as { error?: unknown };
-          if (typeof responseBody.error === 'string' && responseBody.error.trim()) {
-            message = responseBody.error;
-          }
-        }
-      } catch {
-        // Keep the original Functions error message.
-      }
-      setInviteTenantError(message);
-      setInviteTenantSaving(false);
-      return;
-    }
-
-    if (data?.error) {
-      setInviteTenantError(String(data.error));
+    if (result.error) {
+      setInviteTenantError(result.error);
       setInviteTenantSaving(false);
       return;
     }
