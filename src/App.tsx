@@ -1132,7 +1132,7 @@ function AppContent() {
       <div className="admin-layout">
         <SystemAdminSidebar activePage="totp-reset" accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />
         <main className="admin-main">
-          <header className="workspace-topbar"><div><span className="topbar-kicker">ACCOUNT SECURITY</span><strong>TOTP Reset</strong></div><div className="topbar-right"><span className="topbar-status">{adminAccessLevel === 'owner' ? 'System Admin Owner' : adminAccessLevel === 'administrator' ? 'Administrator — Full Access' : 'View Only'}</span></div></header>
+          <header className="workspace-topbar"><div><span className="topbar-kicker">ACCOUNT SECURITY</span><strong>TOTP Reset</strong></div><div className="topbar-right"><span className="topbar-status">{adminAccessLevel === 'owner' ? 'System Admin Owner' : adminAccessLevel === 'administrator' ? 'Administrator — Full Access' : 'View Only'}</span><button type="button" className="header-sign-out" onClick={() => void signOut()}>Sign out</button></div></header>
           <TotpResetPage
             canReset={adminAccessLevel === 'owner' || adminAccessLevel === 'administrator'}
             accounts={totpResetAccounts}
@@ -1171,7 +1171,7 @@ function AppContent() {
         <div className="admin-main">
           <header className="workspace-topbar">
             <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>System overview</strong></div>
-            <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span></div>
+            <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="header-sign-out" onClick={() => void signOut()}>Sign out</button></div>
           </header>
           {accountMenuOpen && (
             <div className="account-menu">
@@ -1798,6 +1798,7 @@ function AppContent() {
   return (
     <AppShell
       sidebar={<SystemAdminSidebar activePage={adminPage} accessLevel={adminAccessLevel} onDashboard={() => openDashboard()} onRestaurants={() => openRestaurants()} onAdministrators={() => openAdministrators()} onAuditLogs={() => openAuditLogs()} onPlatformHealth={() => openPlatformHealth()} onMapboxUsage={() => openMapboxUsage()} onTotpResets={() => openTotpReset()} onSignOut={() => void signOut()} />}
+      onSignOut={() => void signOut()}
       title={isAdminPage(adminPage, 'restaurants') ? 'Restaurant management' : isAdminPage(adminPage, 'administrators') ? 'System administrators' : 'Activity logs'}
     >
       <main className="admin-shell admin-shell-with-sidebar">
