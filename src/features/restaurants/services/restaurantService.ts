@@ -34,3 +34,12 @@ export async function deleteRestaurant(restaurantId: string): Promise<{
 
   return { data: null, error: { message } };
 }
+
+/** Fetch the current persisted restaurant record after a status change. */
+export async function fetchRestaurantById(restaurantId: string) {
+  return supabase
+    .from('restaurants')
+    .select('id,owner_id,custom_domain,slug,name,tagline,logo_url,location_text,contact_number,email,is_active,created_at,updated_at')
+    .eq('id', restaurantId)
+    .single();
+}

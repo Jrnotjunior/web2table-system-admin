@@ -13,13 +13,13 @@ import { useAuditLogRealtime } from './features/audit/hooks/useAuditLogRealtime'
 import { useSystemAdminAuthListener } from './features/administrators/hooks/useSystemAdminAuthListener';
 import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
-import { fetchRestaurants, deleteRestaurant as deleteRestaurantService } from './features/restaurants/services/restaurantService';
+import { fetchRestaurants, fetchRestaurantById, deleteRestaurant as deleteRestaurantService } from './features/restaurants/services/restaurantService';
 import { setRestaurantCustomDomain } from './features/restaurants/services/restaurantDomainService';
 import { saveRestaurantProfile, updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
 import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
-import { fetchRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
+import { fetchRestaurantStaff, deleteRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, inviteRestaurantOwner, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 import { fetchAdministrators, revokeAdministratorAccess, restoreAdministratorAccess, deleteRevokedAdministratorAccess, updateAdministratorAccessLevel } from './features/administrators/services/administratorService';
 import { inviteSystemAdministrator } from './features/administrators/services/systemAdminInviteService';
@@ -699,26 +699,10 @@ function AppContent() {
     setStaffActionId(staffId);
     setStaffActionError('');
 
-    const { data, error } = await supabase.functions.invoke('system-admin-delete-staff', {
-      body: { staffId },
-    });
+    const { data, error } = await deleteRestaurantStaff(staffId);
 
     if (error) {
-      let message = error.message;
-
-      try {
-        const response = (error as { context?: Response }).context;
-        if (response) {
-          const responseBody = await response.clone().json() as { error?: unknown };
-          if (typeof responseBody.error === 'string' && responseBody.error.trim()) {
-            message = responseBody.error;
-          }
-        }
-      } catch {
-        // Keep the original FunctionsHttpError message if the response body cannot be parsed.
-      }
-
-      setStaffActionError(message);
+      setStaffActionError(error.message);
       setStaffActionId(null);
       return;
     }
@@ -1735,7 +1719,7 @@ function AppContent() {
                     onClick={async () => {
                       const restaurant = pendingRestaurantStatus;
                       await toggleRestaurant(restaurant);
-                      const { data } = await supabase.from('restaurants').select('id,owner_id,custom_domain,slug,name,tagline,logo_url,location_text,contact_number,email,is_active,created_at,updated_at').eq('id', restaurant.id).single();
+                      const { data } = await fetchRestaurantById(restaurant.id);
                       if (data) setSelectedRestaurant(data as Restaurant);
                       setPendingRestaurantStatus(null);
                     }}
