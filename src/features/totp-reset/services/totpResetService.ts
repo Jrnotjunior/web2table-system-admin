@@ -59,3 +59,27 @@ export async function fetchTotpResetAccounts(): Promise<TotpResetAccount[]> {
 
   return rows;
 }
+
+export async function resetRestaurantUserTotp(
+  targetUserId: string,
+  restaurantId: string,
+  role: 'restaurant_owner' | 'staff',
+): Promise<void> {
+  const { data, error } = await supabase.functions.invoke('system-admin-reset-restaurant-user-totp', {
+    body: { target_user_id: targetUserId, restaurant_id: restaurantId, target_role: role },
+  });
+  if (error) {
+    let message = error.message;
+    try {
+      const response = (error as { context?: Response }).context;
+      if (response) {
+        const payload = await response.clone().json() as { error?: unknown };
+        if (typeof payload.error === 'string' && payload.error.trim()) message = payload.error;
+      }
+    } catch {
+      // Keep the original Functions error if its response body cannot be parsed.
+    }
+    throw new Error(message);
+  }
+  if (data?.error) throw new Error(String(data.error));
+}

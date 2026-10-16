@@ -17,6 +17,7 @@ import { fetchRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffAct
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 import { fetchAdministrators, revokeAdministratorAccess, restoreAdministratorAccess, deleteRevokedAdministratorAccess, updateAdministratorAccessLevel } from './features/administrators/services/administratorService';
 import { fetchTotpResetAccounts } from './features/totp-reset/services/totpResetService';
+import { resetRestaurantUserTotp as resetRestaurantUserTotpService } from './features/totp-reset/services/totpResetService';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -707,21 +708,7 @@ function AppContent() {
     setStaffActionError('');
     setOwnerError('');
     try {
-      const { data, error } = await supabase.functions.invoke('system-admin-reset-restaurant-user-totp', {
-        body: { target_user_id: targetUserId, restaurant_id: restaurantId, target_role: role },
-      });
-      if (error) {
-        let message = error.message;
-        try {
-          const response = (error as { context?: Response }).context;
-          if (response) {
-            const payload = await response.clone().json() as { error?: unknown };
-            if (typeof payload.error === 'string' && payload.error.trim()) message = payload.error;
-          }
-        } catch { /* Keep the original Functions error. */ }
-        throw new Error(message);
-      }
-      if (data?.error) throw new Error(String(data.error));
+      await resetRestaurantUserTotpService(targetUserId, restaurantId, role);
       await recordAdminAudit('Restaurant account TOTP reset', restaurantId, role, targetUserId, { target_user_id: targetUserId, target_role: role, account_label: displayName, factor_type: 'totp' });
       setTotpResetSuccess('Authenticator reset for ' + displayName + '. They must sign in and enroll a new authenticator before accessing their workspace.');
       return true;
