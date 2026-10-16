@@ -2535,14 +2535,7 @@ function AppContent() {
                                 >
                                   {staffActionId === staff.id ? 'Saving...' : staff.is_active ? 'Deactivate' : 'Activate'}
                                 </button>
-                                {adminAccessLevel === 'owner' && staff.auth_user_id && <button
-                                  className="secondary-button"
-                                  type="button"
-                                  onClick={() => void resetRestaurantUserTotp(staff.auth_user_id!, staff.name || staff.email || 'Staff member', 'staff', selectedRestaurant.id)}
-                                  disabled={staffActionId !== null}
-                                >
-                                  {staffActionId === staff.auth_user_id ? 'Resetting...' : 'Reset TOTP'}
-                                </button>}
+
                                 <button
                                   className="danger-button"
                                   type="button"
