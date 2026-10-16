@@ -2361,7 +2361,6 @@ function AppContent() {
                   <div className="owner-current">
                     <div className="owner-avatar">{(ownerName || ownerEmail).charAt(0).toUpperCase()}</div>
                     <div className="owner-current-details"><strong>{ownerName || 'Restaurant Owner'}</strong><span>{ownerEmail}</span><small>User ID: {ownerUserId}</small></div>
-                    {adminAccessLevel === 'owner' && <button className="secondary-button" type="button" onClick={() => void resetRestaurantUserTotp(ownerUserId, ownerName || ownerEmail || 'Restaurant Owner', 'restaurant_owner', selectedRestaurant.id)} disabled={staffActionId !== null || !ownerUserId}>{staffActionId === ownerUserId ? 'Resetting...' : 'Reset TOTP'}</button>}
                     {canManage && <button className="danger-button" onClick={() => { setOwnerError(''); setPendingRemoveOwner(true); }} disabled={ownerSaving}>Remove owner</button>}
                   </div>
                 ) : (
