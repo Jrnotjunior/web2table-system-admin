@@ -31,11 +31,11 @@ export default function SystemAdminSidebar({
       <nav className="sidebar-nav">
         {item('dashboard', '▦', 'Dashboard', onDashboard)}
         {item('restaurants', '▤', 'Restaurants', onRestaurants)}
-        {item('administrators', '♙', 'Administrators', onAdministrators, accessLevel !== 'owner')}
+        {item('administrators', '♙', 'Administrators', onAdministrators, accessLevel == null)}
         {item('audit', '▧', 'Activity Logs', onAuditLogs)}
         {item('health', '⌁', 'Platform Health', onPlatformHealth)}
         {item('maps', '◎', 'Mapbox Usage', onMapboxUsage)}
-        {accessLevel === 'owner' && item('totp-reset', '♧', 'TOTP Reset', onTotpResets)}
+        {accessLevel != null && item('totp-reset', '♧', 'TOTP Reset', onTotpResets)}
       </nav>
       <div className="sidebar-footer"><span className="sidebar-online-dot" />System Admin Console{onSignOut && <button type="button" onClick={onSignOut}>Sign out</button>}</div>
     </aside>
