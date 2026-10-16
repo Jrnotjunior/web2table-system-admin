@@ -354,6 +354,11 @@ function AppContent() {
       return false;
     }
 
+    const isSessionCurrent = async () => {
+      const { data: currentSessionData } = await supabase.auth.getSession();
+      return currentSessionData.session?.user.id === session.user.id;
+    };
+
     const { error: sessionError } = await supabase.auth.setSession({
       access_token: session.access_token,
       refresh_token: session.refresh_token,
@@ -361,9 +366,16 @@ function AppContent() {
 
     if (sessionError) {
       console.error('Unable to establish System Administrator auth session:', sessionError);
-      await supabase.auth.signOut();
+      const stillCurrent = await isSessionCurrent();
+      if (stillCurrent) await supabase.auth.signOut();
       setSignedIn(false);
       setAuthorized(false);
+      setInviteSetup(false);
+      setLoading(false);
+      return false;
+    }
+
+    if (!(await isSessionCurrent())) {
       setLoading(false);
       return false;
     }
@@ -379,10 +391,16 @@ function AppContent() {
 
     const accessLevel = await loadMyAccessLevel();
 
+    if (!(await isSessionCurrent())) {
+      setLoading(false);
+      return false;
+    }
+
     if (!accessLevel) {
       await supabase.auth.signOut();
       setSignedIn(false);
       setAuthorized(false);
+      setInviteSetup(false);
       setLoading(false);
       return false;
     }
