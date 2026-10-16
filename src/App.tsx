@@ -173,7 +173,9 @@ function AppContent() {
   auditLogsRef.current = auditLogs;
   adminAccessLevelRef.current = adminAccessLevel;
 
-  useAuditLogRealtime(authorized && adminPage === 'audit', setAuditLogs);
+  useAuditLogRealtime(authorized && adminPage === 'audit', () => {
+    void loadAuditLogs(auditPageNumber);
+  });
 
     function isSystemAdminInvitation() {
     const queryParams = new URLSearchParams(window.location.search);

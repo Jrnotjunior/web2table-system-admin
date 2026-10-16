@@ -1,12 +1,17 @@
-import { useEffect, type Dispatch, type SetStateAction } from 'react';
+import { useEffect, useRef } from 'react';
 import { supabase } from '../../../lib/supabase';
-import type { AuditLog } from '../../../shared/types/audit';
 
-/** Subscribe to audit-table changes only while the audit page is active. */
+/** Refresh the active audit query when its underlying table changes. */
 export function useAuditLogRealtime(
   enabled: boolean,
-  setAuditLogs: Dispatch<SetStateAction<AuditLog[]>>,
+  onAuditChange: () => void,
 ): void {
+  const onAuditChangeRef = useRef(onAuditChange);
+
+  useEffect(() => {
+    onAuditChangeRef.current = onAuditChange;
+  }, [onAuditChange]);
+
   useEffect(() => {
     if (!enabled) return;
 
@@ -15,28 +20,10 @@ export function useAuditLogRealtime(
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'system_admin_audit_logs' },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            const newLog = payload.new as AuditLog;
-            setAuditLogs((current) => {
-              if (current.some((log) => log.id === newLog.id)) return current;
-              return [newLog, ...current];
-            });
-          }
-
-          if (payload.eventType === 'UPDATE') {
-            const updatedLog = payload.new as AuditLog;
-            setAuditLogs((current) =>
-              current
-                .map((log) => log.id === updatedLog.id ? updatedLog : log)
-                .sort((a, b) => b.created_at.localeCompare(a.created_at)),
-            );
-          }
-
-          if (payload.eventType === 'DELETE') {
-            const deletedLog = payload.old as AuditLog;
-            setAuditLogs((current) => current.filter((log) => log.id !== deletedLog.id));
-          }
+        () => {
+          // Re-run the current server-side filters and page instead of applying
+          // unfiltered realtime rows to a potentially filtered/paginated list.
+          onAuditChangeRef.current();
         },
       )
       .subscribe();
@@ -44,5 +31,5 @@ export function useAuditLogRealtime(
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [enabled, setAuditLogs]);
+  }, [enabled]);
 }
