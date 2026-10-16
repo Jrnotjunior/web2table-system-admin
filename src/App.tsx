@@ -82,6 +82,8 @@ function AppContent() {
     adminActionSaving,
     showInviteAdmin,
     setShowInviteAdmin,
+    inviteAdminName,
+    setInviteAdminName,
     inviteAdminEmail,
     setInviteAdminEmail,
     inviteAdminAccessLevel,
@@ -1231,6 +1233,8 @@ function AppContent() {
           onCloseAction={() => setPendingAdminAction(null)}
           onConfirmAction={() => void confirmAdministratorAction()}
           showInvite={showInviteAdmin}
+          inviteName={inviteAdminName}
+          onInviteNameChange={setInviteAdminName}
           inviteEmail={inviteAdminEmail}
           onInviteEmailChange={setInviteAdminEmail}
           inviteAccessLevel={inviteAdminAccessLevel}
