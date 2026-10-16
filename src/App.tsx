@@ -14,6 +14,7 @@ import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPack
 import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
+import { fetchAdministrators, revokeAdministratorAccess, restoreAdministratorAccess, deleteRevokedAdministratorAccess, updateAdministratorAccessLevel } from './features/administrators/services/administratorService';
 import useAppNavigation from './app/useAppNavigation';
 import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -197,7 +198,7 @@ function AppContent() {
   async function loadAdministrators() {
     setAdministratorsLoading(true);
     setAdministratorsError('');
-    const { data, error } = await supabase.rpc('system_admin_get_administrators');
+    const { data, error } = await fetchAdministrators();
     if (error) {
       setAdministratorsError(error.message);
       setAdministrators([]);
@@ -329,19 +330,16 @@ function AppContent() {
     let error: { message: string } | null = null;
 
     if (type === 'revoke') {
-      const result = await supabase.rpc('system_admin_revoke_access', { p_admin_user_id: admin.admin_user_id });
+      const result = await revokeAdministratorAccess(admin.admin_user_id);
       error = result.error;
     } else if (type === 'restore') {
-      const result = await supabase.rpc('system_admin_restore_access', { p_admin_user_id: admin.admin_user_id });
+      const result = await restoreAdministratorAccess(admin.admin_user_id);
       error = result.error;
     } else if (type === 'delete') {
-      const result = await supabase.rpc('system_admin_delete_revoked_access', { p_admin_user_id: admin.admin_user_id });
+      const result = await deleteRevokedAdministratorAccess(admin.admin_user_id);
       error = result.error;
     } else if (nextAccessLevel) {
-      const result = await supabase.rpc('system_admin_set_access_level', {
-        p_admin_user_id: admin.admin_user_id,
-        p_access_level: nextAccessLevel,
-      });
+      const result = await updateAdministratorAccessLevel(admin.admin_user_id, nextAccessLevel);
       error = result.error;
     }
 
