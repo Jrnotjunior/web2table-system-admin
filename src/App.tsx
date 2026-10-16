@@ -17,7 +17,7 @@ import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
 import RestaurantsPage from './features/restaurants/RestaurantsPage';
-import type { Restaurant } from './features/restaurants/types';
+import type { Restaurant, RestaurantForm } from './features/restaurants/types';
 import RestaurantDetailsPage from './features/restaurants/RestaurantDetailsPage';
 
 function isAdminPage(current: AdminPage, target: AdminPage) {
@@ -26,16 +26,6 @@ function isAdminPage(current: AdminPage, target: AdminPage) {
 
 
 
-type RestaurantForm = {
-  name: string;
-  slug: string;
-  tagline: string;
-  logo_url: string;
-  location_text: string;
-  contact_number: string;
-  email: string;
-  is_active: boolean;
-};
 
 const emptyForm: RestaurantForm = {
   name: '',
