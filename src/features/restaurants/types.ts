@@ -24,3 +24,15 @@ export type RestaurantForm = {
   email: string;
   is_active: boolean;
 };
+export type RestaurantPackageRow = {
+  package_id: number | null;
+  package_key: string | null;
+  package_name: string | null;
+  package_description: string | null;
+  subscription_status: string;
+  module_key: string;
+  module_name: string;
+  included_by_package: boolean;
+  override_enabled: boolean | null;
+  effective_enabled: boolean;
+};
