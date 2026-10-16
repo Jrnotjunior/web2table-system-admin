@@ -1246,7 +1246,12 @@ function AppContent() {
         });
         if (!ownerEmailError && ownerEmailData?.emails && typeof ownerEmailData.emails === 'object') {
           for (const row of rows) {
-            if (row.role === 'restaurant_owner') row.email = ownerEmailData.emails[row.userId] || '';
+            if (row.role === 'restaurant_owner') {
+              row.email = ownerEmailData.emails[row.userId] || '';
+              const ownerName = ownerEmailData.names?.[row.userId];
+              if (typeof ownerName === 'string' && ownerName.trim()) row.displayName = ownerName.trim();
+              else if (row.email) row.displayName = row.email.split('@')[0];
+            }
           }
         } else if (ownerEmailError) {
           console.warn('Could not load restaurant owner login emails:', ownerEmailError.message);
