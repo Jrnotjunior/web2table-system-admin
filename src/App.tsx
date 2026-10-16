@@ -7,7 +7,7 @@ import AppShell from './app/AppShell';
 import DashboardPage from './features/dashboard/DashboardPage';
 import AuditLogsPanel from './features/audit/AuditLogsPanel';
 import TotpResetPanel from './features/totp-reset/TotpResetPanel';
-import AdministratorsPanel from './features/administrators/AdministratorsPanel';
+import AdministratorsPage from './features/administrators/AdministratorsPage';
 import RestaurantManagementHeader from './features/restaurants/components/RestaurantManagementHeader';
 import RestaurantOverview from './features/restaurants/components/RestaurantOverview';
 import RestaurantOwnerPanel from './features/restaurants/components/RestaurantOwnerPanel';
@@ -1651,7 +1651,7 @@ function AppContent() {
             <button className="account-menu-item" onClick={signOut}>Sign out</button>
           </div>
         )}
-        <AdministratorsPanel
+        <AdministratorsPage
           administrators={administrators}
           search={administratorSearch}
           onSearchChange={setAdministratorSearch}
