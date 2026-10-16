@@ -13,8 +13,7 @@ import { useAuditLogRealtime } from './features/audit/hooks/useAuditLogRealtime'
 import { useSystemAdminAuthListener } from './features/administrators/hooks/useSystemAdminAuthListener';
 import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
-import { fetchRestaurants } from './features/restaurants/services/restaurantService';
-import { deleteRestaurant as deleteRestaurantService } from './features/restaurants/services/restaurantService';
+import { fetchRestaurants, deleteRestaurant as deleteRestaurantService } from './features/restaurants/services/restaurantService';
 import { setRestaurantCustomDomain } from './features/restaurants/services/restaurantDomainService';
 import { saveRestaurantProfile, updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
