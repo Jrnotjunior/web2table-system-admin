@@ -5,6 +5,7 @@ import { buildNavigationSearch, getNavigationFromSearch, type AdminPage } from '
 import DashboardOverview from './features/dashboard/DashboardOverview';
 import AuditLogsPanel from './features/audit/AuditLogsPanel';
 import TotpResetPanel from './features/totp-reset/TotpResetPanel';
+import AdministratorsPanel from './features/administrators/AdministratorsPanel';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -1644,115 +1645,31 @@ function AppContent() {
             <button className="account-menu-item" onClick={signOut}>Sign out</button>
           </div>
         )}
-        <section className="dashboard-card administrators-card">
-          <div className="administrators-toolbar">
-            <input
-              className="search-input uniform-search-input administrators-search-input"
-              type="search"
-              placeholder="Search administrators..."
-              aria-label="Search administrators"
-              value={administratorSearch}
-              onChange={(event) => setAdministratorSearch(event.target.value)}
-            />
-            <span className="administrators-result-count">{administrators.filter((admin) => [admin.name || '', admin.email || '', admin.access_level, admin.status, admin.granted_by_email || ''].join(' ').toLowerCase().includes(administratorSearch.trim().toLowerCase())).length} administrators</span>
-            <button onClick={() => { setInviteAdminError(''); setInviteAdminSuccess(''); setShowInviteAdmin(true); }}>+ Invite Administrator</button>
-          </div>
-          {administratorsError && <div className="error-banner">{administratorsError}</div>}
-          {inviteAdminSuccess && <div className="success-banner">{inviteAdminSuccess}</div>}
-          {administratorsLoading ? <div className="empty-state">Loading administrators...</div> : administrators.length === 0 ? (
-            <div className="empty-state"><strong>No administrators found</strong><span>Invite an administrator to get started.</span></div>
-          ) : administrators.filter((admin) => [admin.name || '', admin.email || '', admin.access_level, admin.status, admin.granted_by_email || ''].join(' ').toLowerCase().includes(administratorSearch.trim().toLowerCase())).length === 0 ? (
-            <div className="empty-state"><strong>No matching administrators</strong><span>Try a different search term.</span></div>
-          ) : (
-            <div className="administrators-table-wrap">
-              <table className="administrators-table">
-                <thead><tr><th>Administrator</th><th>Access</th><th>Status</th><th>Granted by</th><th>Actions</th></tr></thead>
-                <tbody>
-                  {administrators.filter((admin) => [admin.name || '', admin.email || '', admin.access_level, admin.status, admin.granted_by_email || ''].join(' ').toLowerCase().includes(administratorSearch.trim().toLowerCase())).map((admin) => (
-                    <tr key={admin.id}>
-                      <td><strong>{admin.name || admin.email || 'Unnamed administrator'}</strong>{admin.name && admin.email && <span className="audit-subtext">{admin.email}</span>}</td>
-                      <td><span className="access-badge">{admin.access_level === 'owner' ? 'Owner' : admin.access_level === 'administrator' ? 'Administrator — Full Access' : 'View Only'}</span></td>
-                      <td><span className={admin.status === 'active' ? 'status active' : 'status inactive'}>{admin.status === 'pending' ? 'Pending invite' : admin.status === 'revoked' ? 'Revoked' : 'Active'}</span></td>
-                      <td>{admin.granted_by_email || '—'}</td>
-                      <td>
-                        {admin.access_level === 'owner' ? <span className="audit-subtext">Owner account</span> : admin.status === 'revoked' ? (
-                          <div className="staff-actions">
-                            <button className="secondary-button" onClick={() => setPendingAdminAction({ type: 'restore', admin })}>Restore</button>
-                            <button className="danger-button" onClick={() => setPendingAdminAction({ type: 'delete', admin })}>Delete</button>
-                          </div>
-                        ) : (
-                          <div className="staff-actions">
-                            <button className="secondary-button" onClick={() => setPendingAdminAction({ type: 'change', admin, nextAccessLevel: admin.access_level === 'administrator' ? 'view_only' : 'administrator' })}>{admin.access_level === 'administrator' ? 'Make View Only' : 'Make Full Access'}</button>
-                            <button className="danger-button" onClick={() => setPendingAdminAction({ type: 'revoke', admin })}>Revoke</button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-        {showInviteAdmin && (
-          <div className="modal-backdrop" role="presentation">
-            <section className="modal-card administrator-invite-modal" role="dialog" aria-modal="true" aria-labelledby="invite-admin-title">
-              <div className="modal-heading"><div><div className="eyebrow">System Administrator</div><h2 id="invite-admin-title">Invite Administrator</h2></div><button className="icon-button" type="button" onClick={() => setShowInviteAdmin(false)} disabled={inviteAdminSaving} aria-label="Close">×</button></div>
-              <form className="restaurant-form" onSubmit={inviteAdministrator}>
-                <label>Email address<input type="email" value={inviteAdminEmail} onChange={(event) => setInviteAdminEmail(event.target.value)}  autoComplete="email" required /></label>
-                <label>Access Level<select value={inviteAdminAccessLevel} onChange={(event) => setInviteAdminAccessLevel(event.target.value as 'administrator' | 'view_only')}><option value="administrator">Administrator — Full Access</option><option value="view_only">View Only</option></select></label>
-                <div className="administrator-invite-warning"><strong>The invitation will be emailed to this address.</strong><span>The account will remain pending until the invitee creates a password.</span></div>
-                {inviteAdminError && <div className="error-banner">{inviteAdminError}</div>}
-                <div className="modal-actions"><button type="button" className="secondary-button" onClick={() => setShowInviteAdmin(false)} disabled={inviteAdminSaving}>Cancel</button><button type="submit" disabled={inviteAdminSaving}>{inviteAdminSaving ? 'Sending...' : 'Send Invitation'}</button></div>
-              </form>
-            </section>
-          </div>
-        )}
-        {inviteAdminConfirmationEmail && (
-          <div className="modal-backdrop" role="presentation">
-            <section className="modal-card administrator-invite-success-modal" role="dialog" aria-modal="true" aria-labelledby="invite-admin-success-title">
-              <div className="modal-heading">
-                <div>
-                  <div className="eyebrow">Invitation Sent</div>
-                  <h2 id="invite-admin-success-title">Invitation email sent</h2>
-                </div>
-                <button
-                  className="icon-button"
-                  type="button"
-                  onClick={() => setInviteAdminConfirmationEmail('')}
-                  aria-label="Close"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="administrator-action-content">
-                <div className="success-banner">The invitation email has been sent successfully.</div>
-                <p>The invitation was sent to <strong>{inviteAdminConfirmationEmail}</strong>.</p>
-                <div className="administrator-action-warning">
-                  <strong>The account is currently pending.</strong>
-                  <span>The invitee must open the invitation email and create a password before the account becomes active.</span>
-                </div>
-              </div>
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  onClick={() => setInviteAdminConfirmationEmail('')}
-                >
-                  Done
-                </button>
-              </div>
-            </section>
-          </div>
-        )}
-        {pendingAdminAction && (
-          <div className="modal-backdrop" role="presentation">
-            <section className="modal-card administrator-action-modal" role="dialog" aria-modal="true" aria-labelledby="admin-action-title">
-              <div className="modal-heading"><div><div className="eyebrow">Access Control</div><h2 id="admin-action-title">{pendingAdminAction.type === 'revoke' ? 'Revoke access?' : pendingAdminAction.type === 'restore' ? 'Restore access?' : pendingAdminAction.type === 'delete' ? 'Delete administrator?' : 'Change access level?'}</h2></div><button className="icon-button" type="button" onClick={() => setPendingAdminAction(null)} disabled={adminActionSaving} aria-label="Close">×</button></div>
-              <div className="administrator-action-content"><p><strong>{pendingAdminAction.admin.email || pendingAdminAction.admin.name || 'This administrator'}</strong></p><div className="administrator-action-warning"><strong>{pendingAdminAction.type === 'revoke' ? 'This administrator will no longer be able to access System Admin.' : pendingAdminAction.type === 'restore' ? 'This administrator will regain their previous access level.' : pendingAdminAction.type === 'delete' ? 'This permanently deletes the revoked administrator account and removes its System Admin access. This cannot be undone.' : 'Access will change to ' + (pendingAdminAction.nextAccessLevel === 'administrator' ? 'Administrator — Full Access' : 'View Only') + '.'}</strong><span>{pendingAdminAction.type === 'delete' ? 'Only a revoked account can be permanently deleted. Audit history is retained.' : 'The Owner account cannot be changed or revoked.'}</span></div>{administratorsError && <div className="error-banner">{administratorsError}</div>}</div>
-              <div className="modal-actions"><button type="button" className="secondary-button" onClick={() => setPendingAdminAction(null)} disabled={adminActionSaving}>Cancel</button><button type="button" className={pendingAdminAction.type === 'revoke' || pendingAdminAction.type === 'delete' ? 'danger-button' : ''} onClick={() => void confirmAdministratorAction()} disabled={adminActionSaving}>{adminActionSaving ? 'Saving...' : pendingAdminAction.type === 'delete' ? 'Delete permanently' : 'Confirm'}</button></div>
-            </section>
-          </div>
-        )}
+        <AdministratorsPanel
+          administrators={administrators}
+          search={administratorSearch}
+          onSearchChange={setAdministratorSearch}
+          loading={administratorsLoading}
+          error={administratorsError}
+          success={inviteAdminSuccess}
+          onOpenInvite={() => { setInviteAdminError(''); setInviteAdminSuccess(''); setShowInviteAdmin(true); }}
+          pendingAction={pendingAdminAction}
+          actionSaving={adminActionSaving}
+          onRequestAction={setPendingAdminAction}
+          onCloseAction={() => setPendingAdminAction(null)}
+          onConfirmAction={() => void confirmAdministratorAction()}
+          showInvite={showInviteAdmin}
+          inviteEmail={inviteAdminEmail}
+          onInviteEmailChange={setInviteAdminEmail}
+          inviteAccessLevel={inviteAdminAccessLevel}
+          onInviteAccessLevelChange={setInviteAdminAccessLevel}
+          inviteSaving={inviteAdminSaving}
+          inviteError={inviteAdminError}
+          onSubmitInvite={inviteAdministrator}
+          onCloseInvite={() => setShowInviteAdmin(false)}
+          confirmationEmail={inviteAdminConfirmationEmail}
+          onCloseInviteConfirmation={() => setInviteAdminConfirmationEmail('')}
+        />
       </main></div></div>
     );
   }
