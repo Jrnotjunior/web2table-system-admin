@@ -2292,8 +2292,15 @@ function AppContent() {
               <span className={selectedRestaurant.is_active ? 'status active' : 'status inactive'}>
                 {selectedRestaurant.is_active ? 'Active' : 'Inactive'}
               </span>
-
-
+              <button
+                className="icon-button restaurant-manage-close"
+                type="button"
+                onClick={() => openRestaurants()}
+                aria-label="Close restaurant management"
+                title="Back to restaurants"
+              >
+                ×
+              </button>
             </div>
           </div>
 
