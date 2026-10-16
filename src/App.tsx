@@ -1237,6 +1237,21 @@ function AppContent() {
           });
         }
       }
+
+      // Retrieve owner login emails server-side; the browser must not access Auth admin APIs.
+      const ownerIds = [...new Set(rows.filter((account) => account.role === 'restaurant_owner').map((account) => account.userId))];
+      if (ownerIds.length > 0) {
+        const { data: ownerEmailData, error: ownerEmailError } = await supabase.functions.invoke('system-admin-get-owner-emails', {
+          body: { user_ids: ownerIds },
+        });
+        if (!ownerEmailError && ownerEmailData?.emails && typeof ownerEmailData.emails === 'object') {
+          for (const row of rows) {
+            if (row.role === 'restaurant_owner') row.email = ownerEmailData.emails[row.userId] || '';
+          }
+        } else if (ownerEmailError) {
+          console.warn('Could not load restaurant owner login emails:', ownerEmailError.message);
+        }
+      }
       setTotpResetAccounts(rows);
     } catch (error) {
       setTotpResetError(error instanceof Error ? error.message : 'Unable to load restaurant accounts.');
