@@ -259,7 +259,7 @@ function AppContent() {
     } else if (navigation.page === 'audit') {
       setAuditPageNumber(0);
       void loadAuditLogs(0);
-    } else if (navigation.page === 'administrators' && adminAccessLevel === 'owner') {
+    } else if (navigation.page === 'administrators' && adminAccessLevel != null) {
       void loadAdministrators();
     } else if (navigation.page === 'totp-reset') {
       void loadTotpResetAccounts();
@@ -283,7 +283,7 @@ function AppContent() {
   }
 
   function openAdministrators(pushHistory = true) {
-    if (adminAccessLevel !== 'owner') return;
+    if (adminAccessLevel == null) return;
     if (pushHistory) pushNavigation('administrators');
     setAccountMenuOpen(false);
     setAdminPage('administrators');
@@ -873,7 +873,7 @@ function AppContent() {
   }
 
   function openTotpReset(pushHistory = true) {
-    if (adminAccessLevel !== 'owner') return;
+    if (adminAccessLevel == null) return;
     if (pushHistory) pushNavigation('totp-reset');
     setAccountMenuOpen(false);
     setSelectedRestaurant(null);
