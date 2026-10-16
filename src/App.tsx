@@ -10,6 +10,7 @@ import { recordAuthAuditEvent, recordAdminAudit } from './shared/services/auditS
 import { fetchAuditLogs } from './features/audit/services/auditLogService';
 import { getAuditDateRange } from './features/audit/utils/auditDateRange';
 import { useAuditLogRealtime } from './features/audit/hooks/useAuditLogRealtime';
+import { useSystemAdminAuthListener } from './features/administrators/hooks/useSystemAdminAuthListener';
 import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants } from './features/restaurants/services/restaurantService';
@@ -177,6 +178,17 @@ function AppContent() {
   useAuditLogRealtime(authorized && adminPage === 'audit', () => {
     void loadAuditLogs(auditPageNumber);
   });
+
+  useSystemAdminAuthListener(
+    () => {
+      setSignedIn(false);
+      setAuthorized(false);
+      setAdminAccessLevel(null);
+      setAccountMenuOpen(false);
+      setRestaurants([]);
+    },
+    () => setSignedIn(true),
+  );
 
     function isSystemAdminInvitation() {
     const queryParams = new URLSearchParams(window.location.search);
@@ -451,29 +463,7 @@ function AppContent() {
   }
 
   useEffect(() => {
-    let active = true;
-
-    checkAdminSession().then(() => {
-      if (!active) return;
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        setSignedIn(false);
-        setAuthorized(false);
-        setAdminAccessLevel(null);
-        setAccountMenuOpen(false);
-        setRestaurants([]);
-        return;
-      }
-
-      setSignedIn(true);
-    });
-
-    return () => {
-      active = false;
-      listener.subscription.unsubscribe();
-    };
+    void checkAdminSession();
   }, []);
 
   async function signIn(event: FormEvent) {
