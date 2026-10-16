@@ -60,12 +60,7 @@ export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrator
       </header>
       <main className="admin-shell admin-shell-with-sidebar">
       <section className="dashboard-card mapbox-usage-card">
-        <div className="mapbox-usage-toolbar">
-          <div>
-            <div className="eyebrow">Cost & Usage Control</div>
-            <h2>Mapbox</h2>
-            <p>Web2Table usage recorded by backend Mapbox operations. Route requests should only be recorded after a customer confirms a delivery location.</p>
-          </div>
+        <div className="mapbox-usage-toolbar mapbox-usage-toolbar-compact">
           <div className="segmented-control" aria-label="Usage period">
             <button className={range === 7 ? 'active' : ''} type="button" onClick={() => setRange(7)}>7 days</button>
             <button className={range === 30 ? 'active' : ''} type="button" onClick={() => setRange(30)}>30 days</button>
