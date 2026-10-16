@@ -15,6 +15,7 @@ import RestaurantStaffPanel from './features/restaurants/RestaurantStaffPanel';
 import RestaurantFormPanel from './features/restaurants/RestaurantFormPanel';
 import RestaurantPackagePanel from './features/restaurants/RestaurantPackagePanel';
 import RestaurantDomainConfirmation from './features/restaurants/RestaurantDomainConfirmation';
+import RestaurantSettingsConfirmation from './features/restaurants/RestaurantSettingsConfirmation';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -2211,52 +2212,13 @@ function AppContent() {
           )}
 
           {pendingSaveSettings && (
-            <div className="modal-backdrop settings-confirm-backdrop" role="presentation">
-              <section className="modal-card settings-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="save-settings-title">
-                <div className="modal-heading">
-                  <div>
-                    <div className="eyebrow">Save Settings</div>
-                    <h2 id="save-settings-title">Apply these settings?</h2>
-                  </div>
-                  <button
-                    className="icon-button"
-                    type="button"
-                    onClick={() => setPendingSaveSettings(false)}
-                    disabled={settingsSaving}
-                    aria-label="Close"
-                  >
-                    ×
-                  </button>
-                </div>
-
-                <div className="settings-confirm-content">
-                  <p>You are about to update the operational settings for <strong>{selectedRestaurant.name}</strong>.</p>
-                  <div className="settings-confirm-warning">
-                    <strong>This will immediately change how this restaurant handles these settings.</strong>
-                    <span>Review the VAT, payment, and rider assignment settings before confirming.</span>
-                  </div>
-                  {settingsError && <div className="error-banner">{settingsError}</div>}
-                </div>
-
-                <div className="modal-actions">
-                  <button
-                    type="button"
-                    className="secondary-button"
-                    onClick={() => setPendingSaveSettings(false)}
-                    disabled={settingsSaving}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => void saveRestaurantSettings()}
-                    disabled={settingsSaving}
-                  >
-                    {settingsSaving ? 'Saving...' : 'Confirm & Save'}
-                  </button>
-                </div>
-              </section>
-            </div>
+            <RestaurantSettingsConfirmation
+              restaurantName={selectedRestaurant?.name ?? ''}
+              settingsSaving={settingsSaving}
+              settingsError={settingsError}
+              onClose={() => setPendingSaveSettings(false)}
+              onConfirm={() => void saveRestaurantSettings()}
+            />
           )}
 
           {pendingAssignOwner && (
