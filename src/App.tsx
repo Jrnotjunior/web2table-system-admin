@@ -1067,17 +1067,6 @@ function AppContent() {
   if (inviteSetup) {
     return (
       <main className="auth-shell">
-        {authDialogMessage && (
-          <div className="auth-dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setAuthDialogMessage(''); }}>
-            <section className="auth-dialog" role="alertdialog" aria-modal="true" aria-labelledby="auth-dialog-title" aria-describedby="auth-dialog-description">
-              <div className="auth-dialog-mark" aria-hidden="true">!</div>
-              <div className="eyebrow">WEB2TABLE Platform</div>
-              <h2 id="auth-dialog-title">Unable to sign in</h2>
-              <p id="auth-dialog-description">{authDialogMessage}</p>
-              <button type="button" autoFocus onClick={() => setAuthDialogMessage('')}>OK</button>
-            </section>
-          </div>
-        )}
         <section className="auth-card">
           <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE Platform</div>
@@ -1119,6 +1108,17 @@ function AppContent() {
   if (!signedIn) {
     return (
       <main className="auth-shell">
+        {authDialogMessage && (
+          <div className="auth-dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setAuthDialogMessage(''); }}>
+            <section className="auth-dialog" role="alertdialog" aria-modal="true" aria-labelledby="auth-dialog-title" aria-describedby="auth-dialog-description">
+              <div className="auth-dialog-mark" aria-hidden="true">!</div>
+              <div className="eyebrow">WEB2TABLE Platform</div>
+              <h2 id="auth-dialog-title">Unable to sign in</h2>
+              <p id="auth-dialog-description">{authDialogMessage}</p>
+              <button type="button" autoFocus onClick={() => setAuthDialogMessage('')}>OK</button>
+            </section>
+          </div>
+        )}
         <section className="auth-card">
           <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE Platform</div>
