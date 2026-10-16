@@ -16,9 +16,9 @@ import RestaurantSettingsPanel from './features/restaurants/components/Restauran
 import RestaurantStaffPanel from './features/restaurants/components/RestaurantStaffPanel';
 import RestaurantFormPanel from './features/restaurants/components/RestaurantFormPanel';
 import RestaurantPackagePanel from './features/restaurants/components/RestaurantPackagePanel';
-import RestaurantDomainConfirmation from './features/restaurants/RestaurantDomainConfirmation';
-import RestaurantSettingsConfirmation from './features/restaurants/RestaurantSettingsConfirmation';
-import RestaurantOwnerAssignmentConfirmation from './features/restaurants/RestaurantOwnerAssignmentConfirmation';
+import RestaurantDomainConfirmation from './features/restaurants/components/RestaurantDomainConfirmation';
+import RestaurantSettingsConfirmation from './features/restaurants/components/RestaurantSettingsConfirmation';
+import RestaurantOwnerAssignmentConfirmation from './features/restaurants/components/RestaurantOwnerAssignmentConfirmation';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
