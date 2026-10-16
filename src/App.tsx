@@ -14,6 +14,7 @@ import RestaurantSettingsPanel from './features/restaurants/RestaurantSettingsPa
 import RestaurantStaffPanel from './features/restaurants/RestaurantStaffPanel';
 import RestaurantFormPanel from './features/restaurants/RestaurantFormPanel';
 import RestaurantPackagePanel from './features/restaurants/RestaurantPackagePanel';
+import RestaurantDomainConfirmation from './features/restaurants/RestaurantDomainConfirmation';
 import PlatformHealthPage from './components/PlatformHealthPage';
 import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
@@ -2199,29 +2200,14 @@ function AppContent() {
           {renderRestaurantDeleteModal()}
 
           {pendingSaveDomain && (
-            <div className="modal-backdrop domain-confirm-backdrop" role="presentation">
-              <section className="modal-card domain-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="save-domain-title">
-                <div className="modal-heading">
-                  <div>
-                    <div className="eyebrow">Save Domain</div>
-                    <h2 id="save-domain-title">Apply this domain?</h2>
-                  </div>
-                  <button className="icon-button" type="button" onClick={() => setPendingSaveDomain(false)} disabled={domainSaving} aria-label="Close">×</button>
-                </div>
-                <div className="domain-confirm-content">
-                  <p>You are about to set the public domain for <strong>{selectedRestaurant.name}</strong> to <strong>{domain.trim().toLowerCase()}</strong>.</p>
-                  <div className="domain-confirm-warning">
-                    <strong>This will change the restaurant's public domain configuration.</strong>
-                    <span>Use only the hostname, such as restaurant.com. Do not include https:// or a path.</span>
-                  </div>
-                  {domainError && <div className="error-banner">{domainError}</div>}
-                </div>
-                <div className="modal-actions">
-                  <button type="button" className="secondary-button" onClick={() => setPendingSaveDomain(false)} disabled={domainSaving}>Cancel</button>
-                  <button type="button" onClick={() => void saveDomain()} disabled={domainSaving}>{domainSaving ? 'Saving...' : 'Confirm & Save'}</button>
-                </div>
-              </section>
-            </div>
+            <RestaurantDomainConfirmation
+              restaurantName={selectedRestaurant?.name ?? ''}
+              domain={domain}
+              domainSaving={domainSaving}
+              domainError={domainError}
+              onClose={() => setPendingSaveDomain(false)}
+              onConfirm={() => void saveDomain()}
+            />
           )}
 
           {pendingSaveSettings && (
