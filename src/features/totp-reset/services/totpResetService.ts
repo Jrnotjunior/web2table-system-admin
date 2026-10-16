@@ -83,3 +83,23 @@ export async function resetRestaurantUserTotp(
   }
   if (data?.error) throw new Error(String(data.error));
 }
+
+export async function resetCoAdministratorTotp(targetUserId: string): Promise<void> {
+  const { data, error } = await supabase.functions.invoke('system-admin-reset-co-admin-totp', {
+    body: { target_user_id: targetUserId },
+  });
+  if (error) {
+    let message = error.message;
+    try {
+      const response = (error as { context?: Response }).context;
+      if (response) {
+        const payload = await response.clone().json() as { error?: unknown };
+        if (typeof payload.error === 'string' && payload.error.trim()) message = payload.error;
+      }
+    } catch {
+      // Preserve the original function error if its response cannot be parsed.
+    }
+    throw new Error(message);
+  }
+  if (data?.error) throw new Error(String(data.error));
+}
