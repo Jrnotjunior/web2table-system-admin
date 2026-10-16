@@ -56,7 +56,7 @@ export default function MapboxUsagePage({ onBack, onRestaurants, onAdministrator
       <div className="admin-main">
       <header className="workspace-topbar">
         <div><span className="topbar-kicker">WEB2TABLE PLATFORM</span><strong>Mapbox usage</strong></div>
-        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span></div>
+        <div className="topbar-right"><span className="topbar-status"><span className="sidebar-online-dot" />Administration</span><button type="button" className="header-sign-out" onClick={onSignOut}>Sign out</button></div>
       </header>
       <main className="admin-shell admin-shell-with-sidebar">
       <section className="dashboard-card mapbox-usage-card">
