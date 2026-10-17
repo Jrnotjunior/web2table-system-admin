@@ -734,18 +734,29 @@ body{min-width:320px}
 .totp-reset-success strong{display:block;margin-bottom:7px;color:#86efac;font-size:1rem}
 .totp-reset-success p{margin:0;color:rgba(255,255,255,.82)}
 
-/* Match the Ticket Dashboard login palette on the System Admin sign-in card. */
-.auth-shell{background:#000!important}
-.auth-shell .auth-card{background:#000!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:8px!important;box-shadow:none!important}
+/* Web2Table sign-in palette with a compact, centered login layout. */
+.auth-shell{background:#f7f9fc!important;padding:32px!important}
+.auth-shell .auth-card{background:#fff!important;border:1px solid #dce5f1!important;border-radius:20px!important;box-shadow:0 18px 48px rgba(15,23,42,.08)!important}
 .auth-shell .auth-card:before{display:none!important}
-.auth-shell .auth-card h1{color:#fff!important}
-.auth-shell .auth-card p{color:#d0d0d0!important}
-.auth-shell .auth-card .eyebrow{color:#fff!important}
-.auth-shell .auth-card label{color:#fff!important}
-.auth-shell .auth-card input{background:#e8f0fe!important;color:#111!important;border:1px solid #dce6f7!important;border-radius:8px!important}
-.auth-shell .auth-card input::placeholder{color:#687386!important}
-.auth-shell .auth-card button{background:#ED1C24!important;color:#fff!important;border:0!important;border-radius:8px!important;box-shadow:none!important}
-.auth-shell .auth-card button:hover:not(:disabled){background:#c9161d!important}
+.auth-shell .auth-card h1{color:#101b30!important}
+.auth-shell .auth-card p{color:#64748b!important}
+.auth-shell .auth-card .eyebrow{color:#536783!important;letter-spacing:.09em!important;font-weight:700!important}
+.auth-shell .auth-card label{color:#101b30!important}
+.auth-shell .auth-card input{background:#e8f0fe!important;color:#101b30!important;border:1px solid #d6e1f0!important;border-radius:10px!important}
+.auth-shell .auth-card input::placeholder{color:#64748b!important;opacity:1}
+.auth-shell .auth-card button{background:#101b30!important;color:#fff!important;border:0!important;border-radius:10px!important;box-shadow:none!important}
+.auth-shell .auth-card button:hover:not(:disabled){background:#1c2c48!important}
+.auth-login-card{width:min(440px,100%)!important;padding:30px 32px 32px!important;text-align:center!important}
+.auth-login-card .auth-logo{width:76px!important;height:76px!important;margin:0 auto 14px!important}
+.auth-login-card h1{margin:8px 0 6px!important;font-size:clamp(2rem,5vw,2.5rem)!important;line-height:1.12!important;letter-spacing:-.045em!important}
+.auth-login-card > p{max-width:330px!important;margin:0 auto!important;line-height:1.55!important}
+.auth-login-card form{gap:14px!important;margin-top:26px!important}
+.auth-login-card form label{text-align:left!important}
+.auth-login-card input[type="email"],
+.auth-login-card .password-input-wrap input{height:44px!important;text-align:left!important;padding-left:14px!important;font:inherit!important}
+.auth-login-card .password-input-wrap input{padding-right:48px!important}
+.auth-login-card form button[type="submit"]{width:min(160px,100%)!important;justify-self:center!important;min-height:46px!important;margin-top:4px!important;font-weight:700!important}
+@media(max-width:480px){.auth-shell{padding:20px!important}.auth-login-card{padding:26px 22px!important}.auth-login-card .auth-logo{width:68px!important;height:68px!important}}
 
 /* Recovery is a secondary text action, not a filled button. */
 .auth-shell .auth-card .mfa-recovery-link{
