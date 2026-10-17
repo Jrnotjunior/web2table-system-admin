@@ -38,9 +38,24 @@ export default function RestaurantDomainPanel({
             Custom domain
             <input value={domain} onChange={(event) => onDomainChange(event.target.value)} placeholder="restaurant.com" />
           </label>
-          <button onClick={onRequestSave} disabled={domainSaving || !domain.trim()}>
-            {domainSaving ? 'Saving...' : 'Save domain'}
-          </button>
+          <div className="domain-form-actions">
+            <button onClick={onRequestSave} disabled={domainSaving || !domain.trim()}>
+              {domainSaving ? 'Saving...' : 'Save domain'}
+            </button>
+            {domain.trim() && (
+              <button
+                type="button"
+                className="secondary-button"
+                disabled={domainSaving}
+                onClick={() => {
+                  onDomainChange('');
+                  onRequestSave();
+                }}
+              >
+                Remove domain
+              </button>
+            )}
+          </div>
         </div>}
         {!canManage && <div className="empty-state">View Only access can view the domain configuration but cannot change it.</div>}
         <div className="domain-help">
