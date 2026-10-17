@@ -1183,11 +1183,11 @@ function AppContent() {
             </section>
           </div>
         )}
-        <section className="auth-card">
+        <section className="auth-card auth-login-card">
           <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
-          <div className="eyebrow">WEB2TABLE Platform</div>
-          <h1>System Admin</h1>
-          <p>Sign in to manage restaurants and platform settings.</p>
+          <div className="eyebrow">WEB2TABLE PLATFORM</div>
+          <h1>Welcome back.</h1>
+          <p>Sign in to manage your restaurants and platform settings.</p>
           <form onSubmit={signIn}>
             <label>
               <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email address" aria-label="Email address" autoComplete="email" required />
