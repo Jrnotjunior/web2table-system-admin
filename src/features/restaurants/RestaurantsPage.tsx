@@ -11,11 +11,10 @@ type Props = {
   error: string;
   onInviteTenant: () => void;
   onManage: (restaurant: Restaurant) => void;
-  onEdit: (restaurant: Restaurant) => void;
   onDelete: (restaurant: Restaurant) => void;
 };
 
-export default function RestaurantsPage({ restaurants, filteredRestaurants, search, onSearchChange, accessLevel, canManage, loading, error, onInviteTenant, onManage, onEdit, onDelete }: Props) {
+export default function RestaurantsPage({ restaurants, filteredRestaurants, search, onSearchChange, accessLevel, canManage, loading, error, onInviteTenant, onManage, onDelete }: Props) {
   return (
     <section className="dashboard-card">
       <div className="stats-row">
@@ -46,7 +45,6 @@ export default function RestaurantsPage({ restaurants, filteredRestaurants, sear
               </div>
               <div className="row-actions">
                 <button className="secondary-button" onClick={() => onManage(restaurant)}>Manage</button>
-                {canManage && <button className="secondary-button" onClick={() => onEdit(restaurant)}>Edit</button>}
                 {canManage && <button type="button" className="danger-button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onDelete(restaurant); }}>Delete</button>}
               </div>
             </article>
