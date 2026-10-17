@@ -1,6 +1,8 @@
 name: Build System Admin for Hostinger
 
 on:
+  push:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -20,7 +22,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build for Hostinger root domain
         run: npm run build:hostinger
@@ -34,7 +36,12 @@ jobs:
       - name: Verify Hostinger artifact paths
         run: |
           test -f dist/index.html
+          test -f dist/.htaccess
           grep -q 'src="/assets/' dist/index.html
+          grep -q 'href="/assets/' dist/index.html
+          echo "=== Built HTML entry points ==="
+          grep -oE '(src|href)="[^"]+"' dist/index.html
+          echo "=== Build files ==="
           find dist -maxdepth 2 -type f -print
 
       - name: Upload Hostinger build artifact
