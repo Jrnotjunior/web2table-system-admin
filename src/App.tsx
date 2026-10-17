@@ -15,7 +15,7 @@ import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants, fetchRestaurantById, deleteRestaurant as deleteRestaurantService } from './features/restaurants/services/restaurantService';
 import { setRestaurantCustomDomain } from './features/restaurants/services/restaurantDomainService';
-import { saveRestaurantProfile, updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
+import { updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
 import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
@@ -31,7 +31,6 @@ import DashboardPage from './features/dashboard/DashboardPage';
 import AuditLogsPage from './features/audit/AuditLogsPage';
 import TotpResetPage from './features/totp-reset/TotpResetPage';
 import AdministratorsPage from './features/administrators/AdministratorsPage';
-import RestaurantFormPanel from './features/restaurants/components/RestaurantFormPanel';
 import RestaurantDomainConfirmation from './features/restaurants/components/RestaurantDomainConfirmation';
 import RestaurantSettingsConfirmation from './features/restaurants/components/RestaurantSettingsConfirmation';
 import RestaurantOwnerAssignmentConfirmation from './features/restaurants/components/RestaurantOwnerAssignmentConfirmation';
@@ -40,7 +39,7 @@ import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
 import RestaurantsPage from './features/restaurants/RestaurantsPage';
-import type { Restaurant, RestaurantForm, RestaurantPackageRow, RestaurantStaff } from './features/restaurants/types';
+import type { Restaurant, RestaurantPackageRow, RestaurantStaff } from './features/restaurants/types';
 import RestaurantDetailsPage from './features/restaurants/RestaurantDetailsPage';
 
 function isAdminPage(current: AdminPage, target: AdminPage) {
@@ -49,17 +48,6 @@ function isAdminPage(current: AdminPage, target: AdminPage) {
 
 
 
-
-const emptyForm: RestaurantForm = {
-  name: '',
-  slug: '',
-  tagline: '',
-  logo_url: '',
-  location_text: '',
-  contact_number: '',
-  email: '',
-  is_active: true,
-};
 
 function AppContent() {
   const { getNavigationFromUrl, pushNavigation } = useAppNavigation();
@@ -122,10 +110,6 @@ function AppContent() {
   const [restaurantLoading, setRestaurantLoading] = useState(false);
   const [restaurantError, setRestaurantError] = useState('');
   const [search, setSearch] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [editingRestaurant, setEditingRestaurant] = useState<Restaurant | null>(null);
-  const [form, setForm] = useState<RestaurantForm>(emptyForm);
-  const [saving, setSaving] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const canManage = adminAccessLevel === 'owner' || adminAccessLevel === 'administrator';
   const [manageTab, setManageTab] = useState<'overview' | 'owner' | 'domain' | 'settings' | 'staff' | 'package'>('overview');
@@ -184,7 +168,6 @@ function AppContent() {
   const [pendingRestaurantStatus, setPendingRestaurantStatus] = useState<Restaurant | null>(null);
   const [pendingDeleteRestaurant, setPendingDeleteRestaurant] = useState<Restaurant | null>(null);
   const [restaurantDeleteSaving, setRestaurantDeleteSaving] = useState(false);
-  const [pendingRestaurantFormSave, setPendingRestaurantFormSave] = useState(false);
   const [adminPage, setAdminPage] = useState<AdminPage>('dashboard');
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [dashboardError, setDashboardError] = useState('');
@@ -1427,114 +1410,6 @@ function AppContent() {
     setSelectedRestaurant(null);
   }
 
-  function startCreate() {
-    setEditingRestaurant(null);
-    setForm(emptyForm);
-    setRestaurantError('');
-    setShowForm(true);
-  }
-
-  function startEdit(restaurant: Restaurant) {
-    setEditingRestaurant(restaurant);
-    setForm({
-      name: restaurant.name,
-      slug: restaurant.slug,
-      tagline: restaurant.tagline,
-      logo_url: restaurant.logo_url ?? '',
-      location_text: restaurant.location_text ?? '',
-      contact_number: restaurant.contact_number ?? '',
-      email: restaurant.email ?? '',
-      is_active: restaurant.is_active,
-    });
-    setRestaurantError('');
-    setShowForm(true);
-  }
-
-  function closeForm() {
-    if (saving) return;
-    setShowForm(false);
-    setEditingRestaurant(null);
-    setForm(emptyForm);
-  }
-
-  function updateForm(field: keyof RestaurantForm, value: string | boolean) {
-    setForm((current) => ({ ...current, [field]: value }));
-  }
-
-  async function saveRestaurant(event: FormEvent) {
-    event.preventDefault();
-    setPendingRestaurantFormSave(true);
-  }
-
-  async function confirmSaveRestaurant() {
-    setPendingRestaurantFormSave(false);
-    setSaving(true);
-    setRestaurantError('');
-
-    const payload = {
-      name: form.name.trim(),
-      slug: form.slug.trim().toLowerCase(),
-      tagline: form.tagline.trim(),
-      logo_url: form.logo_url.trim() || null,
-      location_text: form.location_text.trim() || null,
-      contact_number: form.contact_number.trim() || null,
-      email: form.email.trim() || null,
-      is_active: form.is_active,
-    };
-
-    const result = await saveRestaurantProfile(editingRestaurant?.id ?? null, payload);
-
-    if (result.error) {
-      setRestaurantError(result.error.message);
-      setSaving(false);
-      return;
-    }
-
-    const restaurantId = result.id;
-
-    const restaurantChanges = editingRestaurant
-      ? Object.fromEntries(
-          Object.entries({
-            name: [editingRestaurant.name, payload.name],
-            slug: [editingRestaurant.slug, payload.slug],
-            tagline: [editingRestaurant.tagline, payload.tagline],
-            logo_url: [editingRestaurant.logo_url, payload.logo_url],
-            location_text: [editingRestaurant.location_text, payload.location_text],
-            contact_number: [editingRestaurant.contact_number, payload.contact_number],
-            email: [editingRestaurant.email, payload.email],
-            is_active: [editingRestaurant.is_active, payload.is_active],
-          }).filter(([, [oldValue, newValue]]) => oldValue !== newValue),
-        )
-      : {};
-
-    await recordAdminAudit(
-      editingRestaurant ? 'Restaurant profile updated' : 'Restaurant created',
-      restaurantId,
-      'restaurant',
-      restaurantId,
-      editingRestaurant
-        ? {
-            changes: restaurantChanges,
-          }
-        : {
-            created_values: {
-              name: payload.name,
-              slug: payload.slug,
-              tagline: payload.tagline,
-              logo_url: payload.logo_url,
-              location_text: payload.location_text,
-              contact_number: payload.contact_number,
-              email: payload.email,
-              is_active: payload.is_active,
-            },
-          },
-    );
-
-    setSaving(false);
-    closeForm();
-    await loadRestaurants();
-  }
-
   async function toggleRestaurant(restaurant: Restaurant) {
     const nextStatus = !restaurant.is_active;
     setRestaurantError('');
@@ -1912,7 +1787,6 @@ function AppContent() {
         error={restaurantError}
         onInviteTenant={() => { setInviteTenantError(''); setInviteTenantSuccess(''); setInviteTenantEmail(''); setShowInviteTenant(true); }}
         onManage={openRestaurant}
-        onEdit={startEdit}
         onDelete={requestDeleteRestaurant}
       />
 
@@ -2033,45 +1907,6 @@ function AppContent() {
         </div>
       )}
 
-      {showForm && (
-        <RestaurantFormPanel
-          form={form}
-          updateForm={updateForm}
-          editingRestaurant={Boolean(editingRestaurant)}
-          saving={saving}
-          restaurantError={restaurantError}
-          onClose={closeForm}
-          onSubmit={saveRestaurant}
-        />
-      )}
-
-      {pendingRestaurantFormSave && (
-        <div className="modal-backdrop restaurant-form-confirm-backdrop" role="presentation">
-          <section className="modal-card restaurant-form-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="restaurant-save-title">
-            <div className="modal-heading">
-              <div>
-                <div className="eyebrow">{editingRestaurant ? 'Save Changes' : 'Create Restaurant'}</div>
-                <h2 id="restaurant-save-title">{editingRestaurant ? 'Save these changes?' : 'Create this restaurant?'}</h2>
-              </div>
-              <button className="icon-button" type="button" onClick={() => setPendingRestaurantFormSave(false)} disabled={saving} aria-label="Close">×</button>
-            </div>
-            <div className="restaurant-form-confirm-content">
-              <p>You are about to {editingRestaurant ? 'update' : 'create'} <strong>{form.name.trim() || 'this restaurant'}</strong>.</p>
-              <div className="restaurant-form-confirm-warning">
-                <strong>{editingRestaurant ? 'These changes will update the restaurant profile.' : 'This will create a new restaurant on the platform.'}</strong>
-                <span>{form.is_active ? 'The restaurant will be active after saving.' : 'The restaurant will be created as inactive.'}</span>
-              </div>
-              {restaurantError && <div className="error-banner">{restaurantError}</div>}
-            </div>
-            <div className="modal-actions">
-              <button type="button" className="secondary-button" onClick={() => setPendingRestaurantFormSave(false)} disabled={saving}>Cancel</button>
-              <button type="button" onClick={() => void confirmSaveRestaurant()} disabled={saving}>
-                {saving ? 'Saving...' : editingRestaurant ? 'Confirm & Save' : 'Confirm & Create'}
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
     </main>
     </AppShell>
   );
