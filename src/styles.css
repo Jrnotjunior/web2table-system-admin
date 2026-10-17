@@ -951,6 +951,6 @@ body{min-width:320px}
 .auth-dialog button:focus-visible{outline:2px solid #fff;outline-offset:3px}
 
 
-/* White invitation actions for consistent secondary emphasis. */
-.restaurants-search-toolbar .restaurants-invite-button,.administrators-toolbar button{background:#fff!important;border:1px solid #fff!important;color:#111!important}
-.restaurants-search-toolbar .restaurants-invite-button:hover:not(:disabled),.administrators-toolbar button:hover:not(:disabled){background:#e9e9e9!important;border-color:#e9e9e9!important;color:#111!important}
+/* Invitation actions use the same outlined theme as the restaurant Manage button. */
+.restaurants-search-toolbar .restaurants-invite-button,.administrators-toolbar button{background:transparent!important;border:1px solid rgba(255,255,255,.2)!important;color:#fff!important;border-radius:8px!important}
+.restaurants-search-toolbar .restaurants-invite-button:hover:not(:disabled),.administrators-toolbar button:hover:not(:disabled){background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.35)!important;color:#fff!important}
