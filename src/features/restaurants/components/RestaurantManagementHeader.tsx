@@ -25,6 +25,7 @@ export default function RestaurantManagementHeader({ restaurant, manageTab, onSe
   <nav className="manage-tabs" aria-label="Restaurant management sections">
    <button className={`manage-tab ${manageTab === 'overview' ? 'active' : ''}`} type="button" onClick={() => onSelectTab('overview')}>Overview</button>
    <button className={`manage-tab ${manageTab === 'owner' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('owner'); onLoadOwner(); }}>Owner</button>
+   <button className={`manage-tab ${manageTab === 'domain' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('domain'); onSelectDomain(); }}>Domain</button>
    <button className={`manage-tab ${manageTab === 'settings' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('settings'); onLoadSettings(); }}>Settings</button>
    <button className={`manage-tab ${manageTab === 'staff' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('staff'); onLoadStaff(); }}>Staff</button>
    <button className={`manage-tab ${manageTab === 'package' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('package'); onLoadPackage(); }}>Package</button>
