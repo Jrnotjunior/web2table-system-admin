@@ -37,6 +37,15 @@ This is a static frontend; the React app does not require a Node.js server after
 
 The Hostinger build uses `/` as the asset base, intended for a domain or subdomain document root. If hosting under a URL subdirectory instead, update the Vite base path before building.
 
+## Build a Hostinger package through GitHub Actions
+
+The `Build Hostinger package` workflow creates a downloadable artifact from the root-based Hostinger build. Before running it, add these repository Actions secrets under **Settings → Secrets and variables → Actions**:
+
+- `VITE_SUPABASE_URL`: the production Supabase project URL
+- `VITE_SUPABASE_ANON_KEY`: the public anon/publishable key (never a service-role key)
+
+Then open **Actions → Build Hostinger package → Run workflow**. When it succeeds, open that run, download the `web2table-system-admin-hostinger` artifact, extract it, and upload the extracted files to the document root for `admin.web2table.io`. This artifact is separate from the GitHub Pages deployment.
+
 ## GitHub Pages
 
 The regular `npm run build` command retains the existing GitHub Pages base path. Use `npm run build:hostinger` only for a root-domain/subdomain deployment.
