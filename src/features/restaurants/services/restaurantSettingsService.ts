@@ -3,6 +3,7 @@ import { supabase } from '../../../lib/supabase';
 export type RestaurantSettingsUpdate = {
   cashOnDeliveryEnabled: boolean;
   cashOnPickupEnabled: boolean;
+  cashOnTakeOutEnabled: boolean;
   automaticRiderAssignmentEnabled: boolean;
   vatRegistered: boolean;
   pricesVatInclusive: boolean;
@@ -23,6 +24,7 @@ export async function updateRestaurantSettings(
     p_restaurant_id: restaurantId,
     p_cash_on_delivery_enabled: settings.cashOnDeliveryEnabled,
     p_cash_on_pickup_enabled: settings.cashOnPickupEnabled,
+    p_cash_on_take_out_enabled: settings.cashOnTakeOutEnabled,
     p_automatic_rider_assignment_enabled: settings.automaticRiderAssignmentEnabled,
     p_tax_vat_registered: settings.vatRegistered,
     p_tax_prices_vat_inclusive: settings.pricesVatInclusive,
