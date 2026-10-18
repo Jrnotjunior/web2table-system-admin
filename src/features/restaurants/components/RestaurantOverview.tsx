@@ -1,5 +1,5 @@
 type RestaurantOverviewData = {
- name: string; slug: string; tagline: string; location_text: string | null; contact_number: string | null;
+ name: string; slug: string; tagline: string; restaurant_address: string | null; contact_number: string | null;
  email: string | null; custom_domain: string | null; created_at: string; is_active: boolean;
 };
 type Props = {
@@ -15,7 +15,7 @@ export default function RestaurantOverview({ restaurant, canManage, onRequestSta
     <div className="detail-item"><span>Restaurant name</span><strong>{restaurant.name}</strong></div>
     <div className="detail-item"><span>Slug</span><strong>/{restaurant.slug}</strong></div>
     <div className="detail-item"><span>Tagline</span><strong>{restaurant.tagline || '—'}</strong></div>
-    <div className="detail-item"><span>Location</span><strong>{restaurant.location_text || '—'}</strong></div>
+    <div className="detail-item"><span>Location</span><strong>{restaurant.restaurant_address || '—'}</strong></div>
     <div className="detail-item"><span>Contact number</span><strong>{restaurant.contact_number || '—'}</strong></div>
     <div className="detail-item"><span>Email</span><strong>{restaurant.email || '—'}</strong></div>
     <div className="detail-item"><span>Custom domain</span><strong>{restaurant.custom_domain || 'Not configured'}</strong></div>
