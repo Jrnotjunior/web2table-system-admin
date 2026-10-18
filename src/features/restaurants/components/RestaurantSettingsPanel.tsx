@@ -9,8 +9,10 @@ type RestaurantSettingsPanelProps = {
   onPricesVatInclusiveChange: (value: boolean) => void;
   cashOnDeliveryEnabled: boolean;
   cashOnPickupEnabled: boolean;
+  cashOnTakeOutEnabled: boolean;
   onCashOnDeliveryChange: (value: boolean) => void;
   onCashOnPickupChange: (value: boolean) => void;
+  onCashOnTakeOutChange: (value: boolean) => void;
   automaticRiderAssignmentEnabled: boolean;
   onAutomaticRiderAssignmentChange: (value: boolean) => void;
   settingsError: string;
@@ -31,6 +33,8 @@ export default function RestaurantSettingsPanel({
   onCashOnDeliveryChange,
   cashOnPickupEnabled,
   onCashOnPickupChange,
+  cashOnTakeOutEnabled,
+  onCashOnTakeOutChange,
   automaticRiderAssignmentEnabled,
   onAutomaticRiderAssignmentChange,
   settingsError,
@@ -80,11 +84,19 @@ export default function RestaurantSettingsPanel({
                 </label>
               </div>
               <div className="detail-item">
-                <span>Cash for Pickup &amp; Take-out</span>
+                <span>Cash for Pickup</span>
                 <label className="toggle-row">
                   <input className="toggle-input" type="checkbox" checked={cashOnPickupEnabled} onChange={(event) => onCashOnPickupChange(event.target.checked)} disabled={!canManage} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{cashOnPickupEnabled ? "Enabled" : "Disabled"}</span>
+                </label>
+              </div>
+              <div className="detail-item">
+                <span>Cash for Take-out</span>
+                <label className="toggle-row">
+                  <input className="toggle-input" type="checkbox" checked={cashOnTakeOutEnabled} onChange={(event) => onCashOnTakeOutChange(event.target.checked)} disabled={!canManage} />
+                  <span className="toggle-switch" aria-hidden="true"><span /></span>
+                  <span className="toggle-label">{cashOnTakeOutEnabled ? 'Enabled' : 'Disabled'}</span>
                 </label>
               </div>
               <div className="detail-item">
