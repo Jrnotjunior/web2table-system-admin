@@ -1072,7 +1072,7 @@ function AppContent() {
     if (!term) return restaurants;
 
     return restaurants.filter((restaurant) =>
-      [restaurant.name, restaurant.slug, restaurant.location_text ?? '', restaurant.email ?? '']
+      [restaurant.name, restaurant.slug, restaurant.restaurant_address ?? '', restaurant.email ?? '']
         .join(' ')
         .toLowerCase()
         .includes(term),
