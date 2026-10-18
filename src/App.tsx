@@ -130,6 +130,7 @@ function AppContent() {
   const [pendingSaveSettings, setPendingSaveSettings] = useState(false);
   const [cashOnDeliveryEnabled, setCashOnDeliveryEnabled] = useState(true);
   const [cashOnPickupEnabled, setCashOnPickupEnabled] = useState(true);
+  const [cashOnTakeOutEnabled, setCashOnTakeOutEnabled] = useState(true);
   const [automaticRiderAssignmentEnabled, setAutomaticRiderAssignmentEnabled] = useState(false);
   const [vatRegistered, setVatRegistered] = useState(false);
   const [pricesVatInclusive, setPricesVatInclusive] = useState(false);
@@ -557,6 +558,7 @@ function AppContent() {
       const settings = Array.isArray(data) ? data[0] : data;
       setCashOnDeliveryEnabled(settings?.cash_on_delivery_enabled ?? true);
       setCashOnPickupEnabled(settings?.cash_on_pickup_enabled ?? true);
+      setCashOnTakeOutEnabled(settings?.cash_on_take_out_enabled ?? true);
       setAutomaticRiderAssignmentEnabled(settings?.automatic_rider_assignment_enabled ?? false);
       setVatRegistered(settings?.tax_vat_registered ?? false);
       setPricesVatInclusive(settings?.tax_prices_vat_inclusive ?? false);
@@ -575,6 +577,7 @@ function AppContent() {
     const { data, error } = await updateRestaurantSettings(selectedRestaurant.id, {
       cashOnDeliveryEnabled,
       cashOnPickupEnabled,
+      cashOnTakeOutEnabled,
       automaticRiderAssignmentEnabled,
       vatRegistered,
       pricesVatInclusive,
@@ -1562,7 +1565,7 @@ function AppContent() {
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
-          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, automaticRiderAssignmentEnabled, settingsError, settingsSaving }}
+          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, cashOnTakeOutEnabled, automaticRiderAssignmentEnabled, settingsError, settingsSaving }}
           onVatRegisteredChange={setVatRegistered}
           onVatRateChange={setVatRate}
           onPricesVatInclusiveChange={setPricesVatInclusive}
