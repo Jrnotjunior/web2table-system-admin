@@ -8,7 +8,9 @@ type RestaurantSettingsPanelProps = {
   pricesVatInclusive: boolean;
   onPricesVatInclusiveChange: (value: boolean) => void;
   cashOnDeliveryEnabled: boolean;
+  cashOnPickupEnabled: boolean;
   onCashOnDeliveryChange: (value: boolean) => void;
+  onCashOnPickupChange: (value: boolean) => void;
   automaticRiderAssignmentEnabled: boolean;
   onAutomaticRiderAssignmentChange: (value: boolean) => void;
   settingsError: string;
@@ -27,6 +29,8 @@ export default function RestaurantSettingsPanel({
   onPricesVatInclusiveChange,
   cashOnDeliveryEnabled,
   onCashOnDeliveryChange,
+  cashOnPickupEnabled,
+  onCashOnPickupChange,
   automaticRiderAssignmentEnabled,
   onAutomaticRiderAssignmentChange,
   settingsError,
@@ -73,6 +77,14 @@ export default function RestaurantSettingsPanel({
                   <input className="toggle-input" type="checkbox" checked={cashOnDeliveryEnabled} onChange={(event) => onCashOnDeliveryChange(event.target.checked)} disabled={!canManage} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{cashOnDeliveryEnabled ? 'Enabled' : 'Disabled'}</span>
+                </label>
+              </div>
+              <div className="detail-item">
+                <span>Cash for Pickup &amp; Take-out</span>
+                <label className="toggle-row">
+                  <input className="toggle-input" type="checkbox" checked={cashOnPickupEnabled} onChange={(event) => onCashOnPickupChange(event.target.checked)} disabled={!canManage} />
+                  <span className="toggle-switch" aria-hidden="true"><span /></span>
+                  <span className="toggle-label">{cashOnPickupEnabled ? "Enabled" : "Disabled"}</span>
                 </label>
               </div>
               <div className="detail-item">
