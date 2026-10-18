@@ -3,7 +3,7 @@ import { supabase } from '../../../lib/supabase';
 export async function fetchRestaurants() {
   return supabase
     .from('restaurants')
-    .select('id,owner_id,custom_domain,slug,name,tagline,logo_url,location_text,contact_number,email,is_active,created_at,updated_at')
+    .select('id,owner_id,custom_domain,slug,name,tagline,logo_url,restaurant_address,contact_number,email,is_active,created_at,updated_at')
     .order('created_at', { ascending: false });
 }
 
@@ -39,7 +39,7 @@ export async function deleteRestaurant(restaurantId: string): Promise<{
 export async function fetchRestaurantById(restaurantId: string) {
   return supabase
     .from('restaurants')
-    .select('id,owner_id,custom_domain,slug,name,tagline,logo_url,location_text,contact_number,email,is_active,created_at,updated_at')
+    .select('id,owner_id,custom_domain,slug,name,tagline,logo_url,restaurant_address,contact_number,email,is_active,created_at,updated_at')
     .eq('id', restaurantId)
     .single();
 }
