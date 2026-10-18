@@ -1571,6 +1571,7 @@ function AppContent() {
           onPricesVatInclusiveChange={setPricesVatInclusive}
           onCashOnDeliveryChange={setCashOnDeliveryEnabled}
           onCashOnPickupChange={setCashOnPickupEnabled}
+           onCashOnTakeOutChange={setCashOnTakeOutEnabled}
           onAutomaticRiderAssignmentChange={setAutomaticRiderAssignmentEnabled}
           onRequestSaveSettings={() => setPendingSaveSettings(true)}
         />
