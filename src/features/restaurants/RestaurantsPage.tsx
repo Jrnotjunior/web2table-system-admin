@@ -40,7 +40,7 @@ export default function RestaurantsPage({ restaurants, filteredRestaurants, sear
                   <div className="restaurant-title-line"><h3>{restaurant.name}</h3><span className={restaurant.is_active ? 'status active' : 'status inactive'}>{restaurant.is_active ? 'Active' : 'Inactive'}</span></div>
                   <div className="restaurant-slug">/{restaurant.slug}</div>
                   {restaurant.tagline && <p>{restaurant.tagline}</p>}
-                  <div className="restaurant-meta">{restaurant.location_text && <span>{restaurant.location_text}</span>}{restaurant.email && <span>{restaurant.email}</span>}{restaurant.contact_number && <span>{restaurant.contact_number}</span>}</div>
+                  <div className="restaurant-meta">{restaurant.restaurant_address && <span>{restaurant.restaurant_address}</span>}{restaurant.email && <span>{restaurant.email}</span>}{restaurant.contact_number && <span>{restaurant.contact_number}</span>}</div>
                 </div>
               </div>
               <div className="row-actions">
