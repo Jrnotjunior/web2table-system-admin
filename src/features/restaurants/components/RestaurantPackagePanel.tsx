@@ -74,9 +74,8 @@ export default function RestaurantPackagePanel({
                     <option value="2">2 — Self Ordering + POS</option>
                     <option value="3">3 — POS</option>
                     <option value="4">4 — Self Ordering + POS + Kitchen</option>
-                    <option value="5">5 — Dispatch + Delivery</option>
-                    <option value="6">6 — Self Ordering + Kitchen</option>
-                    <option value="7">7 — POS + Delivery</option>
+                    <option value="5">5 — Self Ordering + Kitchen</option>
+                    <option value="6">6 — POS + Delivery</option>
                   </select>
                 </label>
               </div>
