@@ -1868,9 +1868,9 @@ function AppContent() {
                     onChange={(event) => setInviteTenantPackageId(event.target.value)}
                     disabled={inviteTenantSaving}
                   >
-                    <option value="1">1 — Full System</option>
-                    <option value="3">3 — POS</option>
-                    <option value="4">4 — Self Ordering + POS + Kitchen</option>
+                    <option value="1">Package 1 — Full System</option>
+                    <option value="3">Package 2 — POS</option>
+                    <option value="4">Package 3 — Self Ordering + POS + Kitchen</option>
                   </select>
                 </label>
 
