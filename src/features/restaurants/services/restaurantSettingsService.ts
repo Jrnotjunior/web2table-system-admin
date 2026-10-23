@@ -90,3 +90,26 @@ export async function reviewTaxpayerProfile(restaurantId: string, profile: Taxpa
     p_bir_approval_recorded_at: profile.bir_approval_recorded_at,
   });
 }
+
+
+export type BirIssuanceReadiness = {
+  restaurant_id: string;
+  taxpayer_profile_exists: boolean;
+  taxpayer_identity_complete: boolean;
+  taxpayer_profile_status: string;
+  regulatory_route: string;
+  route_evidence_recorded: boolean;
+  configured_series_count: number;
+  enabled_series_count: number;
+  issued_document_count: number;
+  official_invoice_issuance_api_enabled: false;
+  is_bir_accredited: false;
+  blockers: string[];
+  notice: string;
+};
+
+export async function fetchBirIssuanceReadiness(restaurantId: string) {
+  return supabase.rpc('get_restaurant_bir_issuance_readiness', {
+    p_restaurant_id: restaurantId,
+  });
+}
