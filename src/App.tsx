@@ -18,7 +18,7 @@ import { setRestaurantCustomDomain } from './features/restaurants/services/resta
 import { updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
-import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled, fetchTaxpayerProfile, reviewTaxpayerProfile, fetchBirIssuanceReadiness, type TaxpayerProfileReview, type BirIssuanceReadiness } from './features/restaurants/services/restaurantSettingsService';
+import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled, fetchTaxpayerProfile, reviewTaxpayerProfile, fetchBirIssuanceReadiness, configureDisabledInvoiceSeries, type DisabledInvoiceSeriesInput, type TaxpayerProfileReview, type BirIssuanceReadiness } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, deleteRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, inviteRestaurantOwner, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 
@@ -144,6 +144,9 @@ function AppContent() {
   const [birReadinessLoading, setBirReadinessLoading] = useState(false);
   const [birReadiness, setBirReadiness] = useState<BirIssuanceReadiness | null>(null);
   const [birReadinessError, setBirReadinessError] = useState('');
+  const [invoiceSeriesSaving, setInvoiceSeriesSaving] = useState(false);
+  const [invoiceSeriesError, setInvoiceSeriesError] = useState('');
+  const [invoiceSeriesMessage, setInvoiceSeriesMessage] = useState('');
   const [domain, setDomain] = useState('');
   const [domainLoading, setDomainLoading] = useState(false);
   const [domainSaving, setDomainSaving] = useState(false);
@@ -632,6 +635,33 @@ function AppContent() {
       setTaxpayerProfileMessage('Taxpayer profile review saved. This platform review is not BIR accreditation or approval.');
     }
     setTaxpayerProfileSaving(false);
+  }
+
+  async function saveDisabledInvoiceSeries(input: DisabledInvoiceSeriesInput) {
+    if (!selectedRestaurant) return;
+    setInvoiceSeriesSaving(true);
+    setInvoiceSeriesError('');
+    setInvoiceSeriesMessage('');
+    try {
+      const { data, error } = await configureDisabledInvoiceSeries(selectedRestaurant.id, input);
+      if (error) {
+        setInvoiceSeriesError(error.message);
+      } else {
+        const { data: readinessData, error: readinessError } = await fetchBirIssuanceReadiness(selectedRestaurant.id);
+        if (readinessError) {
+          setBirReadinessError(readinessError.message);
+        } else {
+          setBirReadiness(readinessData as unknown as BirIssuanceReadiness | null);
+          setBirReadinessError('');
+        }
+        const result = data as { notice?: string } | null;
+        setInvoiceSeriesMessage(result?.notice ?? 'Serial series saved with invoice issuance disabled.');
+      }
+    } catch (saveError) {
+      setInvoiceSeriesError(saveError instanceof Error ? saveError.message : 'Unable to save disabled invoice serial series.');
+    } finally {
+      setInvoiceSeriesSaving(false);
+    }
   }
 
   async function saveRestaurantSettings() {
@@ -1633,7 +1663,7 @@ function AppContent() {
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
-          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, cashOnTakeOutEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving, taxpayerProfileLoading, taxpayerProfile, taxpayerProfileError, taxpayerProfileMessage, taxpayerProfileSaving, birReadinessLoading, birReadiness, birReadinessError }}
+          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, cashOnTakeOutEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving, taxpayerProfileLoading, taxpayerProfile, taxpayerProfileError, taxpayerProfileMessage, taxpayerProfileSaving, birReadinessLoading, birReadiness, birReadinessError, invoiceSeriesSaving, invoiceSeriesError, invoiceSeriesMessage }}
           onVatRegisteredChange={setVatRegistered}
           onVatRateChange={setVatRate}
           onPricesVatInclusiveChange={setPricesVatInclusive}
@@ -1644,6 +1674,7 @@ function AppContent() {
           onOnlinePaymentsEnabledChange={setOnlinePaymentsEnabled}
           onTaxpayerProfileChange={setTaxpayerProfile}
           onRequestReviewTaxpayerProfile={() => void saveTaxpayerProfileReview()}
+          onConfigureDisabledInvoiceSeries={(input) => void saveDisabledInvoiceSeries(input)}
           onRequestSaveSettings={() => setPendingSaveSettings(true)}
         />
           {pendingRestaurantStatus && (
