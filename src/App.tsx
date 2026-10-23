@@ -18,7 +18,7 @@ import { setRestaurantCustomDomain } from './features/restaurants/services/resta
 import { updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
-import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled, fetchTaxpayerProfile, reviewTaxpayerProfile, type TaxpayerProfileReview } from './features/restaurants/services/restaurantSettingsService';
+import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled, fetchTaxpayerProfile, reviewTaxpayerProfile, fetchBirIssuanceReadiness, type TaxpayerProfileReview, type BirIssuanceReadiness } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, deleteRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, inviteRestaurantOwner, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 
@@ -141,6 +141,9 @@ function AppContent() {
   const [taxpayerProfileError, setTaxpayerProfileError] = useState('');
   const [taxpayerProfileMessage, setTaxpayerProfileMessage] = useState('');
   const [taxpayerProfileSaving, setTaxpayerProfileSaving] = useState(false);
+  const [birReadinessLoading, setBirReadinessLoading] = useState(false);
+  const [birReadiness, setBirReadiness] = useState<BirIssuanceReadiness | null>(null);
+  const [birReadinessError, setBirReadinessError] = useState('');
   const [domain, setDomain] = useState('');
   const [domainLoading, setDomainLoading] = useState(false);
   const [domainSaving, setDomainSaving] = useState(false);
@@ -555,14 +558,17 @@ function AppContent() {
   async function loadRestaurantSettings(restaurantId: string) {
     setSettingsLoading(true);
     setTaxpayerProfileLoading(true);
+    setBirReadinessLoading(true);
     setSettingsError('');
     setTaxpayerProfileError('');
     setTaxpayerProfileMessage('');
+    setBirReadinessError('');
 
-    const [{ data, error }, onlinePaymentsResult, taxpayerProfileResult] = await Promise.all([
+    const [{ data, error }, onlinePaymentsResult, taxpayerProfileResult, birReadinessResult] = await Promise.all([
       fetchRestaurantSettings(restaurantId),
       fetchOnlinePaymentsEnabled(restaurantId),
       fetchTaxpayerProfile(restaurantId),
+      fetchBirIssuanceReadiness(restaurantId),
     ]);
 
     if (error) {
@@ -586,6 +592,13 @@ function AppContent() {
     } else {
       setTaxpayerProfile(taxpayerProfileResult.data as unknown as TaxpayerProfileReview | null);
     }
+    if (birReadinessResult.error) {
+      setBirReadiness(null);
+      setBirReadinessError(birReadinessResult.error.message);
+    } else {
+      setBirReadiness(birReadinessResult.data as unknown as BirIssuanceReadiness | null);
+    }
+    setBirReadinessLoading(false);
     setTaxpayerProfileLoading(false);
     setSettingsLoading(false);
   }
@@ -1613,7 +1626,7 @@ function AppContent() {
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
-          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, cashOnTakeOutEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving, taxpayerProfileLoading, taxpayerProfile, taxpayerProfileError, taxpayerProfileMessage, taxpayerProfileSaving }}
+          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, cashOnTakeOutEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving, taxpayerProfileLoading, taxpayerProfile, taxpayerProfileError, taxpayerProfileMessage, taxpayerProfileSaving, birReadinessLoading, birReadiness, birReadinessError }}
           onVatRegisteredChange={setVatRegistered}
           onVatRateChange={setVatRate}
           onPricesVatInclusiveChange={setPricesVatInclusive}
