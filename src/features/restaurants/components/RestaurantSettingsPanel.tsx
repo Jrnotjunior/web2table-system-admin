@@ -1,4 +1,5 @@
-import type { BirIssuanceReadiness, TaxpayerProfileReview } from '../services/restaurantSettingsService';
+import { useState } from 'react';
+import type { BirIssuanceReadiness, DisabledInvoiceSeriesInput, TaxpayerProfileReview } from '../services/restaurantSettingsService';
 
 function formatDateTimeLocal(value: string | null): string {
   if (!value) return '';
@@ -40,6 +41,10 @@ type RestaurantSettingsPanelProps = {
   birReadinessLoading: boolean;
   birReadiness: BirIssuanceReadiness | null;
   birReadinessError: string;
+  invoiceSeriesSaving: boolean;
+  invoiceSeriesError: string;
+  invoiceSeriesMessage: string;
+  onConfigureDisabledInvoiceSeries: (input: DisabledInvoiceSeriesInput) => void;
 };
 
 export default function RestaurantSettingsPanel({
@@ -74,7 +79,29 @@ export default function RestaurantSettingsPanel({
   birReadinessLoading,
   birReadiness,
   birReadinessError,
+  invoiceSeriesSaving,
+  invoiceSeriesError,
+  invoiceSeriesMessage,
+  onConfigureDisabledInvoiceSeries,
 }: RestaurantSettingsPanelProps) {
+  const [invoiceBranchCode, setInvoiceBranchCode] = useState('');
+  const [invoiceDocumentType, setInvoiceDocumentType] = useState<DisabledInvoiceSeriesInput['documentType']>('sales_invoice');
+  const [invoiceInitialSerial, setInvoiceInitialSerial] = useState('');
+  const [invoiceNextSerial, setInvoiceNextSerial] = useState('');
+
+  function submitDisabledInvoiceSeries(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const initialSerial = Number(invoiceInitialSerial);
+    const nextSerial = Number(invoiceNextSerial);
+    if (!Number.isSafeInteger(initialSerial) || initialSerial <= 0 || !Number.isSafeInteger(nextSerial) || nextSerial < initialSerial) return;
+    onConfigureDisabledInvoiceSeries({
+      branchCode: invoiceBranchCode,
+      documentType: invoiceDocumentType,
+      initialSerial,
+      nextSerial,
+    });
+  }
+
   return (
     <div className="manage-overview">
       <div className="overview-section">
@@ -194,6 +221,26 @@ export default function RestaurantSettingsPanel({
               <ul style={{ margin: 0, paddingLeft: 20, display: 'grid', gap: 6 }}>
                 {birReadiness.blockers.map((blocker) => <li key={blocker}>{blocker}</li>)}
               </ul>
+              <section style={{ marginTop: 20, padding: 16, border: '1px solid var(--border, #dce2ea)', borderRadius: 10 }}>
+                <h4 style={{ margin: '0 0 6px' }}>Configure serial series (keep disabled)</h4>
+                <p className="muted">Use only the official, authorized starting serial from the tenant's applicable permit/approval documents. This records the series for planning and keeps <strong>invoice issuance OFF</strong>. It does not generate or authorize invoices.</p>
+                <form onSubmit={submitDisabledInvoiceSeries} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+                  <label className="detail-item"><span>Branch code</span><input value={invoiceBranchCode} maxLength={64} onChange={(event) => setInvoiceBranchCode(event.target.value)} disabled={!canManage || invoiceSeriesSaving} placeholder="e.g. 00000" /></label>
+                  <label className="detail-item"><span>Document type</span><select value={invoiceDocumentType} onChange={(event) => setInvoiceDocumentType(event.target.value as DisabledInvoiceSeriesInput['documentType'])} disabled={!canManage || invoiceSeriesSaving}>
+                    <option value="sales_invoice">Sales Invoice</option>
+                    <option value="invoice">Invoice</option>
+                    <option value="cash_invoice">Cash Invoice</option>
+                    <option value="credit_invoice">Credit Invoice</option>
+                    <option value="service_invoice">Service Invoice</option>
+                  </select></label>
+                  <label className="detail-item"><span>Authorized initial serial</span><input type="number" min="1" step="1" value={invoiceInitialSerial} onChange={(event) => setInvoiceInitialSerial(event.target.value)} disabled={!canManage || invoiceSeriesSaving} required /></label>
+                  <label className="detail-item"><span>Next serial</span><input type="number" min="1" step="1" value={invoiceNextSerial} onChange={(event) => setInvoiceNextSerial(event.target.value)} disabled={!canManage || invoiceSeriesSaving} required /></label>
+                  {canManage && <div style={{ display: 'flex', alignItems: 'end' }}><button type="submit" disabled={invoiceSeriesSaving || birReadinessLoading || !birReadiness || !birReadiness.route_evidence_recorded || birReadiness.taxpayer_profile_status !== 'reviewed'}>{invoiceSeriesSaving ? 'Saving…' : 'Save disabled series'}</button></div>}
+                </form>
+                {invoiceSeriesError && <div className="error-banner" role="alert" style={{ marginTop: 12 }}>{invoiceSeriesError}</div>}
+                {invoiceSeriesMessage && <p className="muted" role="status" style={{ marginTop: 12 }}>{invoiceSeriesMessage}</p>}
+                <p className="muted" style={{ marginTop: 8 }}>The form stays disabled until the taxpayer profile has platform review and route-specific approval references recorded. A separate approved release is still required before any invoice can be issued.</p>
+              </section>
               <p className="muted" style={{ marginTop: 12 }}>{birReadiness.notice}</p>
             </>
           ) : <div className="empty-state">Readiness status was not returned.</div>}
