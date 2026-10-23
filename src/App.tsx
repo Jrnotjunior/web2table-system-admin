@@ -622,6 +622,13 @@ function AppContent() {
       setTaxpayerProfileError(error.message);
     } else {
       setTaxpayerProfile(data as unknown as TaxpayerProfileReview);
+      const { data: readinessData, error: readinessError } = await fetchBirIssuanceReadiness(selectedRestaurant.id);
+      if (readinessError) {
+        setBirReadinessError(readinessError.message);
+      } else {
+        setBirReadiness(readinessData as unknown as BirIssuanceReadiness | null);
+        setBirReadinessError('');
+      }
       setTaxpayerProfileMessage('Taxpayer profile review saved. This platform review is not BIR accreditation or approval.');
     }
     setTaxpayerProfileSaving(false);
