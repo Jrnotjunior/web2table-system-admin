@@ -1,5 +1,13 @@
 import type { TaxpayerProfileReview } from '../services/restaurantSettingsService';
 
+function formatDateTimeLocal(value: string | null): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 16);
+}
+
 type RestaurantSettingsPanelProps = {
   canManage: boolean;
   settingsLoading: boolean;
@@ -172,6 +180,7 @@ export default function RestaurantSettingsPanel({
                 <div className="detail-item">
                   <span>Platform review status</span>
                   <select value={taxpayerProfile.profile_status} onChange={(event) => onTaxpayerProfileChange({ ...taxpayerProfile, profile_status: event.target.value as TaxpayerProfileReview['profile_status'] })} disabled={!canManage || taxpayerProfileSaving || taxpayerProfileLoading}>
+                    <option value="draft" disabled>Draft — waiting for owner submission</option>
                     <option value="submitted_for_review">Submitted for review</option>
                     <option value="needs_correction">Needs correction</option>
                     <option value="reviewed">Reviewed (platform review only)</option>
@@ -191,7 +200,7 @@ export default function RestaurantSettingsPanel({
                 <label className="detail-item"><span>Tenant Permit to Use reference</span><input value={taxpayerProfile.bir_permit_to_use_reference ?? ''} onChange={(event) => onTaxpayerProfileChange({ ...taxpayerProfile, bir_permit_to_use_reference: event.target.value || null })} disabled={!canManage || taxpayerProfileSaving || taxpayerProfileLoading} /></label>
                 <label className="detail-item"><span>Permit to Transmit reference</span><input value={taxpayerProfile.bir_permit_to_transmit_reference ?? ''} onChange={(event) => onTaxpayerProfileChange({ ...taxpayerProfile, bir_permit_to_transmit_reference: event.target.value || null })} disabled={!canManage || taxpayerProfileSaving || taxpayerProfileLoading} /></label>
                 <label className="detail-item"><span>Approved software version</span><input value={taxpayerProfile.approved_software_version ?? ''} onChange={(event) => onTaxpayerProfileChange({ ...taxpayerProfile, approved_software_version: event.target.value || null })} disabled={!canManage || taxpayerProfileSaving || taxpayerProfileLoading} /></label>
-                <label className="detail-item"><span>BIR approval recorded at</span><input type="datetime-local" value={taxpayerProfile.bir_approval_recorded_at ? new Date(taxpayerProfile.bir_approval_recorded_at).toISOString().slice(0,16) : ''} onChange={(event) => onTaxpayerProfileChange({ ...taxpayerProfile, bir_approval_recorded_at: event.target.value ? new Date(event.target.value).toISOString() : null })} disabled={!canManage || taxpayerProfileSaving || taxpayerProfileLoading} /></label>
+                <label className="detail-item"><span>BIR approval recorded at</span><input type="datetime-local" value={formatDateTimeLocal(taxpayerProfile.bir_approval_recorded_at)} onChange={(event) => onTaxpayerProfileChange({ ...taxpayerProfile, bir_approval_recorded_at: event.target.value ? new Date(event.target.value).toISOString() : null })} disabled={!canManage || taxpayerProfileSaving || taxpayerProfileLoading} /></label>
               </div>
               <label className="detail-item" style={{ display: 'grid', gap: 6, marginTop: 16 }}><span>Internal review note</span><textarea rows={3} value={taxpayerProfile.review_note ?? ''} onChange={(event) => onTaxpayerProfileChange({ ...taxpayerProfile, review_note: event.target.value || null })} disabled={!canManage || taxpayerProfileSaving || taxpayerProfileLoading} /></label>
               {taxpayerProfile.reviewed_at && <p className="muted">Last platform review: {new Date(taxpayerProfile.reviewed_at).toLocaleString()}</p>}
@@ -199,7 +208,7 @@ export default function RestaurantSettingsPanel({
               {taxpayerProfileMessage && <div className="status-panel"><strong>{taxpayerProfileMessage}</strong></div>}
               {canManage && <div className="status-panel">
                 <div><strong>Registration evidence</strong><span>Only record accreditation, PTU or Permit to Transmit references after checking the supporting official documents. The “Reviewed” status below means platform review, not BIR certification.</span></div>
-                <button onClick={onRequestReviewSave} disabled={taxpayerProfileSaving || taxpayerProfileLoading}>{taxpayerProfileSaving ? 'Saving…' : 'Save profile review'}</button>
+                <button onClick={onRequestReviewSave} disabled={taxpayerProfileSaving || taxpayerProfileLoading || taxpayerProfile.profile_status === 'draft'}>{taxpayerProfileSaving ? 'Saving…' : 'Save profile review'}</button>
               </div>}
             </>
           )}
