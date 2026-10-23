@@ -40,3 +40,53 @@ export async function fetchOnlinePaymentsEnabled(restaurantId: string) {
 export async function updateOnlinePaymentsEnabled(restaurantId: string, enabled: boolean) {
   return supabase.rpc('system_admin_set_online_payments_enabled', { p_restaurant_id: restaurantId, p_enabled: enabled });
 }
+
+
+export type TaxpayerProfileReview = {
+  restaurant_id: string;
+  registered_legal_name: string | null;
+  trade_name: string | null;
+  tin: string | null;
+  registered_address: string | null;
+  branch_code: string | null;
+  taxpayer_category: 'micro' | 'small' | 'medium' | 'large' | 'large_taxpayer' | 'unknown';
+  profile_status: 'draft' | 'submitted_for_review' | 'needs_correction' | 'reviewed';
+  review_note: string | null;
+  reviewed_at: string | null;
+  bir_route_status: 'unconfirmed' | 'software_supplier' | 'esp' | 'both' | 'other';
+  bir_accreditation_reference: string | null;
+  bir_permit_to_use_reference: string | null;
+  bir_permit_to_transmit_reference: string | null;
+  approved_software_version: string | null;
+  bir_approval_recorded_at: string | null;
+};
+
+export type TaxpayerProfileReviewUpdate = Pick<
+  TaxpayerProfileReview,
+  | 'profile_status'
+  | 'review_note'
+  | 'bir_route_status'
+  | 'bir_accreditation_reference'
+  | 'bir_permit_to_use_reference'
+  | 'bir_permit_to_transmit_reference'
+  | 'approved_software_version'
+  | 'bir_approval_recorded_at'
+>;
+
+export async function fetchTaxpayerProfile(restaurantId: string) {
+  return supabase.rpc('get_restaurant_taxpayer_profile', { p_restaurant_id: restaurantId });
+}
+
+export async function reviewTaxpayerProfile(restaurantId: string, profile: TaxpayerProfileReviewUpdate) {
+  return supabase.rpc('system_admin_review_restaurant_taxpayer_profile', {
+    p_restaurant_id: restaurantId,
+    p_profile_status: profile.profile_status,
+    p_review_note: profile.review_note,
+    p_bir_route_status: profile.bir_route_status,
+    p_bir_accreditation_reference: profile.bir_accreditation_reference,
+    p_bir_permit_to_use_reference: profile.bir_permit_to_use_reference,
+    p_bir_permit_to_transmit_reference: profile.bir_permit_to_transmit_reference,
+    p_approved_software_version: profile.approved_software_version,
+    p_bir_approval_recorded_at: profile.bir_approval_recorded_at,
+  });
+}
