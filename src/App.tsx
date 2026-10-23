@@ -556,8 +556,6 @@ function AppContent() {
     if (error) {
       setSettingsError(error.message);
     } else {
-      const { error: onlinePaymentsError } = await updateOnlinePaymentsEnabled(selectedRestaurant.id, onlinePaymentsEnabled);
-      if (onlinePaymentsError) setSettingsError(onlinePaymentsError.message);
       const settings = Array.isArray(data) ? data[0] : data;
       setCashOnDeliveryEnabled(settings?.cash_on_delivery_enabled ?? true);
       setCashOnPickupEnabled(settings?.cash_on_pickup_enabled ?? true);
@@ -592,6 +590,8 @@ function AppContent() {
     if (error) {
       setSettingsError(error.message);
     } else {
+      const { error: onlinePaymentsError } = await updateOnlinePaymentsEnabled(selectedRestaurant.id, onlinePaymentsEnabled);
+      if (onlinePaymentsError) setSettingsError(onlinePaymentsError.message);
       const settings = Array.isArray(data) ? data[0] : data;
       setCashOnDeliveryEnabled(settings?.cash_on_delivery_enabled ?? cashOnDeliveryEnabled);
       setCashOnPickupEnabled(settings?.cash_on_pickup_enabled ?? cashOnPickupEnabled);
