@@ -102,6 +102,7 @@ export type BirIssuanceReadiness = {
   configured_series_count: number;
   enabled_series_count: number;
   issued_document_count: number;
+  serial_series: Array<{ branch_code: string; document_type: string; initial_serial: string | null; next_serial: string | null; regulatory_route: string; issuance_enabled: boolean; configured_at: string | null }>;
   unclassified_product_count: number;
   completed_orders_needing_tax_review: number;
   official_invoice_issuance_api_enabled: false;
