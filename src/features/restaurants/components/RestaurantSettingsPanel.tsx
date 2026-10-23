@@ -217,6 +217,22 @@ export default function RestaurantSettingsPanel({
                 <div className="detail-item"><span>Unclassified menu products</span><strong>{birReadiness.unclassified_product_count}</strong></div>
                 <div className="detail-item"><span>Completed sales needing tax review</span><strong>{birReadiness.completed_orders_needing_tax_review}</strong></div>
               </div>
+              <h4 style={{ margin: '18px 0 8px' }}>Saved invoice serial series (all should remain disabled)</h4>
+              {birReadiness.serial_series.length === 0 ? <p className="muted">No serial series configured yet. Recording a series requires verified route/permit details and leaves issuance OFF.</p> : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                    <thead><tr><th style={{ textAlign: 'left', padding: 8 }}>Branch</th><th style={{ textAlign: 'left', padding: 8 }}>Document type</th><th style={{ textAlign: 'left', padding: 8 }}>Initial serial</th><th style={{ textAlign: 'left', padding: 8 }}>Next serial</th><th style={{ textAlign: 'left', padding: 8 }}>Route</th><th style={{ textAlign: 'left', padding: 8 }}>Issuance</th></tr></thead>
+                    <tbody>{birReadiness.serial_series.map((series) => <tr key={`${series.branch_code}:${series.document_type}`}>
+                      <td style={{ padding: 8, borderTop: '1px solid #e2e8f0' }}>{series.branch_code || 'Default branch'}</td>
+                      <td style={{ padding: 8, borderTop: '1px solid #e2e8f0' }}>{series.document_type.replaceAll('_', ' ')}</td>
+                      <td style={{ padding: 8, borderTop: '1px solid #e2e8f0' }}>{series.initial_serial ?? '—'}</td>
+                      <td style={{ padding: 8, borderTop: '1px solid #e2e8f0' }}>{series.next_serial ?? '—'}</td>
+                      <td style={{ padding: 8, borderTop: '1px solid #e2e8f0' }}>{series.regulatory_route.replaceAll('_', ' ')}</td>
+                      <td style={{ padding: 8, borderTop: '1px solid #e2e8f0', color: series.issuance_enabled ? '#b91c1c' : '#166534', fontWeight: 700 }}>{series.issuance_enabled ? 'ENABLED — investigate' : 'OFF'}</td>
+                    </tr>)}</tbody>
+                  </table>
+                </div>
+              )}
               <h4 style={{ margin: '18px 0 8px' }}>Remaining blockers</h4>
               <ul style={{ margin: 0, paddingLeft: 20, display: 'grid', gap: 6 }}>
                 {birReadiness.blockers.map((blocker) => <li key={blocker}>{blocker}</li>)}
