@@ -18,7 +18,7 @@ import { setRestaurantCustomDomain } from './features/restaurants/services/resta
 import { updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
-import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled } from './features/restaurants/services/restaurantSettingsService';
+import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled, fetchTaxpayerProfile, reviewTaxpayerProfile, type TaxpayerProfileReview } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, deleteRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, inviteRestaurantOwner, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 
@@ -136,6 +136,11 @@ function AppContent() {
   const [vatRegistered, setVatRegistered] = useState(false);
   const [pricesVatInclusive, setPricesVatInclusive] = useState(false);
   const [vatRate, setVatRate] = useState('12');
+  const [taxpayerProfileLoading, setTaxpayerProfileLoading] = useState(false);
+  const [taxpayerProfile, setTaxpayerProfile] = useState<TaxpayerProfileReview | null>(null);
+  const [taxpayerProfileError, setTaxpayerProfileError] = useState('');
+  const [taxpayerProfileMessage, setTaxpayerProfileMessage] = useState('');
+  const [taxpayerProfileSaving, setTaxpayerProfileSaving] = useState(false);
   const [domain, setDomain] = useState('');
   const [domainLoading, setDomainLoading] = useState(false);
   const [domainSaving, setDomainSaving] = useState(false);
@@ -549,9 +554,16 @@ function AppContent() {
 
   async function loadRestaurantSettings(restaurantId: string) {
     setSettingsLoading(true);
+    setTaxpayerProfileLoading(true);
     setSettingsError('');
+    setTaxpayerProfileError('');
+    setTaxpayerProfileMessage('');
 
-    const [{ data, error }, onlinePaymentsResult] = await Promise.all([fetchRestaurantSettings(restaurantId), fetchOnlinePaymentsEnabled(restaurantId)]);
+    const [{ data, error }, onlinePaymentsResult, taxpayerProfileResult] = await Promise.all([
+      fetchRestaurantSettings(restaurantId),
+      fetchOnlinePaymentsEnabled(restaurantId),
+      fetchTaxpayerProfile(restaurantId),
+    ]);
 
     if (error) {
       setSettingsError(error.message);
@@ -568,7 +580,38 @@ function AppContent() {
       else setOnlinePaymentsEnabled(Boolean(onlinePaymentsResult.data));
     }
 
+    if (taxpayerProfileResult.error) {
+      setTaxpayerProfile(null);
+      setTaxpayerProfileError(taxpayerProfileResult.error.message);
+    } else {
+      setTaxpayerProfile(taxpayerProfileResult.data as unknown as TaxpayerProfileReview | null);
+    }
+    setTaxpayerProfileLoading(false);
     setSettingsLoading(false);
+  }
+
+  async function saveTaxpayerProfileReview() {
+    if (!selectedRestaurant || !taxpayerProfile) return;
+    setTaxpayerProfileSaving(true);
+    setTaxpayerProfileError('');
+    setTaxpayerProfileMessage('');
+    const { data, error } = await reviewTaxpayerProfile(selectedRestaurant.id, {
+      profile_status: taxpayerProfile.profile_status,
+      review_note: taxpayerProfile.review_note,
+      bir_route_status: taxpayerProfile.bir_route_status,
+      bir_accreditation_reference: taxpayerProfile.bir_accreditation_reference,
+      bir_permit_to_use_reference: taxpayerProfile.bir_permit_to_use_reference,
+      bir_permit_to_transmit_reference: taxpayerProfile.bir_permit_to_transmit_reference,
+      approved_software_version: taxpayerProfile.approved_software_version,
+      bir_approval_recorded_at: taxpayerProfile.bir_approval_recorded_at,
+    });
+    if (error) {
+      setTaxpayerProfileError(error.message);
+    } else {
+      setTaxpayerProfile(data as unknown as TaxpayerProfileReview);
+      setTaxpayerProfileMessage('Taxpayer profile review saved. This platform review is not BIR accreditation or approval.');
+    }
+    setTaxpayerProfileSaving(false);
   }
 
   async function saveRestaurantSettings() {
@@ -1570,7 +1613,7 @@ function AppContent() {
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
-          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, cashOnTakeOutEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving }}
+          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, cashOnTakeOutEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving, taxpayerProfileLoading, taxpayerProfile, taxpayerProfileError, taxpayerProfileMessage, taxpayerProfileSaving }}
           onVatRegisteredChange={setVatRegistered}
           onVatRateChange={setVatRate}
           onPricesVatInclusiveChange={setPricesVatInclusive}
@@ -1579,6 +1622,8 @@ function AppContent() {
            onCashOnTakeOutChange={setCashOnTakeOutEnabled}
           onAutomaticRiderAssignmentChange={setAutomaticRiderAssignmentEnabled}
           onOnlinePaymentsEnabledChange={setOnlinePaymentsEnabled}
+          onTaxpayerProfileChange={setTaxpayerProfile}
+          onRequestReviewTaxpayerProfile={() => void saveTaxpayerProfileReview()}
           onRequestSaveSettings={() => setPendingSaveSettings(true)}
         />
           {pendingRestaurantStatus && (
