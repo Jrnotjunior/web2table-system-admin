@@ -31,3 +31,12 @@ export async function updateRestaurantSettings(
     p_tax_vat_rate: settings.vatRate,
   });
 }
+
+
+export async function fetchOnlinePaymentsEnabled(restaurantId: string) {
+  return supabase.rpc('system_admin_get_online_payments_enabled', { p_restaurant_id: restaurantId });
+}
+
+export async function updateOnlinePaymentsEnabled(restaurantId: string, enabled: boolean) {
+  return supabase.rpc('system_admin_set_online_payments_enabled', { p_restaurant_id: restaurantId, p_enabled: enabled });
+}
