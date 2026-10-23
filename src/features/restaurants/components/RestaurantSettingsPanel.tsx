@@ -1,4 +1,4 @@
-import type { TaxpayerProfileReview } from '../services/restaurantSettingsService';
+import type { BirIssuanceReadiness, TaxpayerProfileReview } from '../services/restaurantSettingsService';
 
 function formatDateTimeLocal(value: string | null): string {
   if (!value) return '';
@@ -37,6 +37,9 @@ type RestaurantSettingsPanelProps = {
   taxpayerProfileMessage: string;
   taxpayerProfileSaving: boolean;
   onRequestReviewSave: () => void;
+  birReadinessLoading: boolean;
+  birReadiness: BirIssuanceReadiness | null;
+  birReadinessError: string;
 };
 
 export default function RestaurantSettingsPanel({
@@ -68,6 +71,9 @@ export default function RestaurantSettingsPanel({
   taxpayerProfileMessage,
   taxpayerProfileSaving,
   onRequestReviewSave,
+  birReadinessLoading,
+  birReadiness,
+  birReadinessError,
 }: RestaurantSettingsPanelProps) {
   return (
     <div className="manage-overview">
@@ -158,6 +164,38 @@ export default function RestaurantSettingsPanel({
             </div>
           </>
         )}
+
+        <div className="overview-section" style={{ marginTop: 24 }}>
+          <div className="eyebrow">BIR readiness</div>
+          <h3>Official invoice issuance gate</h3>
+          <p>This control reports platform readiness only. Official invoice issuance is intentionally disabled while the applicable BIR route, approved invoice rules, required reports and release acceptance remain incomplete.</p>
+          <div className="status-panel" style={{ borderColor: '#b91c1c' }}>
+            <div>
+              <strong style={{ color: '#b91c1c' }}>OFF — Official BIR invoice issuance</strong>
+              <span>Web2Table is not currently represented as BIR-accredited. Operational POS receipts must not be treated as official BIR invoices.</span>
+            </div>
+          </div>
+          {birReadinessLoading ? <div className="empty-state">Checking readiness…</div> : birReadinessError ? (
+            <div className="error-banner">{birReadinessError}</div>
+          ) : birReadiness ? (
+            <>
+              <div className="detail-grid" style={{ marginTop: 12 }}>
+                <div className="detail-item"><span>Taxpayer profile</span><strong>{birReadiness.taxpayer_profile_status.replaceAll('_', ' ')}</strong></div>
+                <div className="detail-item"><span>Regulatory route</span><strong>{birReadiness.regulatory_route.replaceAll('_', ' ')}</strong></div>
+                <div className="detail-item"><span>Taxpayer identity complete</span><strong>{birReadiness.taxpayer_identity_complete ? 'Yes' : 'No'}</strong></div>
+                <div className="detail-item"><span>Route evidence recorded</span><strong>{birReadiness.route_evidence_recorded ? 'Yes — still requires document verification' : 'No'}</strong></div>
+                <div className="detail-item"><span>Configured serial series</span><strong>{birReadiness.configured_series_count}</strong></div>
+                <div className="detail-item"><span>Enabled serial series</span><strong>{birReadiness.enabled_series_count}</strong></div>
+                <div className="detail-item"><span>Documents issued by ledger</span><strong>{birReadiness.issued_document_count}</strong></div>
+              </div>
+              <h4 style={{ margin: '18px 0 8px' }}>Remaining blockers</h4>
+              <ul style={{ margin: 0, paddingLeft: 20, display: 'grid', gap: 6 }}>
+                {birReadiness.blockers.map((blocker) => <li key={blocker}>{blocker}</li>)}
+              </ul>
+              <p className="muted" style={{ marginTop: 12 }}>{birReadiness.notice}</p>
+            </>
+          ) : <div className="empty-state">Readiness status was not returned.</div>}
+        </div>
 
         <div className="overview-section" style={{ marginTop: 24 }}>
           <div className="eyebrow">BIR readiness</div>
