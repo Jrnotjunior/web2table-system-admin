@@ -26,6 +26,7 @@ type RestaurantSettingsPanelProps = {
   taxpayerProfile: TaxpayerProfileReview | null;
   onTaxpayerProfileChange: (profile: TaxpayerProfileReview) => void;
   taxpayerProfileError: string;
+  taxpayerProfileMessage: string;
   taxpayerProfileSaving: boolean;
   onRequestReviewSave: () => void;
 };
@@ -56,6 +57,7 @@ export default function RestaurantSettingsPanel({
   taxpayerProfile,
   onTaxpayerProfileChange,
   taxpayerProfileError,
+  taxpayerProfileMessage,
   taxpayerProfileSaving,
   onRequestReviewSave,
 }: RestaurantSettingsPanelProps) {
@@ -194,6 +196,7 @@ export default function RestaurantSettingsPanel({
               <label className="detail-item" style={{ display: 'grid', gap: 6, marginTop: 16 }}><span>Internal review note</span><textarea rows={3} value={taxpayerProfile.review_note ?? ''} onChange={(event) => onTaxpayerProfileChange({ ...taxpayerProfile, review_note: event.target.value || null })} disabled={!canManage || taxpayerProfileSaving || taxpayerProfileLoading} /></label>
               {taxpayerProfile.reviewed_at && <p className="muted">Last platform review: {new Date(taxpayerProfile.reviewed_at).toLocaleString()}</p>}
               {taxpayerProfileError && <div className="error-banner">{taxpayerProfileError}</div>}
+              {taxpayerProfileMessage && <div className="status-panel"><strong>{taxpayerProfileMessage}</strong></div>}
               {canManage && <div className="status-panel">
                 <div><strong>Registration evidence</strong><span>Only record accreditation, PTU or Permit to Transmit references after checking the supporting official documents. The “Reviewed” status below means platform review, not BIR certification.</span></div>
                 <button onClick={onRequestReviewSave} disabled={taxpayerProfileSaving || taxpayerProfileLoading}>{taxpayerProfileSaving ? 'Saving…' : 'Save profile review'}</button>
