@@ -102,6 +102,8 @@ export type BirIssuanceReadiness = {
   configured_series_count: number;
   enabled_series_count: number;
   issued_document_count: number;
+  unclassified_product_count: number;
+  completed_orders_needing_tax_review: number;
   official_invoice_issuance_api_enabled: false;
   is_bir_accredited: false;
   blockers: string[];
