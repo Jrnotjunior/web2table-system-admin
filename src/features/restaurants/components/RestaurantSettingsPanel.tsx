@@ -187,6 +187,8 @@ export default function RestaurantSettingsPanel({
                 <div className="detail-item"><span>Configured serial series</span><strong>{birReadiness.configured_series_count}</strong></div>
                 <div className="detail-item"><span>Enabled serial series</span><strong>{birReadiness.enabled_series_count}</strong></div>
                 <div className="detail-item"><span>Documents issued by ledger</span><strong>{birReadiness.issued_document_count}</strong></div>
+                <div className="detail-item"><span>Unclassified menu products</span><strong>{birReadiness.unclassified_product_count}</strong></div>
+                <div className="detail-item"><span>Completed sales needing tax review</span><strong>{birReadiness.completed_orders_needing_tax_review}</strong></div>
               </div>
               <h4 style={{ margin: '18px 0 8px' }}>Remaining blockers</h4>
               <ul style={{ margin: 0, paddingLeft: 20, display: 'grid', gap: 6 }}>
