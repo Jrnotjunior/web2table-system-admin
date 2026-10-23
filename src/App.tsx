@@ -18,7 +18,7 @@ import { setRestaurantCustomDomain } from './features/restaurants/services/resta
 import { updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
 import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
-import { fetchRestaurantSettings, updateRestaurantSettings } from './features/restaurants/services/restaurantSettingsService';
+import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, deleteRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, inviteRestaurantOwner, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 
@@ -132,6 +132,7 @@ function AppContent() {
   const [cashOnPickupEnabled, setCashOnPickupEnabled] = useState(true);
   const [cashOnTakeOutEnabled, setCashOnTakeOutEnabled] = useState(true);
   const [automaticRiderAssignmentEnabled, setAutomaticRiderAssignmentEnabled] = useState(false);
+  const [onlinePaymentsEnabled, setOnlinePaymentsEnabled] = useState(true);
   const [vatRegistered, setVatRegistered] = useState(false);
   const [pricesVatInclusive, setPricesVatInclusive] = useState(false);
   const [vatRate, setVatRate] = useState('12');
@@ -550,11 +551,13 @@ function AppContent() {
     setSettingsLoading(true);
     setSettingsError('');
 
-    const { data, error } = await fetchRestaurantSettings(restaurantId);
+    const [{ data, error }, onlinePaymentsResult] = await Promise.all([fetchRestaurantSettings(restaurantId), fetchOnlinePaymentsEnabled(restaurantId)]);
 
     if (error) {
       setSettingsError(error.message);
     } else {
+      const { error: onlinePaymentsError } = await updateOnlinePaymentsEnabled(selectedRestaurant.id, onlinePaymentsEnabled);
+      if (onlinePaymentsError) setSettingsError(onlinePaymentsError.message);
       const settings = Array.isArray(data) ? data[0] : data;
       setCashOnDeliveryEnabled(settings?.cash_on_delivery_enabled ?? true);
       setCashOnPickupEnabled(settings?.cash_on_pickup_enabled ?? true);
@@ -563,6 +566,8 @@ function AppContent() {
       setVatRegistered(settings?.tax_vat_registered ?? false);
       setPricesVatInclusive(settings?.tax_prices_vat_inclusive ?? false);
       setVatRate(String(settings?.tax_vat_rate ?? 0));
+      if (onlinePaymentsResult.error) setSettingsError(onlinePaymentsResult.error.message);
+      else setOnlinePaymentsEnabled(Boolean(onlinePaymentsResult.data));
     }
 
     setSettingsLoading(false);
@@ -1565,7 +1570,7 @@ function AppContent() {
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
-          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, cashOnTakeOutEnabled, automaticRiderAssignmentEnabled, settingsError, settingsSaving }}
+          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, cashOnTakeOutEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving }}
           onVatRegisteredChange={setVatRegistered}
           onVatRateChange={setVatRate}
           onPricesVatInclusiveChange={setPricesVatInclusive}
@@ -1573,6 +1578,7 @@ function AppContent() {
           onCashOnPickupChange={setCashOnPickupEnabled}
            onCashOnTakeOutChange={setCashOnTakeOutEnabled}
           onAutomaticRiderAssignmentChange={setAutomaticRiderAssignmentEnabled}
+          onOnlinePaymentsEnabledChange={setOnlinePaymentsEnabled}
           onRequestSaveSettings={() => setPendingSaveSettings(true)}
         />
           {pendingRestaurantStatus && (
