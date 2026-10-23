@@ -14,6 +14,8 @@ type RestaurantSettingsPanelProps = {
   onCashOnPickupChange: (value: boolean) => void;
   onCashOnTakeOutChange: (value: boolean) => void;
   automaticRiderAssignmentEnabled: boolean;
+  onlinePaymentsEnabled: boolean;
+  onOnlinePaymentsEnabledChange: (value: boolean) => void;
   onAutomaticRiderAssignmentChange: (value: boolean) => void;
   settingsError: string;
   settingsSaving: boolean;
@@ -37,6 +39,8 @@ export default function RestaurantSettingsPanel({
   onCashOnTakeOutChange,
   automaticRiderAssignmentEnabled,
   onAutomaticRiderAssignmentChange,
+  onlinePaymentsEnabled,
+  onOnlinePaymentsEnabledChange,
   settingsError,
   settingsSaving,
   onRequestSave,
@@ -97,6 +101,14 @@ export default function RestaurantSettingsPanel({
                   <input className="toggle-input" type="checkbox" checked={cashOnTakeOutEnabled} onChange={(event) => onCashOnTakeOutChange(event.target.checked)} disabled={!canManage} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{cashOnTakeOutEnabled ? 'Enabled' : 'Disabled'}</span>
+                </label>
+              </div>
+              <div className="detail-item">
+                <span>Online Payments</span>
+                <label className="toggle-row">
+                  <input className="toggle-input" type="checkbox" checked={onlinePaymentsEnabled} onChange={(event) => onOnlinePaymentsEnabledChange(event.target.checked)} disabled={!canManage} />
+                  <span className="toggle-switch" aria-hidden="true"><span /></span>
+                  <span className="toggle-label">{onlinePaymentsEnabled ? 'Enabled' : 'Disabled'}</span>
                 </label>
               </div>
               <div className="detail-item">
