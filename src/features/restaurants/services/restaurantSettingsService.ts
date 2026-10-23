@@ -115,3 +115,21 @@ export async function fetchBirIssuanceReadiness(restaurantId: string) {
     p_restaurant_id: restaurantId,
   });
 }
+
+
+export type DisabledInvoiceSeriesInput = {
+  branchCode: string;
+  documentType: 'invoice' | 'sales_invoice' | 'cash_invoice' | 'credit_invoice' | 'service_invoice';
+  initialSerial: number;
+  nextSerial: number;
+};
+
+export async function configureDisabledInvoiceSeries(restaurantId: string, input: DisabledInvoiceSeriesInput) {
+  return supabase.rpc('system_admin_configure_disabled_invoice_series', {
+    p_restaurant_id: restaurantId,
+    p_branch_code: input.branchCode,
+    p_document_type: input.documentType,
+    p_initial_serial: input.initialSerial,
+    p_next_serial: input.nextSerial,
+  });
+}
