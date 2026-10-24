@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, isPasswordSetupPending } from '../lib/supabase';
 
 type GateState =
   | { kind: 'checking' }
@@ -20,6 +20,12 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
   const pendingBootstrap = useRef(false);
 
   const inspect = useCallback(async () => {
+    // Verified invitation/email setup must reach the original password form
+    // before this existing authenticator gate runs.
+    if (isPasswordSetupPending()) {
+      setState({ kind: 'ready' });
+      return;
+    }
     setState({ kind: 'checking' });
     setMessage('');
     const { data: sessionResult, error: sessionError } = await supabase.auth.getSession();
@@ -150,6 +156,10 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
         return;
       }
       if (event !== 'SIGNED_IN' || !session?.user) return;
+      if (isPasswordSetupPending()) {
+        setState({ kind: 'ready' });
+        return;
+      }
       if (lastInspectedUserId.current === session.user.id || inspectionInFlight.current) return;
       setState({ kind: 'checking' });
       window.setTimeout(() => {
