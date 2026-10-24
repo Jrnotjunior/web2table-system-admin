@@ -23,7 +23,7 @@ Only the public Supabase anon/publishable key belongs in this browser applicatio
 
 This is a static frontend; the React app does not require a Node.js server after the build.
 
-1. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in your local `.env.local` file or build environment.
+1. Set the public Supabase URL and publishable key, plus the VITE_WEB2TABLE_ADMIN=true build flag, in your build environment.
 2. Run:
 
    ```bash
@@ -44,7 +44,7 @@ The `Build Hostinger package` workflow creates a downloadable artifact from the 
 - `VITE_SUPABASE_URL`: the production Supabase project URL
 - `VITE_SUPABASE_ANON_KEY`: the public anon/publishable key (never a service-role key)
 
-Then open **Actions → Build Hostinger package → Run workflow**. When it succeeds, open that run, download the `web2table-system-admin-hostinger` artifact, extract it, and upload the extracted files to the document root for [`admin.web2table.io`](https://admin.web2table.io/). This artifact is separate from the GitHub Pages deployment. **The default Hostinger artifact uses the legacy app mode**, not the Web2Table integration; to serve Web2Table from the custom domain, the Web2Table mode must be intentionally enabled and rebuilt, and the target must be tested against the new Web2Table Supabase project.
+Then open **Actions → Build Hostinger package → Run workflow**. When it succeeds, open that run, download the `web2table-system-admin-hostinger` artifact, extract it, and upload the extracted files to the document root for [`admin.web2table.io`](https://admin.web2table.io/). This artifact is separate from the GitHub Pages deployment. Both Hostinger packaging workflows now build the current Web2Table System Admin interface, rather than the legacy admin mode. The workflows produce artifacts only: to change the custom domain, back up the existing site, upload the newly built artifact, and verify live sign-in and MFA.
 
 ## GitHub Pages
 
@@ -61,3 +61,8 @@ The regular `npm run build` command retains the existing GitHub Pages base path.
 
 ## System Admin custom domain
 The official System Admin entry point is **https://admin.web2table.io/**. The older GitHub Pages preview remains at https://jrnotjunior.github.io/web2table-system-admin/ for Web2Table testing. Use `https://admin.web2table.io/` for the new project's approved authentication redirect **only after the custom-domain deployment is verified to load the Web2Table mode**. The custom domain and a separate Auth project do not automatically migrate old administrators or grant Web2Table access. See [Web2Table integration notes](docs/WEB2TABLE_ADMIN_INTEGRATION.md).
+
+
+## Hostinger Email for authentication
+
+Configure Supabase Auth custom SMTP using an existing Hostinger mailbox. The approved administrator's Gmail address remains the invitation recipient. See docs/HOSTINGER_SMTP.md. All SMTP credentials are entered only in Supabase Dashboard.

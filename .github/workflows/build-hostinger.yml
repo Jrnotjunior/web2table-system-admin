@@ -27,6 +27,7 @@ jobs:
       - name: Build for Hostinger root domain
         run: npm run build:hostinger
         env:
+          VITE_WEB2TABLE_ADMIN: 'true'
           VITE_SUPABASE_URL: https://wvibrchebfwirbgkcnbr.supabase.co
           VITE_SUPABASE_ANON_KEY: sb_publishable_MILZBeZJeOw-bOeMo3Nukg_BKGWt_Qr
 
@@ -45,6 +46,14 @@ jobs:
           grep -oE '(src|href)="[^"]+"' dist/index.html
           echo "=== Build files ==="
           find dist -maxdepth 2 -type f -print
+
+      - name: Verify Web2Table custom-domain bundle
+        run: |
+          grep -Rql --include='*.js' 'Restaurant platform administration' dist/assets
+          if grep -q '/web2table-system-admin/assets/' dist/index.html; then
+            echo "Incorrect GitHub Pages asset base for custom domain"
+            exit 1
+          fi
 
       - name: Upload Hostinger build artifact
         uses: actions/upload-artifact@v4

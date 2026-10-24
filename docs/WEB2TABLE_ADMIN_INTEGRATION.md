@@ -46,7 +46,7 @@ https://jrnotjunior.github.io/web2table-system-admin/
 Web2Table customer storefront:
 https://jrnotjunior.github.io/Multi-Tenant-Restaurant-Ordering-Platform-SaaS/
 
-**Critical deployment check:** The existing Hostinger build preserves the legacy UI unless `VITE_WEB2TABLE_ADMIN=true` is supplied. The custom domain is not automatically running the Web2Table integration just because its URL has changed. Before switching the custom-domain deployment, confirm its hosting source, Supabase project, Auth redirect allowlist, HTTPS, intended user access, and real admin/MFA testing. Avoid auto-migrating legacy accounts, databases, and privileges.
+**Critical deployment check:** Both Hostinger packaging workflows now set the VITE_WEB2TABLE_ADMIN=true build flag. The custom domain is not automatically running the Web2Table integration just because its URL has changed. Before switching the custom-domain deployment, confirm its hosting source, Supabase project, Auth redirect allowlist, HTTPS, intended user access, and real admin/MFA testing. Avoid auto-migrating legacy accounts, databases, and privileges.
 
 ## Typography
 
@@ -55,3 +55,16 @@ The new Web2Table surface uses only **Inter** and **Manrope**. Its CSS does not 
 ## Verification
 
 Run `npm run build:github-pages` and inspect GitHub Actions after code changes. Functional login, MFA, onboarding, tenant creation and invitation acceptance cannot be exercised until the verified new-project administrator exists. Do not claim they have been completed.
+
+## Hostinger Email SMTP
+
+Use a real Hostinger mailbox as the Supabase Auth SMTP sender. This is independent of the administrator login email.
+Navigate to Hostinger Emails > Manage > Connect Apps & Devices to confirm the mailbox-specific server.
+For standard Hostinger Email: smtp.hostinger.com on port 465 SSL, or 587 STARTTLS if needed.
+In the new Web2Table Supabase project: Authentication > SMTP Settings > Enable custom SMTP. Sender name: Web2Table. Sender email and SMTP username: existing full Hostinger mailbox address. Enter the mailbox password only in Supabase Dashboard.
+Check SPF, DKIM and DMARC. Keep the Site URL and allowed redirect at https://admin.web2table.io/ and send the approved administrator Auth invitation only once the custom domain loads the current Web2Table admin build.
+Neither GitHub Actions packaging nor saving SMTP settings sends an invitation. Never put mailbox credentials, secret API keys or tokens into GitHub or frontend build variables.
+
+### Hosting deployment
+
+Both Hostinger workflows build the current Web2Table admin interface, but they only produce ZIP artifacts. The Hostinger website is NOT changed until the artifact contents are uploaded to its document root.
