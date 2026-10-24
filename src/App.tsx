@@ -461,6 +461,27 @@ function AppContent() {
         window.alert(`Unable to create password\n\n${message}`);
         return;
       }
+
+      // Admin API password updates can invalidate the original email-link session.
+      // Establish a fresh password-authenticated session before the MFA gate runs.
+      const { data: reauthenticated, error: reauthenticationError } =
+        await supabase.auth.signInWithPassword({
+          email: currentUserEmail.trim(),
+          password: invitePassword,
+        });
+      if (reauthenticationError || !reauthenticated.session) {
+        const message = `Your password was created, but the setup session could not be renewed for MFA. Sign in with your new password to continue. ${reauthenticationError?.message ?? ''}`.trim();
+        setInviteSetupError(message);
+        window.alert(message);
+        markPasswordSetupCompleted();
+        try {
+          await supabase.auth.signOut({ scope: 'local' });
+        } catch {
+          // The redirect to sign-in also clears any stale local session on next load.
+        }
+        window.location.replace(window.location.origin + '/');
+        return;
+      }
     } catch (error) {
       const message = error instanceof Error
         ? error.message
