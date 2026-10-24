@@ -49,3 +49,6 @@ body{background:#0f1014}
 .w2t-qr img{background:#fff;max-width:210px;width:100%;padding:10px;border-radius:8px}
 .w2t-secret{word-break:break-word}.w2t-secret code{font-size:12px;color:#fff}
 @media(max-width:700px){.w2t-top{padding:14px}.w2t-logo{font-size:15px;flex-wrap:wrap}.w2t-logo small{display:none}.w2t-environment{display:none}.w2t-container{padding:25px 14px 60px}.w2t-summary,.w2t-columns{grid-template-columns:1fr}.w2t-card{margin:8px 0}.w2t-summary .w2t-card{padding:15px}.web2table-admin h1{font-size:28px}}
+
+.w2t-link-button{display:block;background:none;border:0;padding:12px 0 2px;color:#ffb8bf;font-size:13px;font-weight:750;text-decoration:underline;cursor:pointer}
+.w2t-link-button:disabled{opacity:.5;cursor:not-allowed}

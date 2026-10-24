@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import './web2table-admin.css';
@@ -6,6 +6,7 @@ import './web2table-admin.css';
 type Gate =
   | { kind:'checking' }
   | { kind:'signed-out' }
+  | { kind:'recovery' }
   | { kind:'denied' }
   | { kind:'enroll'; factorId:string; qr:string; secret:string }
   | { kind:'incomplete' }
@@ -15,6 +16,7 @@ type Gate =
 
 type Tenant = { id:string; slug:string; name:string; status:string; created_at:string };
 const STORE_URL = 'https://jrnotjunior.github.io/Multi-Tenant-Restaurant-Ordering-Platform-SaaS/';
+const ADMIN_URL = 'https://admin.web2table.io/';
 const tenantSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export default function Web2TableAdminApp() {
@@ -23,6 +25,9 @@ export default function Web2TableAdminApp() {
   const [email,setEmail] = useState('');
   const [password,setPassword] = useState('');
   const [newPassword,setNewPassword] = useState('');
+  const [confirmPassword,setConfirmPassword] = useState('');
+  const recovering=useRef(false);
+  const [expiredLink] = useState(()=>new URLSearchParams(window.location.hash.slice(1)).get('error_code')==='otp_expired');
   const [totp,setTotp] = useState('');
   const [busy,setBusy] = useState(false);
   const [error,setError] = useState('');
@@ -36,6 +41,7 @@ export default function Web2TableAdminApp() {
   const [inviteEmail,setInviteEmail] = useState('');
 
   const inspect = useCallback(async (current:Session|null) => {
+    if (recovering.current) return;
     if (!current) {setGate({kind:'signed-out'});return;}
     setGate({kind:'checking'});
     // This identity check happens on Web2Table's Supabase Auth instance.
@@ -87,7 +93,23 @@ export default function Web2TableAdminApp() {
     const {data:{subscription}}=supabase.auth.onAuthStateChange((event,next)=>{
       if(!live)return;
       setSession(next);
+      if(event==='PASSWORD_RECOVERY'){
+        recovering.current=true;
+        setError('');
+        setGate({kind:'recovery'});
+        return;
+      }
+      if(event==='SIGNED_IN' && next && !recovering.current){
+        // Supabase recommends not awaiting other Auth operations inside its
+        // auth-state callback; schedule the privileged check outside it.
+        setTimeout(()=>{
+          if(live && !recovering.current)
+            void inspect(next).catch(e=>setGate({kind:'error',
+              message:e instanceof Error?e.message:'Unable to verify account'}));
+        },0);
+      }
       if(event==='SIGNED_OUT'){
+        recovering.current=false;
         setGate({kind:'signed-out'});
         setTenants([]);
         setError('');
@@ -97,7 +119,7 @@ export default function Web2TableAdminApp() {
       if(!live)return;
       if(error)throw error;
       setSession(data.session);
-      return inspect(data.session);
+      if(!recovering.current)return inspect(data.session);
     }).catch(e=>{
       if(live)setGate({kind:'error',message:e instanceof Error?e.message:'Unable to check account'});
     });
@@ -127,6 +149,35 @@ export default function Web2TableAdminApp() {
     setBusy(true);setError('');setNotice('');
     try{await action();}catch(e){setError(e instanceof Error?e.message:'Action failed');}
     finally{setBusy(false);}
+  }
+  function requestPasswordRecovery(){
+    void run(async()=>{
+      const address=email.trim().toLowerCase();
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address))
+        throw Error('Enter your email address above first.');
+      const {error:resetError}=await supabase.auth.resetPasswordForEmail(address,{
+        redirectTo:ADMIN_URL,
+      });
+      if(resetError)throw resetError;
+      setNotice('If this email has an account, a password setup link has been sent. Open only the newest email link once.');
+    });
+  }
+  function saveRecoveredPassword(event:FormEvent){
+    event.preventDefault();
+    void run(async()=>{
+      if(!recovering.current)throw Error('Open a valid password recovery email link first.');
+      if(newPassword.length<12)throw Error('Use at least 12 characters.');
+      if(newPassword!==confirmPassword)throw Error('Passwords do not match.');
+      const {error:updateError}=await supabase.auth.updateUser({password:newPassword});
+      if(updateError)throw updateError;
+      setNewPassword('');setConfirmPassword('');
+      recovering.current=false;
+      setNotice('Password saved. Continuing to administrator MFA verification.');
+      const {data,error:sessionError}=await supabase.auth.getSession();
+      if(sessionError)throw sessionError;
+      setSession(data.session);
+      await inspect(data.session);
+    });
   }
   function signIn(event:FormEvent){
     event.preventDefault();
@@ -222,6 +273,24 @@ export default function Web2TableAdminApp() {
       {error&&<p className="w2t-error" role="alert">{error}</p>}
       {notice&&<p className="w2t-success" role="status">{notice}</p>}
 
+      {expiredLink&&gate.kind==='signed-out'&&<p className="w2t-error" role="alert">
+        This email link is expired or was already used. If your account is verified, enter
+        your email and select “Set or reset your password” to continue.
+      </p>}
+      {gate.kind==='recovery'&&<section className="w2t-card w2t-auth">
+        <h2>Set your Web2Table password</h2>
+        <p>Your password-recovery link has been accepted. Choose a new password,
+          then continue to the required authenticator MFA step.</p>
+        <form className="w2t-form" onSubmit={saveRecoveredPassword}>
+          <label>New password (12+ characters)
+            <input required type="password" autoComplete="new-password" minLength={12}
+              value={newPassword} onChange={e=>setNewPassword(e.target.value)}/></label>
+          <label>Confirm new password
+            <input required type="password" autoComplete="new-password" minLength={12}
+              value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)}/></label>
+          <button type="submit" disabled={busy}>Save password and continue</button>
+        </form>
+      </section>}
       {gate.kind==='checking'&&<section className="w2t-card" role="status"><h2>Verifying access…</h2><p>Checking platform-administrator membership and MFA.</p></section>}
       {gate.kind==='signed-out'&&<section className="w2t-card w2t-auth">
         <h2>Sign in to Web2Table</h2>
@@ -231,6 +300,9 @@ export default function Web2TableAdminApp() {
           <label>Password<input type="password" autoComplete="current-password" required value={password} onChange={e=>setPassword(e.target.value)}/></label>
           <button disabled={busy} type="submit">Sign in</button>
         </form>
+        <button type="button" className="w2t-link-button" disabled={busy}
+          onClick={requestPasswordRecovery}>Set or reset your password</button>
+        <p className="w2t-fineprint">For an email-verified invitation account, use the password setup link if you have not set a password. Do not reuse expired invitation links.</p>
       </section>}
       {gate.kind==='denied'&&<section className="w2t-card w2t-auth">
         <h2>Administrator access not enabled</h2>

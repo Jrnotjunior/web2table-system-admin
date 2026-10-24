@@ -68,3 +68,8 @@ Neither GitHub Actions packaging nor saving SMTP settings sends an invitation. N
 ### Hosting deployment
 
 Both Hostinger workflows build the current Web2Table admin interface, but they only produce ZIP artifacts. The Hostinger website is NOT changed until the artifact contents are uploaded to its document root.
+## Invitation-link recovery
+
+If an invitation is confirmed in Supabase Auth but a reused email link returns `error_code=otp_expired`, **do not delete the verified Auth user, bypass MFA or issue another admin role**. On the Web2Table custom-domain sign-in page, enter the invited address and choose **Set or reset your password**. A Supabase Auth `resetPasswordForEmail` request sends a fresh single-use recovery link to that existing address and redirects to `https://admin.web2table.io/`. On the `PASSWORD_RECOVERY` Auth event, the app displays a 12+ character password-change form via `updateUser`. Following the new password, the existing private candidate/MFA/AAL2 bootstrap authorization remains required.
+
+Avoid double-clicking or forwarding the recovery link. Recovery links may be consumed by security scanners or browser extensions; if the new link is rejected, investigate the Supabase Auth logs and email delivery. Never disclose live invitation or recovery tokens.
