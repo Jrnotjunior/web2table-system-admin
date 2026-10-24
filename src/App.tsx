@@ -455,11 +455,18 @@ function AppContent() {
         ),
       ]);
       if (result.error) {
-        setInviteSetupError(result.error.message);
+        const message = result.error.message?.trim() ||
+          'The server rejected password setup (HTTP 403). Your session or System Administrator invitation may not be valid for this account.';
+        setInviteSetupError(message);
+        window.alert(`Unable to create password\n\n${message}`);
         return;
       }
     } catch (error) {
-      setInviteSetupError(error instanceof Error ? error.message : 'Unable to create password. Please use a fresh invitation.');
+      const message = error instanceof Error
+        ? error.message
+        : 'Unable to create password. Please reopen a valid account setup invitation.';
+      setInviteSetupError(message);
+      window.alert(`Unable to create password\n\n${message}`);
       return;
     } finally {
       setInviteSettingPassword(false);
