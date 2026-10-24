@@ -301,6 +301,8 @@ function AppContent() {
     void loadAdministrators();
   }
 
+  // The original invitation OTP is one-time. React StrictMode can mount the
+  // screen twice during development, so verify exactly once per page load.
   async function checkAdminSession() {
     // Supabase invitation emails can arrive with a token_hash in the query
     // string. Verify it first so the invite token becomes an authenticated
@@ -308,10 +310,11 @@ function AppContent() {
     const invitationParams = new URLSearchParams(window.location.search);
     const invitationTokenHash = invitationParams.get('token_hash');
     if (invitationParams.get('type') === 'invite' && invitationTokenHash) {
-      const { error: invitationVerificationError } = await supabase.auth.verifyOtp({
+      invitationVerification ??= supabase.auth.verifyOtp({
         token_hash: invitationTokenHash,
         type: 'invite',
       });
+      const { error: invitationVerificationError } = await invitationVerification;
 
       if (invitationVerificationError) {
         setInviteSetupError(invitationVerificationError.message);
@@ -2045,6 +2048,9 @@ function AppContent() {
     </AppShell>
   );
 }
+
+// Shared across StrictMode effect re-runs for the one-time invitation token.
+let invitationVerification: ReturnType<typeof supabase.auth.verifyOtp> | undefined;
 
 export default function App() {
   return (
