@@ -954,14 +954,15 @@ function AppContent() {
       }
     }
 
-    if (logsResult.error) {
-      setDashboardError((current) => current || logsResult.error.message);
+    const logsError = logsResult.error;
+    if (logsError) {
+      setDashboardError((current) => current || logsError.message);
       setDashboardRecentLogs([]);
     } else {
       setDashboardRecentLogs((Array.isArray(logsResult.data) ? logsResult.data : []) as typeof auditLogs);
     }
 
-    if (healthResult.error || !healthResult.data || healthResult.data.error) {
+    if (healthResult.error || !healthResult.data) {
       setDashboardPlatformHealth(null);
     } else {
       setDashboardPlatformHealth(healthResult.data as typeof dashboardPlatformHealth);
