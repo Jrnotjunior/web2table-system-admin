@@ -8,3 +8,9 @@ The current entry point directly renders the original App, without a build-envir
 
 The domain remains https://admin.web2table.io/. The Hostinger SMTP sender is configured in Supabase Dashboard and is independent of UI source.
 
+
+## Web2Table dashboard data adapter
+
+The finalized System Admin UI remains unchanged. The dashboard now calls the read-only `public.web2table_admin_dashboard_snapshot()` function rather than legacy `system_admin_get_dashboard_summary` and `system_admin_get_restaurant_monitoring` APIs. The query is guarded by MFA AAL2 and an active `platform_admins` record in a private, least-privilege function. It returns real tenant counts, branch-independent tenant monitoring rows, and actual platform-admin counts. **No real order/customer analytics, audit log provider, or dependency health backend has been connected**, so order/customer figures are zero and the UI explicitly flags missing live health telemetry as a warning.
+
+The existing Restaurant list reads `public.tenants` through its active-admin RLS, adapting the safe fields to the existing component type. Legacy detail mutators still require a separate service migration and must not be assumed compatible with the new schema. None of this changes the approved layout, styles, navigation or login UI. In the Supabase Table Editor, System Admin identities are in `public.platform_admins`, not a table named `system_admin`.
