@@ -41,6 +41,25 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       return;
     }
 
+    // getSession() only reads local storage. Password activation can invalidate
+    // the invitation token, so validate it against Auth before calling RPCs.
+    const { data: verifiedIdentity, error: identityError } = await supabase.auth.getUser();
+    if (identityError || !verifiedIdentity.user || verifiedIdentity.user.id !== user.id) {
+      if (!identityError || identityError.status === 401 || identityError.status === 403 ||
+          !verifiedIdentity.user || verifiedIdentity.user.id !== user.id) {
+        try {
+          await supabase.auth.signOut({ scope: 'local' });
+        } catch {
+          // The local sign-in screen is still the correct recovery path.
+        }
+        lastInspectedUserId.current = null;
+        setState({ kind: 'ready' });
+        return;
+      }
+      setState({ kind: 'error', message: identityError.message });
+      return;
+    }
+
     // Use the current Web2Table platform authorization APIs. The private
     // first-admin invitation permits MFA enrollment only; it does not grant
     // access to restaurant data before the verified AAL2 bootstrap claim.
