@@ -1237,7 +1237,7 @@ function AppContent() {
           <div className="eyebrow">WEB2TABLE Platform</div>
           <h1>Set up your account</h1>
           <p>You have been invited as a System Administrator. Create your password to activate your account.</p>
-          <form onSubmit={completeSystemAdminInvitation}>
+          <form noValidate onSubmit={completeSystemAdminInvitation}>
             <label>
               Password
               <span className="password-input-wrap">
