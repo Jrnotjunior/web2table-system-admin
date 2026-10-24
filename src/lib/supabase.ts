@@ -6,9 +6,9 @@ const setupKey = 'web2table-pending-password-setup';
 if (typeof window !== 'undefined') {
   const query = new URLSearchParams(window.location.search);
   const fragment = new URLSearchParams(window.location.hash.slice(1));
-  if (query.get('finish_setup') === '1' ||
-      ((query.get('type') === 'invite' || fragment.get('type') === 'invite') &&
-      (query.has('token_hash') || fragment.has('access_token')))) {
+  const linkType = query.get('type') ?? fragment.get('type');
+  if ((linkType === 'invite' || linkType === 'magiclink') &&
+      (query.has('token_hash') || fragment.has('access_token'))) {
     window.sessionStorage.setItem(setupKey, '1');
   }
 }
