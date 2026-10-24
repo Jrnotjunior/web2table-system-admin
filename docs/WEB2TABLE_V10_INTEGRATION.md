@@ -20,11 +20,20 @@ The GitHub Pages workflow explicitly sets `VITE_WEB2TABLE_V10_ADMIN=true` and bu
 
 All operations remain server-authorized: a UI check does not grant privilege. No `service_role` key or backend secret is needed in the browser.
 
-## Crucial activation blocker
+## First-administrator activation (W2T-008A)
 
-At the time of integration, **Web2Table Auth had zero users and `platform_admins` had zero entries**. Existing sign-ins from the older Auth project cannot be trusted by the new project or automatically reused, because they are issued by different identity providers. Accounts are **not copied or silently elevated**.
+The project owner explicitly designated one email address in conversation. That email was registered in **private** Web2Table Supabase bootstrap invitations; no address or authentication secret is stored in this public repository.
 
-A trusted administrator must arrange creation and verification of the designated account **inside the new Auth project** and explicitly approve its `auth.users.id` before adding it to `public.platform_admins`, followed by MFA enrollment in this interface. No bootstrap mutation should be made without this explicit identity approval.
+1. In the **Web2Table** Supabase project (NOT the older project), configure Authentication > URL Configuration to allow `https://jrnotjunior.github.io/web2table-system-admin/` as an invitation redirect, and verify the email sender is configured.
+2. In Authentication > Users, choose **Add user > Send invitation**, using the designated email. This requires an authorized Dashboard operator or trusted server: browser clients cannot send an Auth Admin invitation. Do not expose a secret API key.
+3. The invited recipient clicks the email link and arrives at the System Admin Pages app. Email confirmation is checked against `auth.users` by the backend.
+4. The V10 app checks `is_initial_admin_bootstrap_candidate()`; a pending invite permits **only MFA enrollment**. Complete a verified TOTP authenticator challenge.
+5. Once the session has `aal2`, the app calls `claim_initial_admin_bootstrap()`. The server checks the originally approved email, confirmed Auth address, one-time expiry, lack of any existing administrator, and MFA, then atomically activates one `platform_admins` record.
+6. A logged-in, MFA-verified administrator can optionally set a 12+ character password for future sign-ins.
+
+The private bootstrap invitation expires after **7 days** (current request: October 31, 2026). The System Admin app never creates Auth accounts, migrates previous accounts, or grants roles on its own. The backend rejects any uninvited, unverified, expired, duplicate, or non-MFA claim.
+
+**Important:** The Supabase connector used by this workflow cannot invoke `auth.admin.inviteUserByEmail`; the invitation email has **not been sent**. After Dashboard invitation and verification, run a real browser authentication/MFA test before using live privileged operations.
 
 ## Deployment routes
 

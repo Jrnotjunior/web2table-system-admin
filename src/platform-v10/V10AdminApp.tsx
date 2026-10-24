@@ -22,6 +22,7 @@ export default function V10AdminApp() {
   const [gate,setGate] = useState<Gate>({kind:'checking'});
   const [email,setEmail] = useState('');
   const [password,setPassword] = useState('');
+  const [newPassword,setNewPassword] = useState('');
   const [totp,setTotp] = useState('');
   const [busy,setBusy] = useState(false);
   const [error,setError] = useState('');
@@ -42,10 +43,31 @@ export default function V10AdminApp() {
     const {data:eligible,error:eligibilityError} =
       await supabase.rpc('privileged_route_eligible',{p_workspace:'admin'});
     if (eligibilityError) throw eligibilityError;
-    if (eligible!==true) {setGate({kind:'denied'});return;}
+    // A one-time first-admin invitation authorizes MFA enrollment, NOT
+    // administration. Matching a verified email requires its own trusted RPC.
+    let bootstrapCandidate=false;
+    if(eligible!==true){
+      const {data:candidate,error:candidateError} =
+        await supabase.rpc('is_initial_admin_bootstrap_candidate');
+      if(candidateError)throw candidateError;
+      bootstrapCandidate=candidate===true;
+      if(!bootstrapCandidate){setGate({kind:'denied'});return;}
+    }
     const {data:aal,error:aalError} = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     if (aalError) throw aalError;
-    if (aal.currentLevel==='aal2') {setGate({kind:'ready'});return;}
+    if (aal.currentLevel==='aal2') {
+      if(bootstrapCandidate){
+        const {data:claimed,error:claimError} =
+          await supabase.rpc('claim_initial_admin_bootstrap');
+        if(claimError)throw claimError;
+        if(claimed!==true)throw Error('Administrator invitation could not be claimed.');
+      }
+      const {data:active,error:activeError} =
+        await supabase.rpc('privileged_route_eligible',{p_workspace:'admin'});
+      if(activeError)throw activeError;
+      if(active!==true){setGate({kind:'denied'});return;}
+      setGate({kind:'ready'});return;
+    }
     const {data:factors,error:factorsError} = await supabase.auth.mfa.listFactors();
     if(factorsError) throw factorsError;
     const verified=factors.totp.find(x=>x.status==='verified');
@@ -203,7 +225,7 @@ export default function V10AdminApp() {
       {gate.kind==='checking'&&<section className="w2t-card" role="status"><h2>Verifying access…</h2><p>Checking platform-administrator membership and MFA.</p></section>}
       {gate.kind==='signed-out'&&<section className="w2t-card w2t-auth">
         <h2>Sign in to Web2Table V10</h2>
-        <p>Use an account securely provisioned in the new Web2Table Auth project. Self-registration and automatic privilege migration are disabled.</p>
+        <p>Sign in with an account invited and verified in the new Web2Table Supabase Auth project. Existing accounts from the older project are not imported. First administrators activate their one-time invitation after setting up MFA.</p>
         <form onSubmit={signIn} className="w2t-form">
           <label>Email<input type="email" autoComplete="username" required value={email} onChange={e=>setEmail(e.target.value)}/></label>
           <label>Password<input type="password" autoComplete="current-password" required value={password} onChange={e=>setPassword(e.target.value)}/></label>
@@ -212,7 +234,7 @@ export default function V10AdminApp() {
       </section>}
       {gate.kind==='denied'&&<section className="w2t-card w2t-auth">
         <h2>Administrator access not enabled</h2>
-        <p>This identity does not have an active platform-administrator record in the new Web2Table project. The System Admin from the earlier project cannot be automatically trusted here.</p>
+        <p>This identity is neither an active administrator nor the verified recipient of an unexpired first-administrator invitation in the new Web2Table project.</p>
         <p>Access must be approved and provisioned through a trusted administrator-bootstrap procedure. No security checks will be bypassed.</p>
         <button disabled={busy} type="button" onClick={signOut}>Sign out</button>
       </section>}
@@ -239,6 +261,27 @@ export default function V10AdminApp() {
         <button type="button" disabled={busy} onClick={()=>void run(()=>inspect(session))}>Retry secure access check</button>
       </section>}
       {gate.kind==='ready'&&<>
+        <section className="w2t-card w2t-auth">
+          <h2>Secure your administrator sign-in</h2>
+          <p>After accepting a new-project email invitation, set a strong password for future sign-ins. Your email verification and MFA enrollment must be completed first. You can skip this if you already have a password.</p>
+          <form className="w2t-form" onSubmit={event=>{
+            event.preventDefault();
+            void run(async()=>{
+              if(newPassword.length<12)throw Error('Use at least 12 characters for your password.');
+              const {error:updateError}=await supabase.auth.updateUser({password:newPassword});
+              if(updateError)throw updateError;
+              setNewPassword('');
+              setNotice('Sign-in password saved.');
+            });
+          }}>
+            <label>New password (12+ characters)
+              <input type="password" autoComplete="new-password" minLength={12}
+                value={newPassword} onChange={event=>setNewPassword(event.target.value)}
+                placeholder="Set a password for future logins" required/>
+            </label>
+            <button type="submit" disabled={busy}>Save password</button>
+          </form>
+        </section>
         <section className="w2t-summary" aria-label="Platform status">
           <div className="w2t-card"><span>Authorized access</span><strong>MFA verified</strong></div>
           <div className="w2t-card"><span>Restaurants</span><strong>{tenants.length}</strong></div>
