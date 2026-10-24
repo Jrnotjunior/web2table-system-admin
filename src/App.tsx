@@ -442,13 +442,15 @@ function AppContent() {
       return;
     }
 
+    // Immediately show visible feedback so a click never looks like a no-op.
+    setInviteSetupError('Contacting the server to create your password…');
     setInviteSettingPassword(true);
     try {
       const result = await Promise.race([
         activateSystemAdminInvitation(invitePassword),
         new Promise<{ error: { message: string } }>(resolve =>
           window.setTimeout(() => resolve({
-            error: { message: 'Password setup did not complete. Check your connection and reopen a fresh invitation link.' },
+            error: { message: 'The server did not respond within 15 seconds. Check your connection and try again. If this repeats, the Network tab will show the failed password-activation request.' },
           }), 15000),
         ),
       ]);
@@ -1301,7 +1303,7 @@ function AppContent() {
                 </button>
               </span>
             </label>
-            {inviteSetupError && <div className="error-banner">{inviteSetupError}</div>}
+            {inviteSetupError && <div className="error-banner" role="alert" aria-live="assertive">{inviteSetupError}</div>}
             <button
               type="button"
               disabled={inviteSettingPassword}
