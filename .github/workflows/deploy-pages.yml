@@ -28,13 +28,19 @@ jobs:
           cache: npm
 
       - name: Install dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
         run: npm install
 
       - name: Build
         run: npm run build:github-pages
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: https://wvibrchebfwirbgkcnbr.supabase.co
+          VITE_SUPABASE_ANON_KEY: sb_publishable_MILZBeZJeOw-bOeMo3Nukg_BKGWt_Qr
 
       - name: Copy company logo
         run: cp web2table.png dist/web2table.png
