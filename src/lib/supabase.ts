@@ -14,23 +14,38 @@ const hasInviteToken = query.has('token_hash') ||
   (fragment.has('access_token') && fragment.has('refresh_token'));
 const hasPkceCallback = query.has('code');
 const invitationSetupStorageKey = 'web2table-system-admin-invitation-setup';
+const invitationSetupCompletedKey = 'web2table-system-admin-invitation-completed';
+const hasFreshInvitationCallback = (callbackType === 'invite' && hasInviteToken) ||
+  // Supabase PKCE exchanges a one-time code for the session.
+  hasPkceCallback;
 
-function hasStoredInvitationSetup(): boolean {
+function readSessionFlag(key: string, expected: string): boolean {
   try {
-    return typeof window !== 'undefined' &&
-      window.sessionStorage.getItem(invitationSetupStorageKey) === 'pending';
+    return typeof window !== 'undefined' && window.sessionStorage.getItem(key) === expected;
   } catch {
     return false;
   }
 }
 
-let invitationSetupActive = (callbackType === 'invite' && hasInviteToken) ||
-  // Supabase PKCE exchanges a one-time code for the session. The server-side
-  // password activation endpoint is the authorization boundary for this path.
-  hasPkceCallback ||
-  hasStoredInvitationSetup();
+// A new explicit callback starts a new setup attempt. Record it before the
+// one-time code is exchanged/removed from the URL, so a refresh can recover.
+if (hasFreshInvitationCallback) {
+  try {
+    window.sessionStorage.removeItem(invitationSetupCompletedKey);
+    window.sessionStorage.setItem(invitationSetupStorageKey, 'pending');
+  } catch {
+    // In-memory routing still works if browser storage is unavailable.
+  }
+}
 
-/** Mark setup as pending only after the invitation callback has yielded a verified session. */
+let invitationSetupActive = hasFreshInvitationCallback ||
+  readSessionFlag(invitationSetupStorageKey, 'pending');
+
+export function isPasswordSetupCompleted(): boolean {
+  return readSessionFlag(invitationSetupCompletedKey, 'true');
+}
+
+/** Persist setup mode after a verified invitation session is established. */
 export function markPasswordSetupPending(): void {
   invitationSetupActive = true;
   try {
@@ -42,8 +57,21 @@ export function markPasswordSetupPending(): void {
   }
 }
 
+/** Mark success so the email-link AMR does not reopen the setup screen after redirect. */
+export function markPasswordSetupCompleted(): void {
+  invitationSetupActive = false;
+  try {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.removeItem(invitationSetupStorageKey);
+      window.sessionStorage.setItem(invitationSetupCompletedKey, 'true');
+    }
+  } catch {
+    // In-memory state still prevents the screen from reopening in this page.
+  }
+}
+
 export function isPasswordSetupPending(): boolean {
-  return invitationSetupActive;
+  return invitationSetupActive && !isPasswordSetupCompleted();
 }
 
 export function clearPasswordSetupPending(): void {
