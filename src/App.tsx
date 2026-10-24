@@ -337,12 +337,19 @@ function AppContent() {
     const session = sessionData.session;
 
     if (sessionReadError || !session) {
+      const expiredSetup = isPasswordSetupPending() ||
+        new URLSearchParams(window.location.search).get('setup') === 'complete';
       clearPasswordSetupPending();
       setCurrentUserEmail('');
       setSignedIn(false);
       setAuthorized(false);
       setInviteSetup(false);
       setLoading(false);
+      if (expiredSetup) {
+        setSetupSent(false);
+        setSetupError('Your account setup link is invalid or expired. Request a fresh email link.');
+        window.history.replaceState(window.history.state, '', '/?setup=1');
+      }
       return false;
     }
 
