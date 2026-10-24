@@ -13,9 +13,7 @@ if (typeof window !== 'undefined') {
   const tokenBearing = query.has('token_hash') ||
     (fragment.has('access_token') && fragment.has('refresh_token'));
   const invitationCallback = linkType === 'invite';
-  const setupCallback = query.get('setup') === 'complete' ||
-    linkType === 'magiclink';
-  if (tokenBearing && (invitationCallback || setupCallback)) {
+  if (tokenBearing && invitationCallback) {
     window.sessionStorage.setItem(setupKey, '1');
   }
 }
