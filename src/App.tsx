@@ -317,6 +317,8 @@ function AppContent() {
       const { error: invitationVerificationError } = await invitationVerification;
 
       if (invitationVerificationError) {
+        clearPasswordSetupPending();
+        setAuthDialogMessage('This invitation link is invalid or expired. Ask the administrator to send a new invitation.');
         setInviteSetupError(invitationVerificationError.message);
         setInviteSetup(false);
         setSignedIn(false);
