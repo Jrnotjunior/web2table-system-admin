@@ -2,7 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const APP_URL = "https://admin.web2table.io";
-const TENANT_SETUP_URL = Deno.env.get("TENANT_SETUP_URL") ?? "https://app.web2table.io/";
+const TENANT_SETUP_URL = Deno.env.get("TENANT_SETUP_URL") ?? "";
 const allowedOrigins = new Set([APP_URL, "https://jrnotjunior.github.io"]);
 
 function headersFor(req: Request) {
@@ -33,6 +33,15 @@ Deno.serve(async (req: Request) => {
   const url = Deno.env.get("SUPABASE_URL");
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  let tenantSetupUrl: URL | null = null;
+  try {
+    const parsed = new URL(TENANT_SETUP_URL);
+    if (parsed.protocol !== "https:" || parsed.username || parsed.password || parsed.search || parsed.hash || !parsed.pathname.replace(/\\/+$/, "").endsWith("/restaurant")) throw new Error();
+    tenantSetupUrl = parsed;
+  } catch {
+    return respond(req, 503, { error: "Tenant password and MFA setup URL is not configured. Set TENANT_SETUP_URL to the deployed restaurant app URL ending in /restaurant and allow it in Supabase Auth redirect URLs." });
+  }
+
   if (!url || !anonKey || !serviceRoleKey) {
     console.error("Missing Supabase function environment configuration.");
     return respond(req, 500, { error: "Tenant invitations are temporarily unavailable." });
@@ -145,7 +154,7 @@ Deno.serve(async (req: Request) => {
     invitationId = invitation.id;
 
     const { data: inviteResult, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
-      redirectTo: `${TENANT_SETUP_URL}?type=invite`,
+      redirectTo: `${tenantSetupUrl!.toString()}?type=invite`,
       data: {
         name: ownerName,
         full_name: ownerName,
