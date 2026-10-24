@@ -2,6 +2,13 @@ import { supabase } from '../../../lib/supabase';
 import type { DashboardSummary, DashboardRestaurantMonitoring, DashboardPlatformHealth } from '../types';
 
 type Snapshot = { summary: DashboardSummary; monitoring: DashboardRestaurantMonitoring[] };
+type DataResult<T> = { data: T; error: { message: string } | null };
+type DashboardResponse = readonly [
+  DataResult<DashboardSummary | null>,
+  DataResult<DashboardRestaurantMonitoring[]>,
+  DataResult<unknown[]>,
+  DataResult<DashboardPlatformHealth | null>,
+];
 
 /**
  * Web2Table's single MFA-protected snapshot replaces old system_admin_*
@@ -10,7 +17,7 @@ type Snapshot = { summary: DashboardSummary; monitoring: DashboardRestaurantMoni
  * Order/customer metrics are zero until real ordering exists. Historical
  * audit events and live dependency health are NOT available in this adapter.
  */
-export async function fetchDashboardData() {
+export async function fetchDashboardData(): Promise<DashboardResponse> {
   const { data, error } = await supabase.rpc('web2table_admin_dashboard_snapshot');
   const raw = data as Partial<Snapshot> | null;
 
