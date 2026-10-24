@@ -87,6 +87,21 @@ Deno.serve(async (req: Request) => {
       }
       authorized = candidate === true;
     }
+
+    if (!authorized) {
+      // A separately invited administrator may set a password before MFA, but
+      // gains no platform access until the MFA gate claims this invitation at AAL2.
+      const { data: invitationCandidate, error: invitationCandidateError } = await adminClient.rpc(
+        "system_admin_invitation_candidate_for_service",
+        { p_user_id: identity.user.id, p_email: identity.user.email.toLowerCase().trim() },
+      );
+      if (invitationCandidateError) {
+        console.error("Unable to verify System Admin invitation:", invitationCandidateError.message);
+        return respond(500, { error: "Unable to verify the System Admin invitation." });
+      }
+      authorized = invitationCandidate === true;
+    }
+
     if (!authorized) {
       return respond(403, { error: "This account is not authorized for System Admin setup." });
     }
