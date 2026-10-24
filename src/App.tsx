@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { supabase, isPasswordSetupPending, markPasswordSetupPending, clearPasswordSetupPending } from './lib/supabase';
+import { supabase, isPasswordSetupPending, isPasswordSetupCompleted, markPasswordSetupPending, markPasswordSetupCompleted, clearPasswordSetupPending } from './lib/supabase';
 import { type AdminPage } from './app/navigation';
 import { useAdministratorManagement } from './features/administrators/hooks/useAdministratorManagement';
 import type { DashboardPlatformHealth, DashboardRestaurantMonitoring, DashboardSummary } from './features/dashboard/types';
@@ -224,11 +224,21 @@ function AppContent() {
   );
 
     function isSystemAdminInvitation() {
-    const queryParams = new URLSearchParams(window.location.search);
-    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-    // Only a session established through a token-bearing email link can
-    // enable password setup, never a manually typed ?type=invite URL.
+    // This is a UI routing flag only. The activation Edge Function remains the
+    // authorization boundary and validates the signed-in email-link session.
     return isPasswordSetupPending();
+  }
+
+  async function isEmailLinkSetupSession(accessToken: string): Promise<boolean> {
+    if (isPasswordSetupCompleted()) return false;
+    const { data, error } = await supabase.auth.getClaims(accessToken);
+    if (error || !data?.claims) return false;
+    const amr = Array.isArray(data.claims.amr) ? data.claims.amr : [];
+    return amr.some((item: unknown) =>
+      !!item && typeof item === 'object' &&
+      ((item as Record<string, unknown>).method === 'otp' ||
+       (item as Record<string, unknown>).method === 'email')
+    );
   }
 
   async function loadMyAccessLevel() {
@@ -384,10 +394,10 @@ function AppContent() {
 
     setSignedIn(true);
 
-    if (isSystemAdminInvitation()) {
-      // Supabase has consumed the one-use callback. Persist setup mode only now,
-      // after a verified identity/session is established, so refresh does not
-      // route this invited user back to sign-in.
+    if (isSystemAdminInvitation() || await isEmailLinkSetupSession(session.access_token)) {
+      // Recover from the session's signed email-link AMR if the one-use URL was
+      // consumed before the latest UI bundle was loaded. The server still checks
+      // this session before allowing password activation.
       markPasswordSetupPending();
       window.history.replaceState(window.history.state, '', window.location.pathname);
       setInviteSetup(true);
@@ -463,7 +473,7 @@ function AppContent() {
     setInvitePasswordConfirm('');
     // Only after the first password has been saved do we run the existing
     // MFA challenge. No administrator privilege is granted by this screen.
-    clearPasswordSetupPending();
+    markPasswordSetupCompleted();
     window.location.replace(window.location.origin + '/');
   }
 
