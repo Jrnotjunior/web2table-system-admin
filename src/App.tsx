@@ -944,8 +944,9 @@ function AppContent() {
       }
     }
 
-    if (monitoringResult.error) {
-      setDashboardError((current) => current || monitoringResult.error.message);
+    const monitoringError = monitoringResult.error;
+    if (monitoringError) {
+      setDashboardError((current) => current || monitoringError.message);
       setDashboardRestaurantMonitoring([]);
     } else {
       setDashboardRestaurantMonitoring((Array.isArray(monitoringResult.data) ? monitoringResult.data : []) as typeof dashboardRestaurantMonitoring);
