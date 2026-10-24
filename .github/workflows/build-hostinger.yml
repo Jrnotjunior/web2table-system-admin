@@ -27,7 +27,6 @@ jobs:
       - name: Build for Hostinger root domain
         run: npm run build:hostinger
         env:
-          VITE_WEB2TABLE_ADMIN: 'true'
           VITE_SUPABASE_URL: https://wvibrchebfwirbgkcnbr.supabase.co
           VITE_SUPABASE_ANON_KEY: sb_publishable_MILZBeZJeOw-bOeMo3Nukg_BKGWt_Qr
 
@@ -39,8 +38,7 @@ jobs:
           test -f dist/index.html
           test -f dist/.htaccess
           grep -q 'src="/assets/' dist/index.html
-          # CSS is loaded by a dynamic entry chunk in the dual-mode admin app.
-          # Check the emitted CSS artifact instead of expecting a static HTML link.
+          # Validate the original approved System Admin stylesheet is emitted.
           test -n "$(find dist/assets -maxdepth 1 -type f -name '*.css' -print -quit)"
           echo "=== Built HTML entry points ==="
           grep -oE '(src|href)="[^"]+"' dist/index.html
@@ -49,7 +47,8 @@ jobs:
 
       - name: Verify Web2Table custom-domain bundle
         run: |
-          grep -Rql --include='*.js' 'Restaurant platform administration' dist/assets
+          grep -Fq "import App from './App'" src/main.tsx
+          grep -Rql --include='*.js' 'auth-login-card' dist/assets
           if grep -q '/web2table-system-admin/assets/' dist/index.html; then
             echo "Incorrect GitHub Pages asset base for custom domain"
             exit 1

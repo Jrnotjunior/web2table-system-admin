@@ -33,9 +33,17 @@ jobs:
       - name: Build
         run: npm run build:github-pages
         env:
-          VITE_WEB2TABLE_ADMIN: 'true'
           VITE_SUPABASE_URL: https://wvibrchebfwirbgkcnbr.supabase.co
           VITE_SUPABASE_ANON_KEY: sb_publishable_MILZBeZJeOw-bOeMo3Nukg_BKGWt_Qr
+
+      - name: Check final System Admin interface is preserved
+        run: |
+          grep -Fq "import App from './App'" src/main.tsx
+          grep -Fq "import './styles.css'" src/main.tsx
+          if grep -q "Web2TableAdminApp" src/main.tsx; then
+            echo "Unexpected replacement admin interface selected"
+            exit 1
+          fi
 
       - name: Copy company logo
         run: cp web2table.png dist/web2table.png

@@ -33,7 +33,6 @@ jobs:
       - name: Build Hostinger site
         run: npm run build:hostinger
         env:
-          VITE_WEB2TABLE_ADMIN: 'true'
           VITE_SUPABASE_URL: https://wvibrchebfwirbgkcnbr.supabase.co
           VITE_SUPABASE_ANON_KEY: sb_publishable_MILZBeZJeOw-bOeMo3Nukg_BKGWt_Qr
 
@@ -46,7 +45,8 @@ jobs:
             echo "GitHub Pages asset base leaked into Hostinger build."
             exit 1
           fi
-          grep -Rql --include='*.js' 'Restaurant platform administration' dist/assets
+          grep -Fq "import App from './App'" src/main.tsx
+          grep -Rql --include='*.js' 'auth-login-card' dist/assets
           echo "Web2Table System Admin package verified."
 
       - name: Upload Hostinger package

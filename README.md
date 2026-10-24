@@ -1,5 +1,12 @@
 # Web2Table System Admin
 
+## System Admin UI ownership
+
+**The UI in `src/App.tsx`, `src/styles.css`, `src/styles/base.css`, `src/styles/layout.css` and the existing feature components is the final, approved System Admin UI.** Do not replace, re-theme, restructure, or introduce a competing admin UI. Integrate Web2Table authorization and data services behind these existing screens, preserving their current visual layout and workflows. The entry point always renders `src/App.tsx`; the Hostinger environment variable `VITE_WEB2TABLE_ADMIN` is no longer used.
+
+**Integration caveat:** The original interface contains legacy Supabase API dependencies. Showing the original design again does not mean those old API calls are compatible with the newer Web2Table database or that the first-admin bootstrap flow is complete. Verify and adapt services separately before enabling administrative operations.
+
+
 React + TypeScript + Vite system administration app using Supabase.
 
 ## Requirements
@@ -23,7 +30,7 @@ Only the public Supabase anon/publishable key belongs in this browser applicatio
 
 This is a static frontend; the React app does not require a Node.js server after the build.
 
-1. Set the public Supabase URL and publishable key, plus the VITE_WEB2TABLE_ADMIN=true build flag, in your build environment.
+1. Set the public Supabase URL and publishable key in your build environment. No UI-switch build flag is required.
 2. Run:
 
    ```bash
@@ -44,7 +51,7 @@ The `Build Hostinger package` workflow creates a downloadable artifact from the 
 - `VITE_SUPABASE_URL`: the production Supabase project URL
 - `VITE_SUPABASE_ANON_KEY`: the public anon/publishable key (never a service-role key)
 
-Then open **Actions → Build Hostinger package → Run workflow**. When it succeeds, open that run, download the `web2table-system-admin-hostinger` artifact, extract it, and upload the extracted files to the document root for [`admin.web2table.io`](https://admin.web2table.io/). This artifact is separate from the GitHub Pages deployment. Both Hostinger packaging workflows now build the current Web2Table System Admin interface, rather than the legacy admin mode. The workflows produce artifacts only: to change the custom domain, back up the existing site, upload the newly built artifact, and verify live sign-in and MFA.
+Then open **Actions → Build Hostinger package → Run workflow**. When it succeeds, open that run, download the `web2table-system-admin-hostinger` artifact, extract it, and upload the extracted files to the document root for [`admin.web2table.io`](https://admin.web2table.io/). This artifact is separate from the GitHub Pages deployment. Both Hostinger workflows build the **original approved System Admin application** from `src/App.tsx`. Hostinger is connected to GitHub for auto-deployment; the GitHub Actions workflows additionally produce downloadable build artifacts.
 
 ## GitHub Pages
 
@@ -60,7 +67,7 @@ The regular `npm run build` command retains the existing GitHub Pages base path.
 - After deployment, test authentication and important privileged workflows against production data before switching users over.
 
 ## System Admin custom domain
-The official System Admin entry point is **https://admin.web2table.io/**. The older GitHub Pages preview remains at https://jrnotjunior.github.io/web2table-system-admin/ for Web2Table testing. Use `https://admin.web2table.io/` for the new project's approved authentication redirect **only after the custom-domain deployment is verified to load the Web2Table mode**. The custom domain and a separate Auth project do not automatically migrate old administrators or grant Web2Table access. See [Web2Table integration notes](docs/WEB2TABLE_ADMIN_INTEGRATION.md).
+The official System Admin entry point is **https://admin.web2table.io/**. The older GitHub Pages preview remains at https://jrnotjunior.github.io/web2table-system-admin/ for Web2Table testing. Use `https://admin.web2table.io/` as the authentication redirect. The original System Admin UI is retained; authentication and API compatibility with the new database still require separate validation. The custom domain and a separate Auth project do not automatically migrate old administrators or grant Web2Table access. See [Web2Table integration notes](docs/WEB2TABLE_ADMIN_INTEGRATION.md).
 
 
 ## Hostinger Email for authentication
