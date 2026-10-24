@@ -38,7 +38,9 @@ jobs:
           test -f dist/index.html
           test -f dist/.htaccess
           grep -q 'src="/assets/' dist/index.html
-          grep -q 'href="/assets/' dist/index.html
+          # CSS is loaded by a dynamic entry chunk in the dual-mode admin app.
+          # Check the emitted CSS artifact instead of expecting a static HTML link.
+          test -n "$(find dist/assets -maxdepth 1 -type f -name '*.css' -print -quit)"
           echo "=== Built HTML entry points ==="
           grep -oE '(src|href)="[^"]+"' dist/index.html
           echo "=== Build files ==="
