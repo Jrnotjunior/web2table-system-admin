@@ -36,7 +36,7 @@ Deno.serve(async (req: Request) => {
   let tenantSetupUrl: URL | null = null;
   try {
     const parsed = new URL(TENANT_SETUP_URL);
-    if (parsed.protocol !== "https:" || parsed.username || parsed.password || parsed.search || parsed.hash || !parsed.pathname.replace(/\\/+$/, "").endsWith("/restaurant")) throw new Error();
+    if (parsed.protocol !== "https:" || parsed.username || parsed.password || parsed.search || parsed.hash || !parsed.pathname.endsWith("/restaurant")) throw new Error();
     tenantSetupUrl = parsed;
   } catch {
     return respond(req, 503, { error: "Tenant password and MFA setup URL is not configured. Set TENANT_SETUP_URL to the deployed restaurant app URL ending in /restaurant and allow it in Supabase Auth redirect URLs." });
