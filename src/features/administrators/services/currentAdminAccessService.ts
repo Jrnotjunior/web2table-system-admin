@@ -9,12 +9,13 @@ export type SystemAdminAccessLevel = 'owner' | 'administrator' | 'view_only';
  * access level. The original UI remains unchanged.
  */
 export async function fetchMySystemAdminAccessLevel(): Promise<SystemAdminAccessLevel | null> {
-  const { data: eligible, error } = await supabase.rpc(
-    'privileged_route_eligible', { p_workspace: 'admin' },
-  );
-  if (error || eligible !== true) return null;
   const { data: aal, error: aalError } =
     await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if (aalError || aal.currentLevel !== 'aal2') return null;
-  return 'owner';
+
+  const { data: accessLevel, error } = await supabase.rpc('current_system_admin_access_level');
+  if (error || (accessLevel !== 'owner' && accessLevel !== 'administrator' && accessLevel !== 'view_only')) {
+    return null;
+  }
+  return accessLevel;
 }
