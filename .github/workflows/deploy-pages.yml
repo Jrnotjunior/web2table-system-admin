@@ -33,6 +33,7 @@ jobs:
       - name: Build
         run: npm run build:github-pages
         env:
+          VITE_WEB2TABLE_V10_ADMIN: 'true'
           VITE_SUPABASE_URL: https://wvibrchebfwirbgkcnbr.supabase.co
           VITE_SUPABASE_ANON_KEY: sb_publishable_MILZBeZJeOw-bOeMo3Nukg_BKGWt_Qr
 

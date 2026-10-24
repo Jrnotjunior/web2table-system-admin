@@ -1,0 +1,51 @@
+:root{font-family:"Inter",sans-serif;--v10-accent:#d13d4c;--v10-border:#303039;color:#f5f3f4;background:#0f1014;font-synthesis:none}
+*{box-sizing:border-box}html,body,#root{margin:0;min-width:0;min-height:100%;width:100%}
+body{background:#0f1014}
+.w2t-v10{min-height:100vh;display:flex;flex-direction:column;line-height:1.5;background:radial-gradient(circle at 92% 0,#331820 0,transparent 480px),#0f1014}
+.w2t-v10 h1,.w2t-v10 h2,.w2t-v10 h3,.w2t-v10 .w2t-logo{font-family:"Manrope",sans-serif;letter-spacing:-.045em}
+.w2t-v10 button,.w2t-v10 input,.w2t-v10 select{font:inherit}
+.w2t-v10 button{cursor:pointer}
+.w2t-v10 button:disabled{opacity:.5;cursor:not-allowed}
+.w2t-v10 a{color:#ffb8bf;text-decoration:none}
+.w2t-v10 :focus-visible{outline:3px solid #f5838e;outline-offset:3px}
+.w2t-top{display:flex;justify-content:space-between;align-items:center;gap:14px;border-bottom:1px solid #29292f;background:#131419;padding:17px clamp(16px,4vw,60px)}
+.w2t-logo{font-size:18px;font-weight:850;color:white!important;display:flex;align-items:center;gap:11px}
+.w2t-logo>span{display:grid;place-items:center;width:42px;height:42px;background:#ae2734;border-radius:11px;color:white;font-size:14px}
+.w2t-logo small{font:600 11px "Inter",sans-serif;color:#b9b5ba;letter-spacing:0}
+.w2t-top-actions{display:flex;align-items:center;gap:16px}
+.w2t-environment{color:#bda3a6;font-size:10px;letter-spacing:.12em;font-weight:800}
+.w2t-container{width:min(1160px,100%);margin:0 auto;padding:38px clamp(16px,3vw,35px) 75px;flex:1}
+.w2t-eyebrow{color:#ff8491;letter-spacing:.18em;font-size:11px;font-weight:800;margin-bottom:10px}
+.w2t-v10 h1{font-size:clamp(28px,4vw,45px);line-height:1.15;margin:0 0 10px}
+.w2t-intro{color:#c3bfc5;font-size:14px;max-width:730px;margin:0 0 23px}
+.w2t-notice{background:#2a1e24;border:1px solid #603640;border-radius:11px;color:#e5c7ce;font-size:12px;line-height:1.7;padding:13px 16px;margin-bottom:20px}
+.w2t-card{padding:clamp(17px,2vw,25px);border:1px solid var(--v10-border);border-radius:16px;background:#1a1b21;margin:15px 0;min-width:0}
+.w2t-card h2{font-size:19px;margin:0 0 8px}
+.w2t-card p{font-size:13px;color:#b6adb6;line-height:1.65}
+.w2t-auth{max-width:530px;margin:20px auto 0}
+.w2t-form{display:grid;gap:13px;margin:20px 0 0}
+.w2t-form label{font-size:12px;font-weight:700;display:grid;gap:7px}
+.w2t-form input,.w2t-form select{width:100%;min-width:0;padding:11px 12px;border:1px solid #54515a;border-radius:9px;background:#101115;color:white;font-size:14px;min-height:45px}
+.w2t-form button,.w2t-v10 .w2t-card>button{background:#a82b38;color:white;font-weight:750;font-size:13px;border:1px solid #b73844;border-radius:9px;padding:12px 15px;min-height:44px}
+.w2t-form button:hover:not(:disabled){background:#bd3442}
+.w2t-ghost{background:transparent!important;color:#eee!important;border:1px solid #5c5158!important;padding:9px 14px;border-radius:9px;font-weight:700;font-size:12px}
+.w2t-error,.w2t-success{padding:13px 15px;border-radius:10px;font-size:13px}
+.w2t-error{color:#ffb7c0;background:#42222c;border:1px solid #a84b60}
+.w2t-success{color:#afe3c3;background:#17372a;border:1px solid #307d54}
+.w2t-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.w2t-summary .w2t-card{display:flex;flex-direction:column;gap:9px}
+.w2t-summary span{font-size:11px;color:#ac9eac}
+.w2t-summary strong{font:800 22px "Manrope",sans-serif}
+.w2t-summary a{font-weight:750}
+.w2t-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.w2t-fineprint{font-size:11px!important}
+.w2t-section-heading{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.w2t-section-heading h2{margin:0}
+.w2t-table-scroll{overflow:auto}
+.w2t-v10 table{width:100%;border-collapse:collapse;font-size:12px;text-align:left;min-width:540px}
+.w2t-v10 th,.w2t-v10 td{padding:13px 10px;border-bottom:1px solid #36323a}
+.w2t-v10 th{color:#b9a9b1}
+.w2t-footer{text-align:center;border-top:1px solid #29252d;padding:20px;color:#91858f;font-size:11px}
+.w2t-qr img{background:#fff;max-width:210px;width:100%;padding:10px;border-radius:8px}
+.w2t-secret{word-break:break-word}.w2t-secret code{font-size:12px;color:#fff}
+@media(max-width:700px){.w2t-top{padding:14px}.w2t-logo{font-size:15px;flex-wrap:wrap}.w2t-logo small{display:none}.w2t-environment{display:none}.w2t-container{padding:25px 14px 60px}.w2t-summary,.w2t-columns{grid-template-columns:1fr}.w2t-card{margin:8px 0}.w2t-summary .w2t-card{padding:15px}.w2t-v10 h1{font-size:28px}}
