@@ -2022,26 +2022,6 @@ function AppContent() {
 
               <div className="form-grid">
                 <label>
-                  Restaurant name
-                  <input
-                    value={inviteTenantRestaurantName}
-                    onChange={(event) => {
-                      const name = event.target.value;
-                      setInviteTenantRestaurantName(name);
-                      setInviteTenantSlug(
-                        name
-                          .normalize('NFKD')
-                          .replace(/[\u0300-\u036f]/g, '')
-                          .toLowerCase()
-                          .replace(/[^a-z0-9]+/g, '-')
-                          .replace(/^-+|-+$/g, ''),
-                      );
-                    }}
-                    
-                    disabled={inviteTenantSaving}
-                  />
-                </label>
-                <label>
                   First name
                   <input
                     autoComplete="given-name"
@@ -2064,14 +2044,34 @@ function AppContent() {
               </div>
 
               <div className="form-grid">
-
                 <label>
-                  Owner email
+                  Restaurant name
+                  <input
+                    autoComplete="organization"
+                    value={inviteTenantRestaurantName}
+                    onChange={(event) => {
+                      const name = event.target.value;
+                      setInviteTenantRestaurantName(name);
+                      setInviteTenantSlug(
+                        name
+                          .normalize('NFKD')
+                          .replace(/[\\u0300-\\u036f]/g, '')
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, '-')
+                          .replace(/^-+|-+$/g, ''),
+                      );
+                    }}
+                    required
+                    disabled={inviteTenantSaving}
+                  />
+                </label>
+                <label>
+                  Email address
                   <input
                     type="email"
+                    autoComplete="email"
                     value={inviteTenantEmail}
                     onChange={(event) => setInviteTenantEmail(event.target.value)}
-                    
                     required
                     disabled={inviteTenantSaving}
                   />
