@@ -5,7 +5,6 @@ export interface InviteRestaurantTenantInput {
   ownerName: string;
   name: string;
   slug: string;
-  packageId: number;
 }
 
 /** Create a tenant and send its owner invitation through the trusted Edge Function. */
@@ -18,7 +17,6 @@ export async function inviteRestaurantTenant(
       owner_name: input.ownerName,
       name: input.name,
       slug: input.slug,
-      package_id: input.packageId,
     },
   });
 
