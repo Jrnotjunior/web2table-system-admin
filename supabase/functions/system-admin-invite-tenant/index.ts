@@ -2,6 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const APP_URL = "https://admin.web2table.io";
+const TENANT_SETUP_URL = Deno.env.get("TENANT_SETUP_URL") ?? "https://app.web2table.io/";
 const allowedOrigins = new Set([APP_URL, "https://jrnotjunior.github.io"]);
 
 function headersFor(req: Request) {
@@ -132,7 +133,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: invitation, error: invitationError } = await adminClient.from("privileged_invitations")
       .insert({
-        tenant_id: tenant.id, email, role: "restaurant_owner", branch_id: branch.id,
+        tenant_id: tenant.id, email, role: "restaurant_owner", branch_id: null,
         invited_by: identity.user.id, status: "pending", expires_at: new Date(Date.now() + 7 * 86400000).toISOString(),
       }).select("id").single();
     if (invitationError || !invitation?.id) {
@@ -144,6 +145,7 @@ Deno.serve(async (req: Request) => {
     invitationId = invitation.id;
 
     const { data: inviteResult, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
+      redirectTo: `${TENANT_SETUP_URL}?type=invite`,
       data: {
         name: ownerName,
         full_name: ownerName,
