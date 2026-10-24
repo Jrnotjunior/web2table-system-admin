@@ -2,7 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const APP_URL = "https://admin.web2table.io";
-const TENANT_SETUP_URL = Deno.env.get("TENANT_SETUP_URL") ?? "";
+const TENANT_SETUP_URL = Deno.env.get("TENANT_SETUP_URL") ?? "https://app.web2table.io/restaurant";
 const allowedOrigins = new Set([APP_URL, "https://jrnotjunior.github.io"]);
 
 function headersFor(req: Request) {
