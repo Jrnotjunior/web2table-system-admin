@@ -75,8 +75,12 @@ Deno.serve(async (req: Request) => {
 
     let authorized = !!adminRow;
     if (!authorized) {
-      const { data: candidate, error: candidateError } =
-        await userClient.rpc("is_initial_admin_bootstrap_candidate");
+      // The bootstrap table is intentionally in the private schema and is not
+      // exposed to browser clients. Check it through a service-role-only RPC.
+      const { data: candidate, error: candidateError } = await adminClient.rpc(
+        "system_admin_bootstrap_candidate_for_service",
+        { p_user_id: identity.user.id, p_email: identity.user.email.toLowerCase().trim() },
+      );
       if (candidateError) {
         console.error("Unable to verify bootstrap invitation:", candidateError.message);
         return respond(500, { error: "Unable to verify the account setup invitation." });
