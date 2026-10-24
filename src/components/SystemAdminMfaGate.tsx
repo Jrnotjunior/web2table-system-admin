@@ -59,17 +59,6 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       setState({ kind: 'error', message: identityError.message });
       return;
     }
-    if (!verifiedIdentity.user || verifiedIdentity.user.id !== user.id) {
-      try {
-        await supabase.auth.signOut({ scope: 'local' });
-      } catch {
-        // The local sign-in screen is still the correct recovery path.
-      }
-      lastInspectedUserId.current = null;
-      setState({ kind: 'ready' });
-      return;
-    }
-
     // Use the current Web2Table platform authorization APIs. The private
     // first-admin invitation permits MFA enrollment only; it does not grant
     // access to restaurant data before the verified AAL2 bootstrap claim.
