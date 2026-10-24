@@ -1,5 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 
+// Capture a one-use invitation's destination before the auth client parses the URL.
+// This state chooses an existing setup screen; it never grants privileges.
+const setupKey = 'web2table-pending-password-setup';
+if (typeof window !== 'undefined') {
+  const query = new URLSearchParams(window.location.search);
+  const fragment = new URLSearchParams(window.location.hash.slice(1));
+  if (query.get('finish_setup') === '1' ||
+      ((query.get('type') === 'invite' || fragment.get('type') === 'invite') &&
+      (query.has('token_hash') || fragment.has('access_token')))) {
+    window.sessionStorage.setItem(setupKey, '1');
+  }
+}
+export function isPasswordSetupPending(): boolean {
+  return typeof window !== 'undefined' && window.sessionStorage.getItem(setupKey) === '1';
+}
+export function clearPasswordSetupPending(): void {
+  if (typeof window !== 'undefined') window.sessionStorage.removeItem(setupKey);
+}
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
