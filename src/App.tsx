@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { supabase } from './lib/supabase';
+import { supabase, isPasswordSetupPending, clearPasswordSetupPending } from './lib/supabase';
 import { type AdminPage } from './app/navigation';
 import { useAdministratorManagement } from './features/administrators/hooks/useAdministratorManagement';
 import type { DashboardPlatformHealth, DashboardRestaurantMonitoring, DashboardSummary } from './features/dashboard/types';
@@ -225,7 +225,7 @@ function AppContent() {
     function isSystemAdminInvitation() {
     const queryParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-    return queryParams.get('type') === 'invite' || hashParams.get('type') === 'invite';
+    return isPasswordSetupPending() || queryParams.get('type') === 'invite' || hashParams.get('type') === 'invite';
   }
 
   async function loadMyAccessLevel() {
@@ -432,12 +432,10 @@ function AppContent() {
 
     setInvitePassword('');
     setInvitePasswordConfirm('');
-    // The access activation RPC does not emit an auth event. Tell the
-    // mounted MFA gate to re-check access and start TOTP setup immediately.
-    window.dispatchEvent(new Event('system-admin-access-activated'));
-    setInviteSetup(false);
-    setAuthorized(true);
-    setInviteSettingPassword(false);
+    // Only after the first password has been saved do we run the existing
+    // MFA challenge. No administrator privilege is granted by this screen.
+    clearPasswordSetupPending();
+    window.location.replace(window.location.origin + '/');
   }
 
   useEffect(() => {
