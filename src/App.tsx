@@ -473,6 +473,21 @@ function AppContent() {
       return;
     }
 
+    const { data: assurance, error: assuranceError } =
+      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (assuranceError) {
+      setLoading(false);
+      setAuthDialogMessage(assuranceError.message);
+      return;
+    }
+    if (assurance.currentLevel !== 'aal2') {
+      // Preserve the final UI: its existing SystemAdminMfaGate handles MFA.
+      // Re-enter via that gate instead of signing out a legitimate user
+      // merely because the database role requires an AAL2 session.
+      window.location.reload();
+      return;
+    }
+
     const accessLevel = await loadMyAccessLevel();
 
     if (!accessLevel) {
