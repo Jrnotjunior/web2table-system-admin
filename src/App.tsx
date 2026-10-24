@@ -432,13 +432,24 @@ function AppContent() {
     }
 
     setInviteSettingPassword(true);
-
-    const result = await activateSystemAdminInvitation(invitePassword);
-
-    if (result.error) {
-      setInviteSetupError(result.error.message);
-      setInviteSettingPassword(false);
+    try {
+      const result = await Promise.race([
+        activateSystemAdminInvitation(invitePassword),
+        new Promise<{ error: { message: string } }>(resolve =>
+          window.setTimeout(() => resolve({
+            error: { message: 'Password setup did not complete. Check your connection and reopen a fresh invitation link.' },
+          }), 15000),
+        ),
+      ]);
+      if (result.error) {
+        setInviteSetupError(result.error.message);
+        return;
+      }
+    } catch (error) {
+      setInviteSetupError(error instanceof Error ? error.message : 'Unable to create password. Please use a fresh invitation.');
       return;
+    } finally {
+      setInviteSettingPassword(false);
     }
 
     window.history.replaceState(
