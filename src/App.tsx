@@ -335,6 +335,8 @@ function AppContent() {
     const session = sessionData.session;
 
     if (!session) {
+      // Expired or unusable email links cannot keep the setup flow active.
+      clearPasswordSetupPending();
       setCurrentUserEmail('');
       setSignedIn(false);
       setAuthorized(false);
