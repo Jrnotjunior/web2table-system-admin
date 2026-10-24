@@ -95,7 +95,6 @@ function AppContent() {
   const [inviteTenantOwnerName, setInviteTenantOwnerName] = useState('');
   const [inviteTenantRestaurantName, setInviteTenantRestaurantName] = useState('');
   const [inviteTenantSlug, setInviteTenantSlug] = useState('');
-  const [inviteTenantPackageId, setInviteTenantPackageId] = useState('1');
   const [inviteTenantSaving, setInviteTenantSaving] = useState(false);
   const [inviteTenantError, setInviteTenantError] = useState('');
   const [inviteTenantSuccess, setInviteTenantSuccess] = useState('');
@@ -879,7 +878,6 @@ function AppContent() {
     const ownerName = inviteTenantOwnerName.trim();
     const restaurantName = inviteTenantRestaurantName.trim();
     const slug = inviteTenantSlug.trim().toLowerCase();
-    const packageId = Number(inviteTenantPackageId);
 
     if (!ownerName) {
       setInviteTenantError('Owner full name is required.');
@@ -898,7 +896,6 @@ function AppContent() {
       ownerName,
       name: restaurantName,
       slug,
-      packageId,
     });
 
     if (result.error) {
@@ -908,13 +905,12 @@ function AppContent() {
     }
 
     setInviteTenantSuccess(
-      `Restaurant "${restaurantName}" was created and package ${packageId} was assigned. The invitation email was sent to ${email}.`,
+      `Restaurant "${restaurantName}" was created and the owner invitation was sent to ${email}.`,
     );
     setInviteTenantEmail('');
     setInviteTenantOwnerName('');
     setInviteTenantRestaurantName('');
     setInviteTenantSlug('');
-    setInviteTenantPackageId('1');
     setInviteTenantSaving(false);
   }
 
@@ -2054,18 +2050,6 @@ function AppContent() {
               </div>
 
               <div className="form-grid">
-                <label>
-                  Package
-                  <select
-                    value={inviteTenantPackageId}
-                    onChange={(event) => setInviteTenantPackageId(event.target.value)}
-                    disabled={inviteTenantSaving}
-                  >
-                    <option value="1">Package 1 — Full System</option>
-                    <option value="3">Package 2 — POS</option>
-                    <option value="4">Package 3 — Self Ordering + POS + Kitchen</option>
-                  </select>
-                </label>
 
                 <label>
                   Owner email
