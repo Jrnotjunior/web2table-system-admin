@@ -2,11 +2,11 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 // The existing System Admin remains intact in legacy mode.
-// GitHub Pages explicitly activates V10 to use Web2Table's current protected
+// GitHub Pages explicitly activates Web2Table to use Web2Table's current protected
 // tenant APIs; no legacy restaurants, tax or billing workflows are imported.
 const root=createRoot(document.getElementById('root')!);
-if(import.meta.env.VITE_WEB2TABLE_V10_ADMIN==='true'){
-  void import('./platform-v10/V10AdminApp').then(({default:App})=>{
+if(import.meta.env.VITE_WEB2TABLE_ADMIN==='true'){
+  void import('./web2table-admin/Web2TableAdminApp').then(({default:App})=>{
     root.render(<StrictMode><App /></StrictMode>);
   });
 }else{

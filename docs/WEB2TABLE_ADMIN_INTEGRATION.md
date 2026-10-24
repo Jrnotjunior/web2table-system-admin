@@ -1,14 +1,14 @@
-# Web2Table V10 System Admin integration
+# Web2Table System Admin integration
 
-## Why V10 has a compatibility mode
+## Why Web2Table has a compatibility mode
 
 This repository is the **existing separate System Admin** application. Its legacy pages use the older Supabase project’s `public.restaurants` and `system_admin_*` RPC contract, which is incompatible with the newer Web2Table restaurant ordering platform’s `tenants`, `platform_admins`, `privileged_invitations`, and RLS.
 
 The new Web2Table platform is at project `wvibrchebfwirbgkcnbr`. The old independent database is `xaihajwrsvcdjisezmmc`. **Do not migrate or rewrite the older database in place**. Do not connect the older project's finance, invoicing or unrelated restaurant schema into Web2Table.
 
-The GitHub Pages workflow explicitly sets `VITE_WEB2TABLE_V10_ADMIN=true` and builds the **V10 integration mode**, which uses the existing repo/deployment but the new platform's access-control and provisioning APIs. Other builds remain in the old mode until deliberately configured; this avoids silently replacing the current Hostinger application.
+The GitHub Pages workflow explicitly sets `VITE_WEB2TABLE_ADMIN=true` and builds the **Web2Table integration mode**, which uses the existing repo/deployment but the new platform's access-control and provisioning APIs. Other builds remain in the old mode until deliberately configured; this avoids silently replacing the current Hostinger application.
 
-## V10 integration capabilities
+## Web2Table integration capabilities
 
 - Password sign-in against the **new** Web2Table Supabase Auth project (no self-registration).
 - Database eligibility via `privileged_route_eligible('admin')`; a valid active `platform_admins` entry is required.
@@ -26,8 +26,8 @@ The project owner explicitly designated one email address in conversation. That 
 
 1. In the **Web2Table** Supabase project (NOT the older project), configure Authentication > URL Configuration to allow `https://admin.web2table.io/` as the canonical invitation redirect, and verify the email sender is configured.
 2. In Authentication > Users, choose **Add user > Send invitation**, using the designated email. This requires an authorized Dashboard operator or trusted server: browser clients cannot send an Auth Admin invitation. Do not expose a secret API key.
-3. The invited recipient clicks the email link and arrives at the System Admin custom-domain app (after verifying that the V10 mode is deployed). Email confirmation is checked against `auth.users` by the backend.
-4. The V10 app checks `is_initial_admin_bootstrap_candidate()`; a pending invite permits **only MFA enrollment**. Complete a verified TOTP authenticator challenge.
+3. The invited recipient clicks the email link and arrives at the System Admin custom-domain app (after verifying that the Web2Table mode is deployed). Email confirmation is checked against `auth.users` by the backend.
+4. The Web2Table app checks `is_initial_admin_bootstrap_candidate()`; a pending invite permits **only MFA enrollment**. Complete a verified TOTP authenticator challenge.
 5. Once the session has `aal2`, the app calls `claim_initial_admin_bootstrap()`. The server checks the originally approved email, confirmed Auth address, one-time expiry, lack of any existing administrator, and MFA, then atomically activates one `platform_admins` record.
 6. A logged-in, MFA-verified administrator can optionally set a 12+ character password for future sign-ins.
 
@@ -40,17 +40,17 @@ The private bootstrap invitation expires after **7 days** (current request: Octo
 System Admin custom domain (intended production entry point):
 https://admin.web2table.io/
 
-V10 GitHub Pages preview (retained for testing):
+Web2Table GitHub Pages preview (retained for testing):
 https://jrnotjunior.github.io/web2table-system-admin/
 
 Web2Table customer storefront:
 https://jrnotjunior.github.io/Multi-Tenant-Restaurant-Ordering-Platform-SaaS/
 
-**Critical deployment check:** The existing Hostinger build preserves the legacy UI unless `VITE_WEB2TABLE_V10_ADMIN=true` is supplied. The custom domain is not automatically running the V10 integration just because its URL has changed. Before switching the custom-domain deployment, confirm its hosting source, Supabase project, Auth redirect allowlist, HTTPS, intended user access, and real admin/MFA testing. Avoid auto-migrating legacy accounts, databases, and privileges.
+**Critical deployment check:** The existing Hostinger build preserves the legacy UI unless `VITE_WEB2TABLE_ADMIN=true` is supplied. The custom domain is not automatically running the Web2Table integration just because its URL has changed. Before switching the custom-domain deployment, confirm its hosting source, Supabase project, Auth redirect allowlist, HTTPS, intended user access, and real admin/MFA testing. Avoid auto-migrating legacy accounts, databases, and privileges.
 
 ## Typography
 
-The new V10 surface uses only **Inter** and **Manrope**. Its CSS does not import the legacy min-width desktop-only styles.
+The new Web2Table surface uses only **Inter** and **Manrope**. Its CSS does not import the legacy min-width desktop-only styles.
 
 ## Verification
 

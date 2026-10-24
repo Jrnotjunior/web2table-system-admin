@@ -44,7 +44,7 @@ The `Build Hostinger package` workflow creates a downloadable artifact from the 
 - `VITE_SUPABASE_URL`: the production Supabase project URL
 - `VITE_SUPABASE_ANON_KEY`: the public anon/publishable key (never a service-role key)
 
-Then open **Actions → Build Hostinger package → Run workflow**. When it succeeds, open that run, download the `web2table-system-admin-hostinger` artifact, extract it, and upload the extracted files to the document root for [`admin.web2table.io`](https://admin.web2table.io/). This artifact is separate from the GitHub Pages deployment. **The default Hostinger artifact uses the legacy app mode**, not the V10 integration; to serve V10 from the custom domain, the V10 mode must be intentionally enabled and rebuilt, and the target must be tested against the new Web2Table Supabase project.
+Then open **Actions → Build Hostinger package → Run workflow**. When it succeeds, open that run, download the `web2table-system-admin-hostinger` artifact, extract it, and upload the extracted files to the document root for [`admin.web2table.io`](https://admin.web2table.io/). This artifact is separate from the GitHub Pages deployment. **The default Hostinger artifact uses the legacy app mode**, not the Web2Table integration; to serve Web2Table from the custom domain, the Web2Table mode must be intentionally enabled and rebuilt, and the target must be tested against the new Web2Table Supabase project.
 
 ## GitHub Pages
 
@@ -60,4 +60,4 @@ The regular `npm run build` command retains the existing GitHub Pages base path.
 - After deployment, test authentication and important privileged workflows against production data before switching users over.
 
 ## System Admin custom domain
-The official System Admin entry point is **https://admin.web2table.io/**. The older GitHub Pages preview remains at https://jrnotjunior.github.io/web2table-system-admin/ for V10 testing. Use `https://admin.web2table.io/` for the new project's approved authentication redirect **only after the custom-domain deployment is verified to load the V10 mode**. The custom domain and a separate Auth project do not automatically migrate old administrators or grant V10 access. See [V10 integration notes](docs/WEB2TABLE_V10_INTEGRATION.md).
+The official System Admin entry point is **https://admin.web2table.io/**. The older GitHub Pages preview remains at https://jrnotjunior.github.io/web2table-system-admin/ for Web2Table testing. Use `https://admin.web2table.io/` for the new project's approved authentication redirect **only after the custom-domain deployment is verified to load the Web2Table mode**. The custom domain and a separate Auth project do not automatically migrate old administrators or grant Web2Table access. See [Web2Table integration notes](docs/WEB2TABLE_ADMIN_INTEGRATION.md).

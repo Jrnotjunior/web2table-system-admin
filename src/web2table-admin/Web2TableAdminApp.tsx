@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
-import './v10.css';
+import './web2table-admin.css';
 
 type Gate =
   | { kind:'checking' }
@@ -17,7 +17,7 @@ type Tenant = { id:string; slug:string; name:string; status:string; created_at:s
 const STORE_URL = 'https://jrnotjunior.github.io/Multi-Tenant-Restaurant-Ordering-Platform-SaaS/';
 const tenantSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export default function V10AdminApp() {
+export default function Web2TableAdminApp() {
   const [session,setSession] = useState<Session|null>(null);
   const [gate,setGate] = useState<Gate>({kind:'checking'});
   const [email,setEmail] = useState('');
@@ -76,7 +76,7 @@ export default function V10AdminApp() {
     // removes any verified factor.
     if(factors.totp.length){setGate({kind:'incomplete'});return;}
     const {data:enrollment,error:enrollError} = await supabase.auth.mfa.enroll({
-      factorType:'totp',friendlyName:'Web2Table V10 System Admin',
+      factorType:'totp',friendlyName:'Web2Table System Admin',
     });
     if(enrollError) throw enrollError;
     setGate({kind:'enroll',factorId:enrollment.id,qr:enrollment.totp.qr_code,secret:enrollment.totp.secret});
@@ -205,26 +205,26 @@ export default function V10AdminApp() {
     setGate({kind:'signed-out'});setSession(null);setTenants([]);
   });}
 
-  return <div className="w2t-v10">
+  return <div className="web2table-admin">
     <header className="w2t-top">
       <a className="w2t-logo" href={import.meta.env.BASE_URL}><span>W2T</span> Web2Table
         <small>System Administration</small></a>
       <div className="w2t-top-actions">
-        <span className="w2t-environment">V10 PLATFORM CONNECTION</span>
+        <span className="w2t-environment">WEB2TABLE PLATFORM CONNECTION</span>
         {session&&<button className="w2t-ghost" type="button" disabled={busy} onClick={signOut}>Sign out</button>}
       </div>
     </header>
     <main className="w2t-container">
-      <p className="w2t-eyebrow">SYSTEM ADMIN · WEB2TABLE V10</p>
+      <p className="w2t-eyebrow">SYSTEM ADMIN · WEB2TABLE</p>
       <h1>Restaurant platform administration</h1>
       <p className="w2t-intro">A separate administration application, connected to the new restaurant ordering platform through verified Supabase authorization.</p>
-      <div className="w2t-notice">This V10 connection uses the new Web2Table database, not the older restaurant records. Existing accounts in another Auth project do not gain access automatically. Public storefronts and checkout remain separate.</div>
+      <div className="w2t-notice">This Web2Table connection uses the new Web2Table database, not the older restaurant records. Existing accounts in another Auth project do not gain access automatically. Public storefronts and checkout remain separate.</div>
       {error&&<p className="w2t-error" role="alert">{error}</p>}
       {notice&&<p className="w2t-success" role="status">{notice}</p>}
 
       {gate.kind==='checking'&&<section className="w2t-card" role="status"><h2>Verifying access…</h2><p>Checking platform-administrator membership and MFA.</p></section>}
       {gate.kind==='signed-out'&&<section className="w2t-card w2t-auth">
-        <h2>Sign in to Web2Table V10</h2>
+        <h2>Sign in to Web2Table</h2>
         <p>Sign in with an account invited and verified in the new Web2Table Supabase Auth project. Existing accounts from the older project are not imported. First administrators activate their one-time invitation after setting up MFA.</p>
         <form onSubmit={signIn} className="w2t-form">
           <label>Email<input type="email" autoComplete="username" required value={email} onChange={e=>setEmail(e.target.value)}/></label>
@@ -329,6 +329,6 @@ export default function V10AdminApp() {
         </section>
       </>}
     </main>
-    <footer className="w2t-footer">Web2Table V10 · Separate System Admin application · Server-enforced access · Inter + Manrope</footer>
+    <footer className="w2t-footer">Web2Table · Separate System Admin application · Server-enforced access · Inter + Manrope</footer>
   </div>;
 }
