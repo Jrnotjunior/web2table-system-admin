@@ -44,9 +44,9 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
     // getSession() only reads local storage. Password activation can invalidate
     // the invitation token, so validate it against Auth before calling RPCs.
     const { data: verifiedIdentity, error: identityError } = await supabase.auth.getUser();
-    if (identityError || !verifiedIdentity.user || verifiedIdentity.user.id !== user.id) {
-      if (!identityError || identityError.status === 401 || identityError.status === 403 ||
-          !verifiedIdentity.user || verifiedIdentity.user.id !== user.id) {
+    if (identityError) {
+      if (identityError.status === 401 || identityError.status === 403 ||
+          /auth session missing|invalid jwt|token has expired/i.test(identityError.message)) {
         try {
           await supabase.auth.signOut({ scope: 'local' });
         } catch {
@@ -57,6 +57,16 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
         return;
       }
       setState({ kind: 'error', message: identityError.message });
+      return;
+    }
+    if (!verifiedIdentity.user || verifiedIdentity.user.id !== user.id) {
+      try {
+        await supabase.auth.signOut({ scope: 'local' });
+      } catch {
+        // The local sign-in screen is still the correct recovery path.
+      }
+      lastInspectedUserId.current = null;
+      setState({ kind: 'ready' });
       return;
     }
 
