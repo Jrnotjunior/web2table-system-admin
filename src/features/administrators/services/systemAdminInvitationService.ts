@@ -1,10 +1,9 @@
 import { supabase } from '../../../lib/supabase';
 
 /**
- * Initial password creation for the existing invited-account UI.
- * Session must be from the Supabase email link. Only the active platform
- * administrator or a verified initial bootstrap candidate may proceed.
- * Actual privileged operations still require AAL2 enforced by the backend.
+ * Complete password setup from the verified email invitation session.
+ * The trusted Edge Function validates the JWT, email verification, and
+ * active-admin/bootstrap authorization before changing the password.
  */
 export async function activateSystemAdminInvitation(password: string): Promise<{
   error: { message: string } | null;
@@ -13,18 +12,33 @@ export async function activateSystemAdminInvitation(password: string): Promise<{
   if (userError || !identity.user) {
     return { error: { message: 'Open a new account setup email link first.' } };
   }
-  const { data: admin, error: adminError } = await supabase.rpc(
-    'privileged_route_eligible', { p_workspace: 'admin' },
-  );
-  if (adminError) return { error: adminError };
-  if (admin !== true) {
-    const { data: candidate, error: candidateError } =
-      await supabase.rpc('is_initial_admin_bootstrap_candidate');
-    if (candidateError) return { error: candidateError };
-    if (candidate !== true) {
-      return { error: { message: 'Account is not authorized for System Admin setup.' } };
+
+  const { data, error } = await supabase.functions.invoke('system-admin-activate-invitation', {
+    body: { password },
+  });
+
+  if (error) {
+    let message = error.message;
+    try {
+      const response = (error as { context?: Response }).context;
+      if (response) {
+        const responseBody = await response.clone().json() as { error?: unknown };
+        if (typeof responseBody.error === 'string' && responseBody.error.trim()) {
+          message = responseBody.error;
+        }
+      }
+    } catch {
+      // Preserve the original Functions error message if its response is not JSON.
     }
+    return { error: { message } };
   }
-  const { error } = await supabase.auth.updateUser({ password });
-  return { error: error ?? null };
+
+  if (data?.error) {
+    return { error: { message: String(data.error) } };
+  }
+  if (data?.success !== true) {
+    return { error: { message: 'Password activation was not confirmed. Please request a fresh invitation.' } };
+  }
+
+  return { error: null };
 }
