@@ -17,6 +17,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
   const [recoveryPassword, setRecoveryPassword] = useState('');
   const inspectionInFlight = useRef(false);
   const lastInspectedUserId = useRef<string | null>(null);
+  const pendingBootstrap = useRef(false);
 
   const inspect = useCallback(async () => {
     setState({ kind: 'checking' });
@@ -33,19 +34,33 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       return;
     }
 
-    // Do not rely on app_metadata.role: the System Admin authorization source
-    // is the database access record, and JWT metadata can be absent/stale.
-    const { data: accessData, error: accessError } = await supabase.rpc('system_admin_get_my_access_level');
-    if (accessError) {
-      setState({ kind: 'error', message: accessError.message });
+    // Use the current Web2Table platform authorization APIs. The private
+    // first-admin invitation permits MFA enrollment only; it does not grant
+    // access to restaurant data before the verified AAL2 bootstrap claim.
+    const { data: adminEligible, error: adminError } = await supabase.rpc(
+      'privileged_route_eligible', { p_workspace: 'admin' },
+    );
+    if (adminError) {
+      setState({ kind: 'error', message: adminError.message });
       return;
     }
-    const access = Array.isArray(accessData) ? accessData[0] : accessData;
-    if (!access?.access_level || access.is_active !== true || access.status !== 'active') {
-      // A signed-in non-admin should not be blocked by the System Admin gate.
-      setState({ kind: 'ready' });
-      return;
+    let candidate = false;
+    if (adminEligible !== true) {
+      const { data: bootstrapEligible, error: bootstrapError } =
+        await supabase.rpc('is_initial_admin_bootstrap_candidate');
+      if (bootstrapError) {
+        setState({ kind: 'error', message: bootstrapError.message });
+        return;
+      }
+      candidate = bootstrapEligible === true;
+      if (!candidate) {
+        pendingBootstrap.current = false;
+        // Original App displays its existing unauthorized view.
+        setState({ kind: 'ready' });
+        return;
+      }
     }
+    pendingBootstrap.current = candidate;
 
     const [{ data: assurance, error: assuranceError }, { data: factors, error: factorsError }] =
       await Promise.all([
@@ -57,6 +72,15 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       return;
     }
     if (assurance.currentLevel === 'aal2') {
+      if (candidate) {
+        const { data: claimed, error: claimError } =
+          await supabase.rpc('claim_initial_admin_bootstrap');
+        if (claimError || claimed !== true) {
+          setState({ kind: 'error', message: claimError?.message ?? 'Unable to activate the approved administrator.' });
+          return;
+        }
+        pendingBootstrap.current = false;
+      }
       setState({ kind: 'ready' });
       return;
     }
@@ -187,6 +211,16 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       if (assuranceError) throw assuranceError;
       if (assurance.currentLevel !== 'aal2') {
         throw new Error('MFA was verified, but this session has not reached AAL2. Please try again.');
+      }
+      // A verified MFA token is necessary but not sufficient. The database
+      // performs the one-time first-admin claim only for the explicitly
+      // approved, email-verified candidate.
+      if (pendingBootstrap.current) {
+        const { data: claimed, error: claimError } =
+          await supabase.rpc('claim_initial_admin_bootstrap');
+        if (claimError) throw claimError;
+        if (claimed !== true) throw new Error('Administrator activation was not confirmed.');
+        pendingBootstrap.current = false;
       }
       setCode('');
       setState({ kind: 'ready' });

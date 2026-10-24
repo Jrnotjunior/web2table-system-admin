@@ -2,20 +2,19 @@ import { supabase } from '../../../lib/supabase';
 
 export type SystemAdminAccessLevel = 'owner' | 'administrator' | 'view_only';
 
-/** Resolve the current user's active System Admin access from the database. */
+/**
+ * Resolve active platform administrator privileges from the CURRENT
+ * Web2Table project. Legacy system_admin_* functions no longer exist.
+ * The first verified MFA administrator maps to the original UI's owner
+ * access level. The original UI remains unchanged.
+ */
 export async function fetchMySystemAdminAccessLevel(): Promise<SystemAdminAccessLevel | null> {
-  const { data, error } = await supabase.rpc('system_admin_get_my_access_level');
-  if (error) return null;
-
-  const access = Array.isArray(data) ? data[0] : data;
-  const level = access?.access_level as SystemAdminAccessLevel | undefined;
-  if (
-    !level ||
-    access.is_active !== true ||
-    access.status !== 'active'
-  ) {
-    return null;
-  }
-
-  return level;
+  const { data: eligible, error } = await supabase.rpc(
+    'privileged_route_eligible', { p_workspace: 'admin' },
+  );
+  if (error || eligible !== true) return null;
+  const { data: aal, error: aalError } =
+    await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aalError || aal.currentLevel !== 'aal2') return null;
+  return 'owner';
 }
