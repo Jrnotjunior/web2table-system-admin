@@ -7,8 +7,15 @@ if (typeof window !== 'undefined') {
   const query = new URLSearchParams(window.location.search);
   const fragment = new URLSearchParams(window.location.hash.slice(1));
   const linkType = query.get('type') ?? fragment.get('type');
-  if ((linkType === 'invite' || linkType === 'magiclink') &&
-      (query.has('token_hash') || fragment.has('access_token'))) {
+  // A magic link generated specifically for completing an invited account
+  // may return without a type field in the fragment. Its exact callback path
+  // is still necessary. The marker is never an authentication credential.
+  const tokenBearing = query.has('token_hash') ||
+    (fragment.has('access_token') && fragment.has('refresh_token'));
+  const invitationCallback = linkType === 'invite';
+  const setupCallback = query.get('setup') === 'complete' ||
+    linkType === 'magiclink';
+  if (tokenBearing && (invitationCallback || setupCallback)) {
     window.sessionStorage.setItem(setupKey, '1');
   }
 }
