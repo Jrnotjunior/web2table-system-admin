@@ -52,6 +52,9 @@ function isAdminPage(current: AdminPage, target: AdminPage) {
 function AppContent() {
   const { getNavigationFromUrl, pushNavigation } = useAppNavigation();
   const [email, setEmail] = useState('');
+  const [setupBusy, setSetupBusy] = useState(false);
+  const [setupSent, setSetupSent] = useState(false);
+  const [setupError, setSetupError] = useState('');
   const [currentUserEmail, setCurrentUserEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -441,6 +444,25 @@ function AppContent() {
   useEffect(() => {
     void checkAdminSession();
   }, []);
+
+  async function sendInitialAccountSetupEmail(event: FormEvent) {
+    event.preventDefault();
+    setSetupBusy(true);
+    setSetupError('');
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim().toLowerCase(),
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: window.location.origin + '/',
+      },
+    });
+    setSetupBusy(false);
+    if (error) {
+      setSetupError(error.message);
+      return;
+    }
+    setSetupSent(true);
+  }
 
   async function signIn(event: FormEvent) {
     event.preventDefault();
@@ -1267,6 +1289,37 @@ function AppContent() {
               {inviteSettingPassword ? 'Creating password...' : 'Create password'}
             </button>
           </form>
+        </section>
+      </main>
+    );
+  }
+
+  // One-time setup for an already-confirmed invited administrator.
+  // Normal System Admin sign-in layout and behavior are untouched.
+  if (!signedIn && new URLSearchParams(window.location.search).get('setup') === '1') {
+    return (
+      <main className="auth-shell">
+        <section className="auth-card">
+          <div className="eyebrow">WEB2TABLE Platform</div>
+          <h1>Finish account setup</h1>
+          <p>Request an email link for your existing invited account.
+            The link opens your original Create password screen before MFA.</p>
+          {setupSent ? (
+            <p>If this address belongs to an existing account, open the
+              newest sign-in link in your email to finish setup.</p>
+          ) : (
+            <form onSubmit={sendInitialAccountSetupEmail}>
+              <label>Email address
+                <input type="email" value={email}
+                  onChange={event => setEmail(event.target.value)}
+                  autoComplete="email" required />
+              </label>
+              {setupError && <div className="error-banner">{setupError}</div>}
+              <button type="submit" disabled={setupBusy}>
+                {setupBusy ? 'Sending link...' : 'Send account setup link'}
+              </button>
+            </form>
+          )}
         </section>
       </main>
     );
