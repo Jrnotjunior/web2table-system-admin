@@ -24,9 +24,9 @@ All operations remain server-authorized: a UI check does not grant privilege. No
 
 The project owner explicitly designated one email address in conversation. That email was registered in **private** Web2Table Supabase bootstrap invitations; no address or authentication secret is stored in this public repository.
 
-1. In the **Web2Table** Supabase project (NOT the older project), configure Authentication > URL Configuration to allow `https://jrnotjunior.github.io/web2table-system-admin/` as an invitation redirect, and verify the email sender is configured.
+1. In the **Web2Table** Supabase project (NOT the older project), configure Authentication > URL Configuration to allow `https://admin.web2table.io/` as the canonical invitation redirect, and verify the email sender is configured.
 2. In Authentication > Users, choose **Add user > Send invitation**, using the designated email. This requires an authorized Dashboard operator or trusted server: browser clients cannot send an Auth Admin invitation. Do not expose a secret API key.
-3. The invited recipient clicks the email link and arrives at the System Admin Pages app. Email confirmation is checked against `auth.users` by the backend.
+3. The invited recipient clicks the email link and arrives at the System Admin custom-domain app (after verifying that the V10 mode is deployed). Email confirmation is checked against `auth.users` by the backend.
 4. The V10 app checks `is_initial_admin_bootstrap_candidate()`; a pending invite permits **only MFA enrollment**. Complete a verified TOTP authenticator challenge.
 5. Once the session has `aal2`, the app calls `claim_initial_admin_bootstrap()`. The server checks the originally approved email, confirmed Auth address, one-time expiry, lack of any existing administrator, and MFA, then atomically activates one `platform_admins` record.
 6. A logged-in, MFA-verified administrator can optionally set a 12+ character password for future sign-ins.
@@ -37,13 +37,16 @@ The private bootstrap invitation expires after **7 days** (current request: Octo
 
 ## Deployment routes
 
-V10 GitHub Pages preview:
+System Admin custom domain (intended production entry point):
+https://admin.web2table.io/
+
+V10 GitHub Pages preview (retained for testing):
 https://jrnotjunior.github.io/web2table-system-admin/
 
 Web2Table customer storefront:
 https://jrnotjunior.github.io/Multi-Tenant-Restaurant-Ordering-Platform-SaaS/
 
-Other deployment artifacts (including Hostinger) preserve the existing legacy UI unless `VITE_WEB2TABLE_V10_ADMIN=true` is supplied. Before switching a production domain, confirm its Supabase config, Auth redirect allowlist, HTTPS, intended user access, and finish end-to-end admin and invitation testing.
+**Critical deployment check:** The existing Hostinger build preserves the legacy UI unless `VITE_WEB2TABLE_V10_ADMIN=true` is supplied. The custom domain is not automatically running the V10 integration just because its URL has changed. Before switching the custom-domain deployment, confirm its hosting source, Supabase project, Auth redirect allowlist, HTTPS, intended user access, and real admin/MFA testing. Avoid auto-migrating legacy accounts, databases, and privileges.
 
 ## Typography
 
