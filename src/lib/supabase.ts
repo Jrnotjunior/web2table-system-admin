@@ -1,14 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Invite mode is only valid on the document load that RECEIVES the token.
-// Do not persist this in sessionStorage: a stale flag was trapping returning
-// admins on Create password even at the ordinary sign-in URL.
+// An invitation may return to the app in either Supabase's token-hash format,
+// its implicit-flow token fragment, or a PKCE ?code= callback. The PKCE
+// callback may not preserve ?type=invite, so recognize the one-time code too.
+// This flag only selects the password-setup screen; the Edge Function still
+// validates the authenticated email-link claims and active admin authorization.
+// Do not persist this in sessionStorage: stale state must never trap returning
+// admins on Create password at the ordinary sign-in URL.
 const query = new URLSearchParams(typeof window === 'undefined' ? '' : window.location.search);
 const fragment = new URLSearchParams(typeof window === 'undefined' ? '' : window.location.hash.slice(1));
-const invitationCallback = (query.get('type') ?? fragment.get('type')) === 'invite';
-let invitationSetupActive = invitationCallback &&
-  (query.has('token_hash') ||
-   (fragment.has('access_token') && fragment.has('refresh_token')));
+const callbackType = query.get('type') ?? fragment.get('type');
+const hasInviteToken = query.has('token_hash') ||
+  (fragment.has('access_token') && fragment.has('refresh_token'));
+const hasPkceCallback = query.has('code');
+let invitationSetupActive = (callbackType === 'invite' && hasInviteToken) ||
+  // Supabase PKCE exchanges a one-time code for the session. The server-side
+  // password activation endpoint is the authorization boundary for this path.
+  hasPkceCallback;
 
 export function isPasswordSetupPending(): boolean {
   return invitationSetupActive;
