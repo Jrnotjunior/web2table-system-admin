@@ -1291,7 +1291,15 @@ function AppContent() {
               </span>
             </label>
             {inviteSetupError && <div className="error-banner">{inviteSetupError}</div>}
-            <button type="submit" disabled={inviteSettingPassword}>
+            <button
+              type="button"
+              disabled={inviteSettingPassword}
+              onClick={(event) => {
+                // Invoke the setup handler directly instead of relying on
+                // browser form-submit behavior on the invitation screen.
+                void completeSystemAdminInvitation(event as unknown as FormEvent);
+              }}
+            >
               {inviteSettingPassword ? 'Creating password...' : 'Create password'}
             </button>
           </form>
