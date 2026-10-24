@@ -8,6 +8,10 @@ import { supabase } from '../../../lib/supabase';
 export async function activateSystemAdminInvitation(password: string): Promise<{
   error: { message: string } | null;
 }> {
+  if (password.length < 8 || password.length > 128) {
+    return { error: { message: 'Choose a password between 8 and 128 characters.' } };
+  }
+
   const { data: identity, error: userError } = await supabase.auth.getUser();
   if (userError || !identity.user) {
     return { error: { message: 'Open a new account setup email link first.' } };
