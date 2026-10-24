@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { supabase, isPasswordSetupPending, clearPasswordSetupPending } from './lib/supabase';
+import { supabase, isPasswordSetupPending, markPasswordSetupPending, clearPasswordSetupPending } from './lib/supabase';
 import { type AdminPage } from './app/navigation';
 import { useAdministratorManagement } from './features/administrators/hooks/useAdministratorManagement';
 import type { DashboardPlatformHealth, DashboardRestaurantMonitoring, DashboardSummary } from './features/dashboard/types';
@@ -385,8 +385,10 @@ function AppContent() {
     setSignedIn(true);
 
     if (isSystemAdminInvitation()) {
-      // Supabase has already consumed the one-use callback credentials; keep
-      // only the in-memory UI state selecting the ORIGINAL create-password UI.
+      // Supabase has consumed the one-use callback. Persist setup mode only now,
+      // after a verified identity/session is established, so refresh does not
+      // route this invited user back to sign-in.
+      markPasswordSetupPending();
       window.history.replaceState(window.history.state, '', window.location.pathname);
       setInviteSetup(true);
       setInviteSetupError('');
@@ -417,8 +419,7 @@ function AppContent() {
     return true;
   }
 
-  async function completeSystemAdminInvitation(event: FormEvent) {
-    event.preventDefault();
+  async function completeSystemAdminInvitation() {
     setInviteSetupError('');
 
     if (invitePassword.length < 8) {
@@ -1237,7 +1238,7 @@ function AppContent() {
           <div className="eyebrow">WEB2TABLE Platform</div>
           <h1>Set up your account</h1>
           <p>You have been invited as a System Administrator. Create your password to activate your account.</p>
-          <form noValidate onSubmit={completeSystemAdminInvitation}>
+          <form noValidate onSubmit={(event) => { event.preventDefault(); void completeSystemAdminInvitation(); }}>
             <label>
               Password
               <span className="password-input-wrap">
@@ -1294,10 +1295,9 @@ function AppContent() {
             <button
               type="button"
               disabled={inviteSettingPassword}
-              onClick={(event) => {
-                // Invoke the setup handler directly instead of relying on
-                // browser form-submit behavior on the invitation screen.
-                void completeSystemAdminInvitation(event as unknown as FormEvent);
+              onClick={() => {
+                // Call setup directly from the click; do not depend on form submission.
+                void completeSystemAdminInvitation();
               }}
             >
               {inviteSettingPassword ? 'Creating password...' : 'Create password'}
