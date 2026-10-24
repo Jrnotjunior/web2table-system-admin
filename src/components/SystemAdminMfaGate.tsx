@@ -18,6 +18,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
   const inspectionInFlight = useRef(false);
   const lastInspectedUserId = useRef<string | null>(null);
   const pendingBootstrap = useRef(false);
+  const pendingInvitation = useRef(false);
 
   const inspect = useCallback(async () => {
     // Verified invitation/email setup must reach the original password form
@@ -51,6 +52,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       return;
     }
     let candidate = false;
+    let invitedAdministrator = false;
     if (adminEligible !== true) {
       const { data: bootstrapEligible, error: bootstrapError } =
         await supabase.rpc('is_initial_admin_bootstrap_candidate');
@@ -59,14 +61,26 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
         return;
       }
       candidate = bootstrapEligible === true;
+
       if (!candidate) {
+        const { data: inviteEligible, error: inviteError } =
+          await supabase.rpc('is_system_admin_invitation_candidate');
+        if (inviteError) {
+          setState({ kind: 'error', message: inviteError.message });
+          return;
+        }
+        invitedAdministrator = inviteEligible === true;
+      }
+
+      if (!candidate && !invitedAdministrator) {
         pendingBootstrap.current = false;
-        // Original App displays its existing unauthorized view.
+        pendingInvitation.current = false;
         setState({ kind: 'ready' });
         return;
       }
     }
     pendingBootstrap.current = candidate;
+    pendingInvitation.current = invitedAdministrator;
 
     const [{ data: assurance, error: assuranceError }, { data: factors, error: factorsError }] =
       await Promise.all([
@@ -86,6 +100,14 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
           return;
         }
         pendingBootstrap.current = false;
+      } else if (invitedAdministrator) {
+        const { data: claimed, error: claimError } =
+          await supabase.rpc('claim_system_admin_invitation');
+        if (claimError || claimed !== true) {
+          setState({ kind: 'error', message: claimError?.message ?? 'Unable to activate the invited administrator.' });
+          return;
+        }
+        pendingInvitation.current = false;
       }
       setState({ kind: 'ready' });
       return;
@@ -231,6 +253,12 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
         if (claimError) throw claimError;
         if (claimed !== true) throw new Error('Administrator activation was not confirmed.');
         pendingBootstrap.current = false;
+      } else if (pendingInvitation.current) {
+        const { data: claimed, error: claimError } =
+          await supabase.rpc('claim_system_admin_invitation');
+        if (claimError) throw claimError;
+        if (claimed !== true) throw new Error('Invited administrator activation was not confirmed.');
+        pendingInvitation.current = false;
       }
       setCode('');
       setState({ kind: 'ready' });
