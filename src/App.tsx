@@ -92,7 +92,8 @@ function AppContent() {
   } = useAdministratorManagement();
   const [showInviteTenant, setShowInviteTenant] = useState(false);
   const [inviteTenantEmail, setInviteTenantEmail] = useState('');
-  const [inviteTenantOwnerName, setInviteTenantOwnerName] = useState('');
+  const [inviteTenantFirstName, setInviteTenantFirstName] = useState('');
+  const [inviteTenantLastName, setInviteTenantLastName] = useState('');
   const [inviteTenantRestaurantName, setInviteTenantRestaurantName] = useState('');
   const [inviteTenantSlug, setInviteTenantSlug] = useState('');
   const [inviteTenantSaving, setInviteTenantSaving] = useState(false);
@@ -875,12 +876,14 @@ function AppContent() {
     setInviteTenantSuccess('');
 
     const email = inviteTenantEmail.trim().toLowerCase();
-    const ownerName = inviteTenantOwnerName.trim();
+    const firstName = inviteTenantFirstName.trim();
+    const lastName = inviteTenantLastName.trim();
+    const ownerName = `${firstName} ${lastName}`.trim();
     const restaurantName = inviteTenantRestaurantName.trim();
     const slug = inviteTenantSlug.trim().toLowerCase();
 
-    if (!ownerName) {
-      setInviteTenantError('Owner full name is required.');
+    if (!firstName || !lastName) {
+      setInviteTenantError('First name and last name are required.');
       setInviteTenantSaving(false);
       return;
     }
@@ -908,7 +911,8 @@ function AppContent() {
       `Restaurant "${restaurantName}" was created and the owner invitation was sent to ${email}.`,
     );
     setInviteTenantEmail('');
-    setInviteTenantOwnerName('');
+    setInviteTenantFirstName('');
+    setInviteTenantLastName('');
     setInviteTenantRestaurantName('');
     setInviteTenantSlug('');
     setInviteTenantSaving(false);
@@ -2038,11 +2042,21 @@ function AppContent() {
                   />
                 </label>
                 <label>
-                  Owner full name
+                  First name
                   <input
-                    value={inviteTenantOwnerName}
-                    onChange={(event) => setInviteTenantOwnerName(event.target.value)}
-                    
+                    autoComplete="given-name"
+                    value={inviteTenantFirstName}
+                    onChange={(event) => setInviteTenantFirstName(event.target.value)}
+                    required
+                    disabled={inviteTenantSaving}
+                  />
+                </label>
+                <label>
+                  Last name
+                  <input
+                    autoComplete="family-name"
+                    value={inviteTenantLastName}
+                    onChange={(event) => setInviteTenantLastName(event.target.value)}
                     required
                     disabled={inviteTenantSaving}
                   />
