@@ -25,7 +25,7 @@ export default function RestaurantsPage({ restaurants, filteredRestaurants, sear
       <div className="toolbar restaurants-search-toolbar">
         <input className="search-input uniform-search-input" type="search" placeholder="Search restaurants..." value={search} onChange={(event) => onSearchChange(event.target.value)} />
         <span className="live-indicator"><span className="live-dot" /> Live</span>
-        {accessLevel === 'owner' && <button className="restaurants-invite-button" onClick={onInviteTenant}>+ Invite tenant</button>}
+        {canManage && accessLevel !== 'view_only' && <button type="button" className="restaurants-invite-button" onClick={onInviteTenant}>+ Invite tenant</button>}
       </div>
       {error && <div className="error-banner">{error}</div>}
       {loading ? <div className="empty-state">Loading restaurants...</div> : filteredRestaurants.length === 0 ? (
