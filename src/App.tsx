@@ -228,7 +228,9 @@ function AppContent() {
     function isSystemAdminInvitation() {
     const queryParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-    return isPasswordSetupPending() || queryParams.get('type') === 'invite' || hashParams.get('type') === 'invite';
+    // Only a session established through a token-bearing email link can
+    // enable password setup, never a manually typed ?type=invite URL.
+    return isPasswordSetupPending();
   }
 
   async function loadMyAccessLevel() {
@@ -331,11 +333,10 @@ function AppContent() {
       );
     }
 
-    const { data: sessionData } = await supabase.auth.getSession();
+    const { data: sessionData, error: sessionReadError } = await supabase.auth.getSession();
     const session = sessionData.session;
 
-    if (!session) {
-      // Expired or unusable email links cannot keep the setup flow active.
+    if (sessionReadError || !session) {
       clearPasswordSetupPending();
       setCurrentUserEmail('');
       setSignedIn(false);
@@ -345,28 +346,35 @@ function AppContent() {
       return false;
     }
 
-    setCurrentUserEmail(session.user.email ?? '');
+    // getSession reads local storage; it does NOT prove the email link/session
+    // is valid. Validate directly with Supabase Auth before showing the original
+    // password creation form, so an expired token never reaches updateUser().
+    // Do NOT call setSession() again with the just-returned tokens: that can
+    // race refresh-token rotation during invitation callbacks.
+    const { data: verifiedIdentity, error: identityError } = await supabase.auth.getUser();
+    if (identityError || !verifiedIdentity.user ||
+        verifiedIdentity.user.id !== session.user.id) {
+      clearPasswordSetupPending();
+      setInvitePassword('');
+      setInvitePasswordConfirm('');
+      setInviteSetup(false);
+      setSignedIn(false);
+      setAuthorized(false);
+      setLoading(false);
+      setSetupSent(false);
+      setSetupError('Your email setup session is invalid or expired. Request a new account setup link.');
+      // Use the existing one-time setup entry, not the normal login or MFA.
+      window.history.replaceState(window.history.state, '', '/?setup=1');
+      void supabase.auth.signOut({ scope: 'local' });
+      return false;
+    }
+
+    setCurrentUserEmail(verifiedIdentity.user.email ?? '');
 
     const isSessionCurrent = async () => {
       const { data: currentSessionData } = await supabase.auth.getSession();
-      return currentSessionData.session?.user.id === session.user.id;
+      return currentSessionData.session?.user.id === verifiedIdentity.user?.id;
     };
-
-    const { error: sessionError } = await supabase.auth.setSession({
-      access_token: session.access_token,
-      refresh_token: session.refresh_token,
-    });
-
-    if (sessionError) {
-      console.error('Unable to establish System Administrator auth session:', sessionError);
-      const stillCurrent = await isSessionCurrent();
-      if (stillCurrent) await supabase.auth.signOut();
-      setSignedIn(false);
-      setAuthorized(false);
-      setInviteSetup(false);
-      setLoading(false);
-      return false;
-    }
 
     if (!(await isSessionCurrent())) {
       setLoading(false);
@@ -376,6 +384,9 @@ function AppContent() {
     setSignedIn(true);
 
     if (isSystemAdminInvitation()) {
+      // Supabase has already consumed the one-use callback credentials; keep
+      // only the in-memory UI state selecting the ORIGINAL create-password UI.
+      window.history.replaceState(window.history.state, '', window.location.pathname);
       setInviteSetup(true);
       setInviteSetupError('');
       setLoading(false);
@@ -455,7 +466,7 @@ function AppContent() {
       email: email.trim().toLowerCase(),
       options: {
         shouldCreateUser: false,
-        emailRedirectTo: window.location.origin + '/',
+        emailRedirectTo: window.location.origin + '/?setup=complete',
       },
     });
     setSetupBusy(false);
