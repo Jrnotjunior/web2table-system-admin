@@ -1,7 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from 'react';
 import { recordAdminAudit } from '../../../shared/services/auditService';
 import { resetRestaurantUserTotp as resetRestaurantUserTotpService, fetchTotpResetAccounts } from '../services/totpResetService';
-import { fetchAdministrators } from '../../administrators/services/administratorService';
 import type { PendingTotpReset, TotpResetAccount } from '../types';
 
 type AccessLevel = 'owner' | 'administrator' | 'view_only' | null;
@@ -29,26 +28,8 @@ export function useTotpResetManagement({
     setLoading(true);
     setError('');
     try {
-      const [restaurantAccounts, adminResult] = await Promise.all([
-        fetchTotpResetAccounts(),
-        fetchAdministrators(),
-      ]);
-      if (adminResult.error) throw adminResult.error;
-      const systemAdmins: TotpResetAccount[] = (adminResult.data ?? [])
-        .filter((admin: { access_level?: string; status?: string; admin_user_id?: string }) =>
-          admin.admin_user_id && ['administrator', 'view_only'].includes(admin.access_level ?? '') &&
-          ['active', 'pending'].includes(admin.status ?? ''),
-        )
-        .map((admin: { admin_user_id: string; email?: string | null; name?: string | null; access_level: string }) => ({
-          userId: admin.admin_user_id,
-          restaurantId: '',
-          restaurantName: 'System Admin',
-          displayName: admin.name?.trim() || admin.email || 'System Administrator',
-          email: admin.email || '',
-          role: 'system_admin' as const,
-          accessLevel: admin.access_level,
-        }));
-      setAccounts([...systemAdmins, ...restaurantAccounts]);
+      const loadedAccounts = await fetchTotpResetAccounts();
+      setAccounts(loadedAccounts);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Unable to load restaurant accounts.');
       setAccounts([]);
