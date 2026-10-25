@@ -56,6 +56,14 @@ function AppContent() {
   const [currentUserEmail, setCurrentUserEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordRecoveryMode, setPasswordRecoveryMode] = useState(() => window.location.hash.includes('type=recovery') || new URLSearchParams(window.location.search).get('type') === 'recovery');
+  const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [resetPassword, setResetPassword] = useState('');
+  const [resetPasswordConfirm, setResetPasswordConfirm] = useState('');
+  const [resetPasswordBusy, setResetPasswordBusy] = useState(false);
+  const [resetPasswordError, setResetPasswordError] = useState('');
+  const [resetPasswordSuccess, setResetPasswordSuccess] = useState('');
   const [authDialogMessage, setAuthDialogMessage] = useState('');
   const [signedIn, setSignedIn] = useState(false);
   const [authorized, setAuthorized] = useState(false);
@@ -394,6 +402,14 @@ function AppContent() {
 
     setSignedIn(true);
 
+    // Password recovery links establish a temporary Auth session. Let the user
+    // choose a new password before the normal dashboard/MFA flow continues.
+    if (window.location.hash.includes('type=recovery') || new URLSearchParams(window.location.search).get('type') === 'recovery') {
+      setPasswordRecoveryMode(true);
+      setLoading(false);
+      return true;
+    }
+
     if (isSystemAdminInvitation() || await isEmailLinkSetupSession(session.access_token)) {
       // Recover from the session's signed email-link AMR if the one-use URL was
       // consumed before the latest UI bundle was loaded. The server still checks
@@ -510,6 +526,65 @@ function AppContent() {
   useEffect(() => {
     void checkAdminSession();
   }, []);
+
+  async function requestPasswordReset(event: FormEvent) {
+    event.preventDefault();
+    setResetPasswordError('');
+    setResetPasswordSuccess('');
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      setResetPasswordError('Enter your System Admin email address first.');
+      return;
+    }
+    setResetPasswordBusy(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+        redirectTo: window.location.origin + '/',
+      });
+      if (error) throw error;
+      // Keep the response generic so the page does not disclose whether an
+      // email address has an account.
+      setResetEmailSent(true);
+    } catch (error) {
+      setResetPasswordError(error instanceof Error ? error.message : 'Unable to request a password reset. Please try again.');
+    } finally {
+      setResetPasswordBusy(false);
+    }
+  }
+
+  async function saveRecoveredPassword(event: FormEvent) {
+    event.preventDefault();
+    setResetPasswordError('');
+    setResetPasswordSuccess('');
+    if (resetPassword.length < 8) {
+      setResetPasswordError('Your password must be at least 8 characters.');
+      return;
+    }
+    if (resetPassword !== resetPasswordConfirm) {
+      setResetPasswordError('The passwords do not match.');
+      return;
+    }
+    setResetPasswordBusy(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: resetPassword });
+      if (error) throw error;
+      await supabase.auth.signOut({ scope: 'local' });
+      setPasswordRecoveryMode(false);
+      setSignedIn(false);
+      setAuthorized(false);
+      setResetPassword('');
+      setResetPasswordConfirm('');
+      setPassword('');
+      setForgotPasswordMode(false);
+      setResetEmailSent(false);
+      setResetPasswordSuccess('Your password has been updated. Sign in with your new password.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } catch (error) {
+      setResetPasswordError(error instanceof Error ? error.message : 'Unable to update your password. Request a new reset link and try again.');
+    } finally {
+      setResetPasswordBusy(false);
+    }
+  }
 
   async function signIn(event: FormEvent) {
     event.preventDefault();
@@ -1348,6 +1423,25 @@ function AppContent() {
     );
   }
 
+  if (passwordRecoveryMode) {
+    return (
+      <main className="auth-shell">
+        <section className="auth-card auth-login-card">
+          <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
+          <div className="eyebrow">WEB2TABLE PLATFORM</div>
+          <h1>Set a new password.</h1>
+          <p>Choose a new password for your System Admin account.</p>
+          <form onSubmit={saveRecoveredPassword}>
+            <label><input type="password" value={resetPassword} onChange={(event) => setResetPassword(event.target.value)} placeholder="New password" aria-label="New password" autoComplete="new-password" minLength={8} required /></label>
+            <label><input type="password" value={resetPasswordConfirm} onChange={(event) => setResetPasswordConfirm(event.target.value)} placeholder="Confirm new password" aria-label="Confirm new password" autoComplete="new-password" minLength={8} required /></label>
+            {resetPasswordError && <p role="alert" className="auth-form-message">{resetPasswordError}</p>}
+            <button type="submit" disabled={resetPasswordBusy}>{resetPasswordBusy ? 'Updating password…' : 'Update password'}</button>
+          </form>
+        </section>
+      </main>
+    );
+  }
+
   if (!signedIn) {
     return (
       <main className="auth-shell">
@@ -1366,16 +1460,34 @@ function AppContent() {
           <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE PLATFORM</div>
           <h1>Welcome back.</h1>
-          <p>Sign in to manage your restaurants and platform settings.</p>
-          <form onSubmit={signIn}>
-            <label>
-              <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email address" aria-label="Email address" autoComplete="email" required />
-            </label>
-            <label>
-              <span className="password-input-wrap"><input type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Password" aria-label="Password" autoComplete="current-password" required /><button className="password-visibility-toggle" type="button" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="M4 4 20 20" />}</svg></button></span>
-            </label>
-            <button type="submit">Sign in</button>
-          </form>
+          <p>{forgotPasswordMode ? 'We will email you a secure link to reset your password.' : 'Sign in to manage your restaurants and platform settings.'}</p>
+          {resetPasswordSuccess && <p role="status" className="auth-form-message">{resetPasswordSuccess}</p>}
+          {resetPasswordError && !passwordRecoveryMode && <p role="alert" className="auth-form-message">{resetPasswordError}</p>}
+          {forgotPasswordMode ? (
+            resetEmailSent ? (
+              <div>
+                <p role="status" className="auth-form-message">If an account exists for {email.trim()}, a password reset link will be sent to that address. Check your inbox and spam folder.</p>
+                <button type="button" onClick={() => { setForgotPasswordMode(false); setResetEmailSent(false); setResetPasswordError(''); }}>Back to sign in</button>
+              </div>
+            ) : (
+              <form onSubmit={requestPasswordReset}>
+                <label><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email address" aria-label="Email address" autoComplete="email" required /></label>
+                <button type="submit" disabled={resetPasswordBusy}>{resetPasswordBusy ? 'Sending reset link…' : 'Send reset link'}</button>
+                <button type="button" className="auth-secondary-button" onClick={() => { setForgotPasswordMode(false); setResetPasswordError(''); }}>Back to sign in</button>
+              </form>
+            )
+          ) : (
+            <form onSubmit={signIn}>
+              <label>
+                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email address" aria-label="Email address" autoComplete="email" required />
+              </label>
+              <label>
+                <span className="password-input-wrap"><input type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Password" aria-label="Password" autoComplete="current-password" required /><button className="password-visibility-toggle" type="button" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="M4 4 20 20" />}</svg></button></span>
+              </label>
+              <button type="submit">Sign in</button>
+              <button type="button" className="auth-secondary-button" onClick={() => { setForgotPasswordMode(true); setResetPasswordError(''); setResetEmailSent(false); }}>Forgot password?</button>
+            </form>
+          )}
         </section>
       </main>
     );
