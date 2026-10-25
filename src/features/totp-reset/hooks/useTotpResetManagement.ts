@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from 'react';
 import { recordAdminAudit } from '../../../shared/services/auditService';
-import { resetRestaurantUserTotp as resetRestaurantUserTotpService, resetCoAdministratorTotp, fetchTotpResetAccounts } from '../services/totpResetService';
+import { resetRestaurantUserTotp as resetRestaurantUserTotpService, fetchTotpResetAccounts } from '../services/totpResetService';
 import { fetchAdministrators } from '../../administrators/services/administratorService';
 import type { PendingTotpReset, TotpResetAccount } from '../types';
 
@@ -64,8 +64,8 @@ export function useTotpResetManagement({
     restaurantId: string,
     confirmed = false,
   ): Promise<boolean> {
-    if (adminAccessLevel !== 'owner') {
-      const message = 'Only the System Administrator Owner can reset account authenticators.';
+    if (adminAccessLevel !== 'owner' && adminAccessLevel !== 'administrator') {
+      const message = 'Only an active System Administrator with management access can reset account authenticators.';
       setStaffActionError(message);
       setOwnerError(message);
       return false;
@@ -87,11 +87,7 @@ export function useTotpResetManagement({
     setStaffActionError('');
     setOwnerError('');
     try {
-      if (role === 'system_admin') {
-        await resetCoAdministratorTotp(targetUserId);
-      } else {
-        await resetRestaurantUserTotpService(targetUserId, restaurantId, role);
-      }
+      await resetRestaurantUserTotpService(targetUserId, restaurantId, role);
       await recordAdminAudit(role === 'system_admin' ? 'System Administrator TOTP reset' : 'Restaurant account TOTP reset', restaurantId || null, role, targetUserId, {
         target_user_id: targetUserId,
         target_role: role,
