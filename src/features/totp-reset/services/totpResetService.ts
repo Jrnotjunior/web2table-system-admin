@@ -1,105 +1,40 @@
 import { supabase } from '../../../lib/supabase';
 import type { TotpResetAccount } from '../types';
 
-export async function fetchTotpResetAccounts(): Promise<TotpResetAccount[]> {
-  const { data, error } = await supabase.from('restaurants')
-    .select('id,owner_id,name')
-    .order('name', { ascending: true });
-  if (error) throw error;
+type ManagementResponse = { accounts?: TotpResetAccount[]; error?: string };
 
-  const rows: TotpResetAccount[] = [];
-  for (const restaurant of data ?? []) {
-    if (restaurant.owner_id) rows.push({
-      userId: restaurant.owner_id,
-      restaurantId: restaurant.id,
-      restaurantName: restaurant.name || 'Restaurant',
-      displayName: 'Restaurant owner',
-      email: '',
-      role: 'restaurant_owner',
-    });
-
-    const { data: staffData, error: staffError } = await supabase.rpc(
-      'system_admin_get_restaurant_staff',
-      { p_restaurant_id: restaurant.id },
-    );
-    if (staffError) {
-      throw new Error('Could not load staff for ' + (restaurant.name || 'restaurant') + ': ' + staffError.message);
-    }
-    for (const staff of Array.isArray(staffData) ? staffData : []) {
-      if (staff.auth_user_id) rows.push({
-        userId: staff.auth_user_id,
-        restaurantId: restaurant.id,
-        restaurantName: restaurant.name || 'Restaurant',
-        displayName: staff.name || staff.email || 'Staff member',
-        email: staff.email || '',
-        role: 'staff',
-        staffRole: staff.role || 'Staff',
-      });
-    }
-  }
-
-  // Owner login emails must be retrieved server-side, never through browser Auth admin APIs.
-  const ownerIds = [...new Set(rows.filter((account) => account.role === 'restaurant_owner').map((account) => account.userId))];
-  if (ownerIds.length > 0) {
-    const { data: ownerEmailData, error: ownerEmailError } = await supabase.functions.invoke('system-admin-get-owner-emails', {
-      body: { user_ids: ownerIds },
-    });
-    if (!ownerEmailError && ownerEmailData?.emails && typeof ownerEmailData.emails === 'object') {
-      for (const row of rows) {
-        if (row.role === 'restaurant_owner') {
-          row.email = ownerEmailData.emails[row.userId] || '';
-          const ownerName = ownerEmailData.names?.[row.userId];
-          if (typeof ownerName === 'string' && ownerName.trim()) row.displayName = ownerName.trim();
-        }
+async function invokeManagement(body: Record<string, unknown>): Promise<ManagementResponse> {
+  const { data, error } = await supabase.functions.invoke('system-admin-totp-management', { body });
+  if (error) {
+    let message = error.message;
+    try {
+      const response = (error as { context?: Response }).context;
+      if (response) {
+        const payload = await response.clone().json() as { error?: unknown };
+        if (typeof payload.error === 'string' && payload.error.trim()) message = payload.error;
       }
-    } else if (ownerEmailError) {
-      console.warn('Could not load restaurant owner login emails:', ownerEmailError.message);
-    }
+    } catch { /* Keep the original Functions error. */ }
+    throw new Error(message);
   }
+  if (data?.error) throw new Error(String(data.error));
+  return data as ManagementResponse;
+}
 
-  return rows;
+export async function fetchTotpResetAccounts(): Promise<TotpResetAccount[]> {
+  const data = await invokeManagement({ action: 'list' });
+  if (!Array.isArray(data.accounts)) throw new Error('The server returned an invalid account list.');
+  return data.accounts;
 }
 
 export async function resetRestaurantUserTotp(
   targetUserId: string,
   restaurantId: string,
-  role: 'restaurant_owner' | 'staff',
+  role: 'restaurant_owner' | 'staff' | 'system_admin',
 ): Promise<void> {
-  const { data, error } = await supabase.functions.invoke('system-admin-reset-restaurant-user-totp', {
-    body: { target_user_id: targetUserId, restaurant_id: restaurantId, target_role: role },
+  await invokeManagement({
+    action: 'reset',
+    target_user_id: targetUserId,
+    restaurant_id: restaurantId || null,
+    target_role: role,
   });
-  if (error) {
-    let message = error.message;
-    try {
-      const response = (error as { context?: Response }).context;
-      if (response) {
-        const payload = await response.clone().json() as { error?: unknown };
-        if (typeof payload.error === 'string' && payload.error.trim()) message = payload.error;
-      }
-    } catch {
-      // Keep the original Functions error if its response body cannot be parsed.
-    }
-    throw new Error(message);
-  }
-  if (data?.error) throw new Error(String(data.error));
-}
-
-export async function resetCoAdministratorTotp(targetUserId: string): Promise<void> {
-  const { data, error } = await supabase.functions.invoke('system-admin-reset-co-admin-totp', {
-    body: { target_user_id: targetUserId },
-  });
-  if (error) {
-    let message = error.message;
-    try {
-      const response = (error as { context?: Response }).context;
-      if (response) {
-        const payload = await response.clone().json() as { error?: unknown };
-        if (typeof payload.error === 'string' && payload.error.trim()) message = payload.error;
-      }
-    } catch {
-      // Preserve the original function error if its response cannot be parsed.
-    }
-    throw new Error(message);
-  }
-  if (data?.error) throw new Error(String(data.error));
 }
