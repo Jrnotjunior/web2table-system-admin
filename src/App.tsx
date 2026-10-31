@@ -40,6 +40,7 @@ import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
 import RestaurantsPage from './features/restaurants/RestaurantsPage';
 import type { Restaurant, RestaurantPackageRow, RestaurantStaff } from './features/restaurants/types';
+import { fetchPosIntegrationStatus, updatePosIntegrationStatus, type PosIntegrationStatus, type PosIntegrationAction } from './features/restaurants/services/posIntegrationService';
 import RestaurantDetailsPage from './features/restaurants/RestaurantDetailsPage';
 
 function isAdminPage(current: AdminPage, target: AdminPage) {
@@ -121,7 +122,12 @@ function AppContent() {
   const [search, setSearch] = useState('');
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const canManage = adminAccessLevel === 'owner' || adminAccessLevel === 'administrator';
-  const [manageTab, setManageTab] = useState<'overview' | 'owner' | 'domain' | 'settings' | 'staff' | 'package'>('overview');
+  const [manageTab, setManageTab] = useState<'overview' | 'owner' | 'domain' | 'settings' | 'staff' | 'package' | 'pos'>('overview');
+  const [posIntegrationStatus, setPosIntegrationStatus] = useState<PosIntegrationStatus>('not_enabled');
+  const [posIntegrationLoading, setPosIntegrationLoading] = useState(false);
+  const [posIntegrationSaving, setPosIntegrationSaving] = useState(false);
+  const [posIntegrationError, setPosIntegrationError] = useState('');
+  const [posIntegrationMessage, setPosIntegrationMessage] = useState('');
   const [restaurantPackageId, setRestaurantPackageId] = useState<number | null>(null);
   const [restaurantPackageRows, setRestaurantPackageRows] = useState<RestaurantPackageRow[]>([]);
   const [packageLoading, setPackageLoading] = useState(false);
@@ -1695,6 +1701,39 @@ function AppContent() {
     </div>
   )}
 
+  async function loadPosIntegration(tenantId: string) {
+    setPosIntegrationLoading(true);
+    setPosIntegrationError('');
+    setPosIntegrationMessage('');
+    try {
+      const status = await fetchPosIntegrationStatus(tenantId);
+      setPosIntegrationStatus(status);
+    } catch (error) {
+      setPosIntegrationError(error instanceof Error ? error.message : 'Unable to load POS integration status.');
+    } finally {
+      setPosIntegrationLoading(false);
+    }
+  }
+
+  async function changePosIntegration(action: PosIntegrationAction, reason: string) {
+    if (!selectedRestaurant || !canManage || posIntegrationSaving) return;
+    setPosIntegrationSaving(true);
+    setPosIntegrationError('');
+    setPosIntegrationMessage('');
+    try {
+      const status = await updatePosIntegrationStatus(selectedRestaurant.id, action, reason);
+      setPosIntegrationStatus(status);
+      setPosIntegrationMessage(`POS integration is now ${status.replaceAll('_', ' ')}. Normal Web2table cashier access is unchanged.`);
+      await recordAdminAudit('Tenant POS integration ' + action, selectedRestaurant.id, 'tenant_pos_integration', selectedRestaurant.id, {
+        action, status, reason: reason.trim() || null,
+      });
+    } catch (error) {
+      setPosIntegrationError(error instanceof Error ? error.message : 'POS integration change was rejected.');
+    } finally {
+      setPosIntegrationSaving(false);
+    }
+  }
+
   function openRestaurant(restaurant: Restaurant, pushHistory = true) {
     if (pushHistory) pushNavigation('restaurant', { restaurantId: restaurant.id });
     setSelectedRestaurant(restaurant);
@@ -1850,6 +1889,9 @@ function AppContent() {
           onLoadSettings={() => void loadRestaurantSettings(selectedRestaurant.id)}
           onLoadStaff={() => void loadRestaurantStaff(selectedRestaurant.id)}
           onLoadPackage={() => void loadRestaurantPackage(selectedRestaurant.id)}
+          onLoadPos={() => void loadPosIntegration(selectedRestaurant.id)}
+          posIntegration={{ status: posIntegrationStatus, loading: posIntegrationLoading, saving: posIntegrationSaving, error: posIntegrationError, message: posIntegrationMessage }}
+          onSetPosIntegration={(action, reason) => void changePosIntegration(action, reason)}
           onRequestStatusChange={() => setPendingRestaurantStatus(selectedRestaurant)}
           owner={{ loading: ownerLoading, ownerUserId, ownerName, ownerEmail, ownerSaving, error: ownerError }}
           onOwnerEmailChange={setOwnerEmail}
