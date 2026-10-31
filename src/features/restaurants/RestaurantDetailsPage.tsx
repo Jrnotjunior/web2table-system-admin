@@ -7,6 +7,7 @@ import RestaurantDomainPanel from './components/RestaurantDomainPanel';
 import RestaurantSettingsPanel from './components/RestaurantSettingsPanel';
 import RestaurantStaffPanel from './components/RestaurantStaffPanel';
 import RestaurantPackagePanel from './components/RestaurantPackagePanel';
+import PosIntegrationPanel from './components/PosIntegrationPanel';
 
 type HeaderProps = ComponentProps<typeof RestaurantManagementHeader>;
 type OwnerProps = ComponentProps<typeof RestaurantOwnerPanel>;
@@ -25,6 +26,9 @@ type Props = {
   onLoadSettings: HeaderProps['onLoadSettings'];
   onLoadStaff: HeaderProps['onLoadStaff'];
   onLoadPackage: HeaderProps['onLoadPackage'];
+  onLoadPos: HeaderProps['onLoadPos'];
+  posIntegration: { status: import('./services/posIntegrationService').PosIntegrationStatus; loading: boolean; saving: boolean; error: string; message: string };
+  onSetPosIntegration: (action: import('./services/posIntegrationService').PosIntegrationAction, reason: string) => void;
   onRequestStatusChange: () => void;
   owner: Pick<OwnerProps, 'loading' | 'ownerUserId' | 'ownerName' | 'ownerEmail' | 'ownerSaving' | 'error'>;
   onOwnerEmailChange: OwnerProps['onEmailChange'];
@@ -59,8 +63,10 @@ type Props = {
 export default function RestaurantDetailsPage(p: Props) {
   return (
     <section className="dashboard-card restaurant-manage-card">
-      <RestaurantManagementHeader restaurant={p.restaurant} manageTab={p.manageTab} onSelectTab={p.onSelectTab} onClose={p.onClose} onLoadOwner={p.onLoadOwner} onSelectDomain={p.onSelectDomain} onLoadSettings={p.onLoadSettings} onLoadStaff={p.onLoadStaff} onLoadPackage={p.onLoadPackage} />
-      {p.manageTab === 'overview' ? (
+      <RestaurantManagementHeader restaurant={p.restaurant} manageTab={p.manageTab} onSelectTab={p.onSelectTab} onClose={p.onClose} onLoadOwner={p.onLoadOwner} onSelectDomain={p.onSelectDomain} onLoadSettings={p.onLoadSettings} onLoadStaff={p.onLoadStaff} onLoadPackage={p.onLoadPackage} onLoadPos={p.onLoadPos} />
+      {p.manageTab === 'pos' ? (
+        <PosIntegrationPanel restaurant={p.restaurant} status={p.posIntegration.status} loading={p.posIntegration.loading} saving={p.posIntegration.saving} error={p.posIntegration.error} message={p.posIntegration.message} canManage={p.canManage} onAction={p.onSetPosIntegration} />
+      ) : p.manageTab === 'overview' ? (
         <RestaurantOverview restaurant={p.restaurant} canManage={p.canManage} onRequestStatusChange={p.onRequestStatusChange} />
       ) : p.manageTab === 'owner' ? (
         <RestaurantOwnerPanel loading={p.owner.loading} ownerUserId={p.owner.ownerUserId} ownerName={p.owner.ownerName} ownerEmail={p.owner.ownerEmail} canManage={p.canManage} ownerSaving={p.owner.ownerSaving} error={p.owner.error} onEmailChange={p.onOwnerEmailChange} onRequestAssign={p.onRequestAssignOwner} onRequestRemove={p.onRequestRemoveOwner} />
