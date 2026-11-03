@@ -735,10 +735,11 @@ function AppContent() {
   }
 
   async function setRestaurantStaffActive(staffId: string, isActive: boolean) {
+    if (!selectedRestaurant) return;
     setStaffActionId(staffId);
     setStaffActionError('');
 
-    const { error } = await setRestaurantStaffActiveService(staffId, isActive);
+    const { error } = await setRestaurantStaffActiveService(selectedRestaurant.id, staffId, isActive);
 
     if (error) {
       setStaffActionError(error.message);
