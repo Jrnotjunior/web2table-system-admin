@@ -1577,7 +1577,6 @@ function AppContent() {
     setOwnerName('');
     setOwnerUserId('');
     setOwnerError('');
-    setDomainError('');
     setSettingsError('');
     setRestaurantError('');
   }
@@ -1715,7 +1714,7 @@ function AppContent() {
           onSelectTab={setManageTab}
           onClose={() => openRestaurants()}
           onLoadOwner={() => void loadRestaurantOwner(selectedRestaurant.id)}
-          onSelectDomain={() => undefined}
+          onSelectDomain={() => setManageTab('domain')}
           onLoadSettings={() => void loadRestaurantSettings(selectedRestaurant.id)}
           onLoadStaff={() => void loadRestaurantStaff(selectedRestaurant.id)}
           onLoadPos={() => void loadPosIntegration(selectedRestaurant.id)}
