@@ -1,5 +1,6 @@
 type RestaurantDomainPanelProps = {
   domain: string;
+  platformDomain?: string;
   onDomainChange: (value: string) => void;
   canManage: boolean;
   domainSaving: boolean;
@@ -9,6 +10,7 @@ type RestaurantDomainPanelProps = {
 
 export default function RestaurantDomainPanel({
   domain,
+  platformDomain = 'app.web2table.io',
   onDomainChange,
   canManage,
   domainSaving,
@@ -23,11 +25,11 @@ export default function RestaurantDomainPanel({
         <p>Assign the public domain that will identify this restaurant on the ordering platform.</p>
         <div className="domain-status-panel">
           <div>
-            <strong>{domain ? 'Custom domain configured' : 'No custom domain configured'}</strong>
+            <strong>{domain ? 'Custom domain configured' : 'Platform domain active'}</strong>
             <span>
               {domain
-                ? <>This restaurant is configured to use <strong>{domain}</strong>.</>
-                : 'The restaurant is currently using its WEB2TABLE platform URL.'}
+                ? <>Custom hostname requested: <strong>{domain}</strong>.</>
+                : <>Customers can order using the Web2Table platform URL <strong>{platformDomain}</strong>. Add a custom domain below only if the restaurant owns a separate hostname.</>}
             </span>
           </div>
           <span className={domain ? 'status active' : 'status inactive'}>{domain ? 'Configured' : 'Not configured'}</span>
@@ -36,7 +38,7 @@ export default function RestaurantDomainPanel({
         {canManage && <div className="domain-form">
           <label>
             Custom domain
-            <input value={domain} onChange={(event) => onDomainChange(event.target.value)} placeholder="restaurant.com" />
+            <input value={domain} onChange={(event) => onDomainChange(event.target.value)} placeholder="restaurant.com" autoComplete="off" />
           </label>
           <div className="domain-form-actions">
             <button onClick={onRequestSave} disabled={domainSaving || !domain.trim()}>
@@ -59,7 +61,7 @@ export default function RestaurantDomainPanel({
         </div>}
         {!canManage && <div className="empty-state">View Only access can view the domain configuration but cannot change it.</div>}
         <div className="domain-help">
-          Add a custom domain only when one is available. Enter only the hostname, for example <strong>restaurant.com</strong>. Do not include https:// or a path.
+          The platform domain is managed by Web2Table and must not be entered here. Add a custom domain only when one is available. Enter only the hostname, for example <strong>restaurant.com</strong>. Do not include https:// or a path.
         </div>
         {domainError && <div className="error-banner">{domainError}</div>}
       </div>
