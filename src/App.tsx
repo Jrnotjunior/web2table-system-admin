@@ -1846,17 +1846,11 @@ function AppContent() {
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
-          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving, taxpayerProfileLoading, taxpayerProfile, taxpayerProfileError, taxpayerProfileMessage, taxpayerProfileSaving, birReadinessLoading, birReadiness, birReadinessError, invoiceSeriesSaving, invoiceSeriesError, invoiceSeriesMessage }}
-          onVatRegisteredChange={setVatRegistered}
-          onVatRateChange={setVatRate}
-          onPricesVatInclusiveChange={setPricesVatInclusive}
+          settingsState={{ settingsLoading, cashOnDeliveryEnabled, cashOnPickupEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving }}
           onCashOnDeliveryChange={setCashOnDeliveryEnabled}
           onCashOnPickupChange={setCashOnPickupEnabled}
           onAutomaticRiderAssignmentChange={setAutomaticRiderAssignmentEnabled}
           onOnlinePaymentsEnabledChange={setOnlinePaymentsEnabled}
-          onTaxpayerProfileChange={setTaxpayerProfile}
-          onRequestReviewTaxpayerProfile={() => void saveTaxpayerProfileReview()}
-          onConfigureDisabledInvoiceSeries={(input) => void saveDisabledInvoiceSeries(input)}
           onRequestSaveSettings={() => setPendingSaveSettings(true)}
         />
           {pendingRestaurantStatus && (
