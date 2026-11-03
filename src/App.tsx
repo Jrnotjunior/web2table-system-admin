@@ -14,7 +14,6 @@ import { useSystemAdminAuthListener } from './features/administrators/hooks/useS
 import { exportAuditLogsCsv } from './features/audit/utils/exportAuditLogsCsv';
 import { fetchDashboardData } from './features/dashboard/services/dashboardService';
 import { fetchRestaurants, fetchRestaurantById, deleteRestaurant as deleteRestaurantService } from './features/restaurants/services/restaurantService';
-import { setRestaurantCustomDomain } from './features/restaurants/services/restaurantDomainService';
 import { updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
 import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled } from './features/restaurants/services/restaurantSettingsService';
@@ -30,7 +29,6 @@ import DashboardPage from './features/dashboard/DashboardPage';
 import AuditLogsPage from './features/audit/AuditLogsPage';
 import TotpResetPage from './features/totp-reset/TotpResetPage';
 import AdministratorsPage from './features/administrators/AdministratorsPage';
-import RestaurantDomainConfirmation from './features/restaurants/components/RestaurantDomainConfirmation';
 import RestaurantSettingsConfirmation from './features/restaurants/components/RestaurantSettingsConfirmation';
 import RestaurantOwnerAssignmentConfirmation from './features/restaurants/components/RestaurantOwnerAssignmentConfirmation';
 import PlatformHealthPage from './components/PlatformHealthPage';
@@ -145,11 +143,6 @@ function AppContent() {
   const [vatRegistered, setVatRegistered] = useState(false);
   const [pricesVatInclusive, setPricesVatInclusive] = useState(false);
   const [vatRate, setVatRate] = useState('12');
-  const [domain, setDomain] = useState('');
-  const [domainLoading, setDomainLoading] = useState(false);
-  const [domainSaving, setDomainSaving] = useState(false);
-  const [domainError, setDomainError] = useState('');
-  const [pendingSaveDomain, setPendingSaveDomain] = useState(false);
   const [ownerLoading, setOwnerLoading] = useState(false);
   const [ownerSaving, setOwnerSaving] = useState(false);
   const [ownerEmail, setOwnerEmail] = useState('');
@@ -789,23 +782,6 @@ function AppContent() {
     }
 
     setStaffActionId(null);
-  }
-
-  async function saveDomain() {
-    if (!selectedRestaurant) return;
-    setDomainSaving(true);
-    setDomainError('');
-    const { data, error } = await setRestaurantCustomDomain(
-      selectedRestaurant.id,
-      domain.trim(),
-    );
-    if (error) {
-      setDomainError(error.message);
-    } else {
-      setDomain(typeof data === 'string' ? data : domain.trim().toLowerCase());
-      setPendingSaveDomain(false);
-    }
-    setDomainSaving(false);
   }
 
   async function inviteTenant(event: FormEvent) {
@@ -1601,7 +1577,6 @@ function AppContent() {
     setOwnerName('');
     setOwnerUserId('');
     setOwnerError('');
-    setDomain('');
     setDomainError('');
     setSettingsError('');
     setRestaurantError('');
@@ -1751,24 +1726,6 @@ function AppContent() {
           onOwnerEmailChange={setOwnerEmail}
           onRequestAssignOwner={() => { setOwnerError(''); setPendingAssignOwner(true); }}
           onRequestRemoveOwner={() => { setOwnerError(''); setPendingRemoveOwner(true); }}
-          domain={domain}
-          onDomainChange={setDomain}
-          domainSaving={domainSaving}
-          domainError={domainError}
-          onRequestSaveDomain={() => {
-            const hostname = domain.trim().toLowerCase();
-            const isValidHostname = hostname.length >= 4 && hostname.length <= 253
-              && /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/.test(hostname)
-              && hostname !== 'web2table.io' && !hostname.endsWith('.web2table.io');
-            if (!isValidHostname) {
-              setDomainError('Enter a valid custom hostname you own, such as restaurant.com. The Web2Table platform domain is managed separately.');
-              setPendingSaveDomain(false);
-              return;
-            }
-            setDomain(hostname);
-            setDomainError('');
-            setPendingSaveDomain(true);
-          }}
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
@@ -1818,17 +1775,6 @@ function AppContent() {
           )}
 
           {renderRestaurantDeleteModal()}
-
-          {pendingSaveDomain && (
-            <RestaurantDomainConfirmation
-              restaurantName={selectedRestaurant?.name ?? ''}
-              domain={domain}
-              domainSaving={domainSaving}
-              domainError={domainError}
-              onClose={() => setPendingSaveDomain(false)}
-              onConfirm={() => void saveDomain()}
-            />
-          )}
 
           {pendingSaveSettings && (
             <RestaurantSettingsConfirmation
