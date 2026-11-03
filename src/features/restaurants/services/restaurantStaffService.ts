@@ -6,8 +6,9 @@ export async function fetchRestaurantStaff(restaurantId: string) {
   });
 }
 
-export async function setRestaurantStaffActive(staffId: string, isActive: boolean) {
+export async function setRestaurantStaffActive(restaurantId: string, staffId: string, isActive: boolean) {
   return supabase.rpc('system_admin_set_restaurant_staff_active', {
+    p_restaurant_id: restaurantId,
     p_staff_id: staffId,
     p_is_active: isActive,
   });
