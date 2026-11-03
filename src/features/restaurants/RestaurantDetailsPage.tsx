@@ -6,12 +6,10 @@ import RestaurantOwnerPanel from './components/RestaurantOwnerPanel';
 import RestaurantDomainPanel from './components/RestaurantDomainPanel';
 import RestaurantSettingsPanel from './components/RestaurantSettingsPanel';
 import RestaurantStaffPanel from './components/RestaurantStaffPanel';
-import RestaurantPackagePanel from './components/RestaurantPackagePanel';
 import PosIntegrationPanel from './components/PosIntegrationPanel';
 
 type HeaderProps = ComponentProps<typeof RestaurantManagementHeader>;
 type OwnerProps = ComponentProps<typeof RestaurantOwnerPanel>;
-type PackageProps = ComponentProps<typeof RestaurantPackagePanel>;
 type StaffProps = ComponentProps<typeof RestaurantStaffPanel>;
 type SettingsProps = ComponentProps<typeof RestaurantSettingsPanel>;
 
@@ -25,7 +23,6 @@ type Props = {
   onSelectDomain: HeaderProps['onSelectDomain'];
   onLoadSettings: HeaderProps['onLoadSettings'];
   onLoadStaff: HeaderProps['onLoadStaff'];
-  onLoadPackage: HeaderProps['onLoadPackage'];
   onLoadPos: HeaderProps['onLoadPos'];
   posIntegration: { status: import('./services/posIntegrationService').PosIntegrationStatus; loading: boolean; saving: boolean; error: string; message: string };
   onSetPosIntegration: (action: import('./services/posIntegrationService').PosIntegrationAction, reason: string) => void;
@@ -39,9 +36,6 @@ type Props = {
   domainSaving: boolean;
   domainError: string;
   onRequestSaveDomain: () => void;
-  packageState: Pick<PackageProps, 'packageLoading' | 'packageSaving' | 'packageError' | 'restaurantPackageId' | 'restaurantPackageRows'>;
-  onAssignPackage: PackageProps['onAssignPackage'];
-  onSetModuleEnabled: PackageProps['onSetModuleEnabled'];
   staffState: Pick<StaffProps, 'staffLoading' | 'staffError' | 'restaurantStaff' | 'staffActionError' | 'staffActionId'>;
   onSetStaffActive: StaffProps['onSetStaffActive'];
   onRequestDeleteStaff: StaffProps['onRequestDelete'];
@@ -63,7 +57,7 @@ type Props = {
 export default function RestaurantDetailsPage(p: Props) {
   return (
     <section className="dashboard-card restaurant-manage-card">
-      <RestaurantManagementHeader restaurant={p.restaurant} manageTab={p.manageTab} onSelectTab={p.onSelectTab} onClose={p.onClose} onLoadOwner={p.onLoadOwner} onSelectDomain={p.onSelectDomain} onLoadSettings={p.onLoadSettings} onLoadStaff={p.onLoadStaff} onLoadPackage={p.onLoadPackage} onLoadPos={p.onLoadPos} />
+      <RestaurantManagementHeader restaurant={p.restaurant} manageTab={p.manageTab} onSelectTab={p.onSelectTab} onClose={p.onClose} onLoadOwner={p.onLoadOwner} onSelectDomain={p.onSelectDomain} onLoadSettings={p.onLoadSettings} onLoadStaff={p.onLoadStaff} onLoadPos={p.onLoadPos} />
       {p.manageTab === 'pos' ? (
         <PosIntegrationPanel restaurant={p.restaurant} status={p.posIntegration.status} loading={p.posIntegration.loading} saving={p.posIntegration.saving} error={p.posIntegration.error} message={p.posIntegration.message} canManage={p.canManage} onAction={p.onSetPosIntegration} />
       ) : p.manageTab === 'overview' ? (
@@ -72,8 +66,6 @@ export default function RestaurantDetailsPage(p: Props) {
         <RestaurantOwnerPanel loading={p.owner.loading} ownerUserId={p.owner.ownerUserId} ownerName={p.owner.ownerName} ownerEmail={p.owner.ownerEmail} canManage={p.canManage} ownerSaving={p.owner.ownerSaving} error={p.owner.error} onEmailChange={p.onOwnerEmailChange} onRequestAssign={p.onRequestAssignOwner} onRequestRemove={p.onRequestRemoveOwner} />
       ) : p.manageTab === 'domain' ? (
         <RestaurantDomainPanel domain={p.domain} onDomainChange={p.onDomainChange} canManage={p.canManage} domainSaving={p.domainSaving} domainError={p.domainError} onRequestSave={p.onRequestSaveDomain} />
-      ) : p.manageTab === 'package' ? (
-        <RestaurantPackagePanel canManage={p.canManage} packageLoading={p.packageState.packageLoading} packageSaving={p.packageState.packageSaving} packageError={p.packageState.packageError} restaurantPackageId={p.packageState.restaurantPackageId} restaurantPackageRows={p.packageState.restaurantPackageRows} onAssignPackage={p.onAssignPackage} onSetModuleEnabled={p.onSetModuleEnabled} />
       ) : p.manageTab === 'staff' ? (
         <RestaurantStaffPanel canManage={p.canManage} staffLoading={p.staffState.staffLoading} staffError={p.staffState.staffError} restaurantStaff={p.staffState.restaurantStaff} staffActionError={p.staffState.staffActionError} staffActionId={p.staffState.staffActionId} onSetStaffActive={p.onSetStaffActive} onRequestDelete={p.onRequestDeleteStaff} />
       ) : (
