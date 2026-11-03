@@ -1,7 +1,7 @@
 type RestaurantSummary = {
  id: string; name: string; slug: string; logo_url: string | null; custom_domain: string | null;
 };
-type ManageTab = 'overview' | 'owner' | 'domain' | 'settings' | 'staff' | 'package' | 'pos';
+type ManageTab = 'overview' | 'owner' | 'domain' | 'settings' | 'staff' | 'pos';
 type Props = {
  restaurant: RestaurantSummary;
  manageTab: ManageTab;
@@ -11,10 +11,9 @@ type Props = {
  onSelectDomain: () => void;
  onLoadSettings: () => void;
  onLoadStaff: () => void;
- onLoadPackage: () => void;
  onLoadPos: () => void;
 };
-export default function RestaurantManagementHeader({ restaurant, manageTab, onSelectTab, onClose, onLoadOwner, onSelectDomain, onLoadSettings, onLoadStaff, onLoadPackage, onLoadPos }: Props) {
+export default function RestaurantManagementHeader({ restaurant, manageTab, onSelectTab, onClose, onLoadOwner, onSelectDomain, onLoadSettings, onLoadStaff, onLoadPos }: Props) {
  return <>
   <div className="restaurant-manage-hero">
    <div className="restaurant-hero-main">
@@ -30,7 +29,6 @@ export default function RestaurantManagementHeader({ restaurant, manageTab, onSe
    <button className={`manage-tab ${manageTab === 'settings' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('settings'); onLoadSettings(); }}>Settings</button>
    <button className={`manage-tab ${manageTab === 'staff' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('staff'); onLoadStaff(); }}>Staff</button>
    <button className={`manage-tab ${manageTab === 'pos' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('pos'); onLoadPos(); }}>POS Integration</button>
-   <button className={`manage-tab ${manageTab === 'package' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('package'); onLoadPackage(); }}>Package</button>
   </nav>
  </>;
 }
