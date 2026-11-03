@@ -39,12 +39,6 @@ type RestaurantSettingsPanelProps = {
 export default function RestaurantSettingsPanel({
   canManage,
   settingsLoading,
-  vatRegistered,
-  onVatRegisteredChange,
-  vatRate,
-  onVatRateChange,
-  pricesVatInclusive,
-  onPricesVatInclusiveChange,
   cashOnDeliveryEnabled,
   onCashOnDeliveryChange,
   cashOnPickupEnabled,
@@ -56,20 +50,6 @@ export default function RestaurantSettingsPanel({
   settingsError,
   settingsSaving,
   onRequestSave,
-  taxpayerProfileLoading,
-  taxpayerProfile,
-  onTaxpayerProfileChange,
-  taxpayerProfileError,
-  taxpayerProfileMessage,
-  taxpayerProfileSaving,
-  onRequestReviewSave,
-  birReadinessLoading,
-  birReadiness,
-  birReadinessError,
-  invoiceSeriesSaving,
-  invoiceSeriesError,
-  invoiceSeriesMessage,
-  onConfigureDisabledInvoiceSeries,
 }: RestaurantSettingsPanelProps) {
 
   return (
