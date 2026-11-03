@@ -1,69 +1,38 @@
 type RestaurantDomainPanelProps = {
-  domain: string;
-  platformDomain?: string;
-  onDomainChange: (value: string) => void;
-  canManage: boolean;
-  domainSaving: boolean;
-  domainError: string;
-  onRequestSave: () => void;
+  restaurantName: string;
+  restaurantSlug: string;
 };
 
-export default function RestaurantDomainPanel({
-  domain,
-  platformDomain = 'app.web2table.io',
-  onDomainChange,
-  canManage,
-  domainSaving,
-  domainError,
-  onRequestSave,
-}: RestaurantDomainPanelProps) {
+export default function RestaurantDomainPanel({ restaurantName, restaurantSlug }: RestaurantDomainPanelProps) {
+  const orderingUrl = `https://app.web2table.io/#order/${encodeURIComponent(restaurantSlug)}?branch=main`;
+
   return (
     <div className="manage-overview">
       <div className="overview-section">
-        <div className="eyebrow">Custom Domain</div>
-        <h3>Restaurant domain</h3>
-        <p>Assign the public domain that will identify this restaurant on the ordering platform.</p>
+        <div className="eyebrow">Restaurant ordering domain</div>
+        <h3>Public ordering URL</h3>
+        <p>This restaurant uses Web2Table's shared ordering domain. Each restaurant is identified by its own URL path.</p>
         <div className="domain-status-panel">
           <div>
-            <strong>{domain ? 'Custom domain configured' : 'Platform domain active'}</strong>
-            <span>
-              {domain
-                ? <>Custom hostname requested: <strong>{domain}</strong>.</>
-                : <>Customers can order using the Web2Table platform URL <strong>{platformDomain}</strong>. Add a custom domain below only if the restaurant owns a separate hostname.</>}
-            </span>
+            <strong>Active Web2Table domain</strong>
+            <span><strong>app.web2table.io</strong> is the ordering domain for {restaurantName}.</span>
           </div>
-          <span className={domain ? 'status active' : 'status inactive'}>{domain ? 'Configured' : 'Not configured'}</span>
+          <span className="status active">Active</span>
         </div>
-
-        {canManage && <div className="domain-form">
+        <div className="domain-form">
           <label>
-            Custom domain
-            <input value={domain} onChange={(event) => onDomainChange(event.target.value)} placeholder="restaurant.com" autoComplete="off" />
+            Restaurant ordering URL
+            <input readOnly value={orderingUrl} aria-label="Restaurant ordering URL" />
           </label>
           <div className="domain-form-actions">
-            <button onClick={onRequestSave} disabled={domainSaving || !domain.trim()}>
-              {domainSaving ? 'Saving...' : 'Save domain'}
+            <button type="button" onClick={() => void navigator.clipboard?.writeText(orderingUrl)}>
+              Copy ordering URL
             </button>
-            {domain.trim() && (
-              <button
-                type="button"
-                className="secondary-button"
-                disabled={domainSaving}
-                onClick={() => {
-                  onDomainChange('');
-                  onRequestSave();
-                }}
-              >
-                Remove domain
-              </button>
-            )}
           </div>
-        </div>}
-        {!canManage && <div className="empty-state">View Only access can view the domain configuration but cannot change it.</div>}
-        <div className="domain-help">
-          The platform domain is managed by Web2Table and must not be entered here. Add a custom domain only when one is available. Enter only the hostname, for example <strong>restaurant.com</strong>. Do not include https:// or a path.
         </div>
-        {domainError && <div className="error-banner">{domainError}</div>}
+        <div className="domain-help">
+          The URL uses this restaurant's unique identifier (<strong>{restaurantSlug}</strong>) and the default branch. No separate domain registration is required for the standard Web2Table ordering address.
+        </div>
       </div>
     </div>
   );
