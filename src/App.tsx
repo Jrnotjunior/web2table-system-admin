@@ -1715,7 +1715,7 @@ function AppContent() {
           onSelectTab={setManageTab}
           onClose={() => openRestaurants()}
           onLoadOwner={() => void loadRestaurantOwner(selectedRestaurant.id)}
-          onSelectDomain={() => { setDomain(selectedRestaurant.custom_domain ?? ''); setDomainError(''); }}
+          onSelectDomain={() => undefined}
           onLoadSettings={() => void loadRestaurantSettings(selectedRestaurant.id)}
           onLoadStaff={() => void loadRestaurantStaff(selectedRestaurant.id)}
           onLoadPos={() => void loadPosIntegration(selectedRestaurant.id)}
