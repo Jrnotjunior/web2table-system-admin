@@ -1,14 +1,6 @@
-import type { BirIssuanceReadiness, DisabledInvoiceSeriesInput, TaxpayerProfileReview } from '../services/restaurantSettingsService';
-
 type RestaurantSettingsPanelProps = {
   canManage: boolean;
   settingsLoading: boolean;
-  vatRegistered: boolean;
-  onVatRegisteredChange: (value: boolean) => void;
-  vatRate: string;
-  onVatRateChange: (value: string) => void;
-  pricesVatInclusive: boolean;
-  onPricesVatInclusiveChange: (value: boolean) => void;
   cashOnDeliveryEnabled: boolean;
   cashOnPickupEnabled: boolean;
   onCashOnDeliveryChange: (value: boolean) => void;
@@ -20,20 +12,6 @@ type RestaurantSettingsPanelProps = {
   settingsError: string;
   settingsSaving: boolean;
   onRequestSave: () => void;
-  taxpayerProfileLoading: boolean;
-  taxpayerProfile: TaxpayerProfileReview | null;
-  onTaxpayerProfileChange: (profile: TaxpayerProfileReview) => void;
-  taxpayerProfileError: string;
-  taxpayerProfileMessage: string;
-  taxpayerProfileSaving: boolean;
-  onRequestReviewSave: () => void;
-  birReadinessLoading: boolean;
-  birReadiness: BirIssuanceReadiness | null;
-  birReadinessError: string;
-  invoiceSeriesSaving: boolean;
-  invoiceSeriesError: string;
-  invoiceSeriesMessage: string;
-  onConfigureDisabledInvoiceSeries: (input: DisabledInvoiceSeriesInput) => void;
 };
 
 export default function RestaurantSettingsPanel({
