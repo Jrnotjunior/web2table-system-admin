@@ -31,11 +31,6 @@ type Props = {
   onOwnerEmailChange: OwnerProps['onEmailChange'];
   onRequestAssignOwner: OwnerProps['onRequestAssign'];
   onRequestRemoveOwner: OwnerProps['onRequestRemove'];
-  domain: string;
-  onDomainChange: (value: string) => void;
-  domainSaving: boolean;
-  domainError: string;
-  onRequestSaveDomain: () => void;
   staffState: Pick<StaffProps, 'staffLoading' | 'staffError' | 'restaurantStaff' | 'staffActionError' | 'staffActionId'>;
   onSetStaffActive: StaffProps['onSetStaffActive'];
   onRequestDeleteStaff: StaffProps['onRequestDelete'];
@@ -58,7 +53,7 @@ export default function RestaurantDetailsPage(p: Props) {
       ) : p.manageTab === 'owner' ? (
         <RestaurantOwnerPanel loading={p.owner.loading} ownerUserId={p.owner.ownerUserId} ownerName={p.owner.ownerName} ownerEmail={p.owner.ownerEmail} canManage={p.canManage} ownerSaving={p.owner.ownerSaving} error={p.owner.error} onEmailChange={p.onOwnerEmailChange} onRequestAssign={p.onRequestAssignOwner} onRequestRemove={p.onRequestRemoveOwner} />
       ) : p.manageTab === 'domain' ? (
-        <RestaurantDomainPanel domain={p.domain} onDomainChange={p.onDomainChange} canManage={p.canManage} domainSaving={p.domainSaving} domainError={p.domainError} onRequestSave={p.onRequestSaveDomain} />
+        <RestaurantDomainPanel restaurantName={p.restaurant.name} restaurantSlug={p.restaurant.slug} />
       ) : p.manageTab === 'staff' ? (
         <RestaurantStaffPanel canManage={p.canManage} staffLoading={p.staffState.staffLoading} staffError={p.staffState.staffError} restaurantStaff={p.staffState.restaurantStaff} staffActionError={p.staffState.staffActionError} staffActionId={p.staffState.staffActionId} onSetStaffActive={p.onSetStaffActive} onRequestDelete={p.onRequestDeleteStaff} />
       ) : (
