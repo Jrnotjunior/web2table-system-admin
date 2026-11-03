@@ -17,7 +17,7 @@ import { fetchRestaurants, fetchRestaurantById, deleteRestaurant as deleteRestau
 import { setRestaurantCustomDomain } from './features/restaurants/services/restaurantDomainService';
 import { updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
-import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled, fetchTaxpayerProfile, reviewTaxpayerProfile, fetchBirIssuanceReadiness, configureDisabledInvoiceSeries, type DisabledInvoiceSeriesInput, type TaxpayerProfileReview, type BirIssuanceReadiness } from './features/restaurants/services/restaurantSettingsService';
+import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, deleteRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, inviteRestaurantOwner, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 
@@ -145,17 +145,6 @@ function AppContent() {
   const [vatRegistered, setVatRegistered] = useState(false);
   const [pricesVatInclusive, setPricesVatInclusive] = useState(false);
   const [vatRate, setVatRate] = useState('12');
-  const [taxpayerProfileLoading, setTaxpayerProfileLoading] = useState(false);
-  const [taxpayerProfile, setTaxpayerProfile] = useState<TaxpayerProfileReview | null>(null);
-  const [taxpayerProfileError, setTaxpayerProfileError] = useState('');
-  const [taxpayerProfileMessage, setTaxpayerProfileMessage] = useState('');
-  const [taxpayerProfileSaving, setTaxpayerProfileSaving] = useState(false);
-  const [birReadinessLoading, setBirReadinessLoading] = useState(false);
-  const [birReadiness, setBirReadiness] = useState<BirIssuanceReadiness | null>(null);
-  const [birReadinessError, setBirReadinessError] = useState('');
-  const [invoiceSeriesSaving, setInvoiceSeriesSaving] = useState(false);
-  const [invoiceSeriesError, setInvoiceSeriesError] = useState('');
-  const [invoiceSeriesMessage, setInvoiceSeriesMessage] = useState('');
   const [domain, setDomain] = useState('');
   const [domainLoading, setDomainLoading] = useState(false);
   const [domainSaving, setDomainSaving] = useState(false);
@@ -664,18 +653,11 @@ function AppContent() {
 
   async function loadRestaurantSettings(restaurantId: string) {
     setSettingsLoading(true);
-    setTaxpayerProfileLoading(true);
-    setBirReadinessLoading(true);
     setSettingsError('');
-    setTaxpayerProfileError('');
-    setTaxpayerProfileMessage('');
-    setBirReadinessError('');
 
-    const [{ data, error }, onlinePaymentsResult, taxpayerProfileResult, birReadinessResult] = await Promise.all([
+    const [{ data, error }, onlinePaymentsResult] = await Promise.all([
       fetchRestaurantSettings(restaurantId),
       fetchOnlinePaymentsEnabled(restaurantId),
-      fetchTaxpayerProfile(restaurantId),
-      fetchBirIssuanceReadiness(restaurantId),
     ]);
 
     if (error) {
@@ -697,80 +679,10 @@ function AppContent() {
       setOnlinePaymentsEnabled(Boolean(onlinePaymentsResult.data));
     }
 
-    if (taxpayerProfileResult.error) {
-      setTaxpayerProfile(null);
-      setTaxpayerProfileError(taxpayerProfileResult.error.message);
-    } else {
-      setTaxpayerProfile(taxpayerProfileResult.data as unknown as TaxpayerProfileReview | null);
-    }
-    if (birReadinessResult.error) {
-      setBirReadiness(null);
-      setBirReadinessError(birReadinessResult.error.message);
-    } else {
-      setBirReadiness(birReadinessResult.data as unknown as BirIssuanceReadiness | null);
-    }
-    setBirReadinessLoading(false);
-    setTaxpayerProfileLoading(false);
     setSettingsLoading(false);
   }
 
-  async function saveTaxpayerProfileReview() {
-    if (!selectedRestaurant || !taxpayerProfile) return;
-    setTaxpayerProfileSaving(true);
-    setTaxpayerProfileError('');
-    setTaxpayerProfileMessage('');
-    const { data, error } = await reviewTaxpayerProfile(selectedRestaurant.id, {
-      profile_status: taxpayerProfile.profile_status,
-      review_note: taxpayerProfile.review_note,
-      bir_route_status: taxpayerProfile.bir_route_status,
-      bir_accreditation_reference: taxpayerProfile.bir_accreditation_reference,
-      bir_permit_to_use_reference: taxpayerProfile.bir_permit_to_use_reference,
-      bir_permit_to_transmit_reference: taxpayerProfile.bir_permit_to_transmit_reference,
-      approved_software_version: taxpayerProfile.approved_software_version,
-      bir_approval_recorded_at: taxpayerProfile.bir_approval_recorded_at,
-    });
-    if (error) {
-      setTaxpayerProfileError(error.message);
-    } else {
-      setTaxpayerProfile(data as unknown as TaxpayerProfileReview);
-      const { data: readinessData, error: readinessError } = await fetchBirIssuanceReadiness(selectedRestaurant.id);
-      if (readinessError) {
-        setBirReadinessError(readinessError.message);
-      } else {
-        setBirReadiness(readinessData as unknown as BirIssuanceReadiness | null);
-        setBirReadinessError('');
-      }
-      setTaxpayerProfileMessage('Taxpayer profile review saved. This platform review is not BIR accreditation or approval.');
-    }
-    setTaxpayerProfileSaving(false);
-  }
 
-  async function saveDisabledInvoiceSeries(input: DisabledInvoiceSeriesInput) {
-    if (!selectedRestaurant) return;
-    setInvoiceSeriesSaving(true);
-    setInvoiceSeriesError('');
-    setInvoiceSeriesMessage('');
-    try {
-      const { data, error } = await configureDisabledInvoiceSeries(selectedRestaurant.id, input);
-      if (error) {
-        setInvoiceSeriesError(error.message);
-      } else {
-        const { data: readinessData, error: readinessError } = await fetchBirIssuanceReadiness(selectedRestaurant.id);
-        if (readinessError) {
-          setBirReadinessError(readinessError.message);
-        } else {
-          setBirReadiness(readinessData as unknown as BirIssuanceReadiness | null);
-          setBirReadinessError('');
-        }
-        const result = data as { notice?: string } | null;
-        setInvoiceSeriesMessage(result?.notice ?? 'Serial series saved with invoice issuance disabled.');
-      }
-    } catch (saveError) {
-      setInvoiceSeriesError(saveError instanceof Error ? saveError.message : 'Unable to save disabled invoice serial series.');
-    } finally {
-      setInvoiceSeriesSaving(false);
-    }
-  }
 
   async function saveRestaurantSettings() {
     if (!selectedRestaurant) return;
