@@ -1846,7 +1846,7 @@ function AppContent() {
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
-          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, cashOnTakeOutEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving, taxpayerProfileLoading, taxpayerProfile, taxpayerProfileError, taxpayerProfileMessage, taxpayerProfileSaving, birReadinessLoading, birReadiness, birReadinessError, invoiceSeriesSaving, invoiceSeriesError, invoiceSeriesMessage }}
+          settingsState={{ settingsLoading, vatRegistered, vatRate, pricesVatInclusive, cashOnDeliveryEnabled, cashOnPickupEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving, taxpayerProfileLoading, taxpayerProfile, taxpayerProfileError, taxpayerProfileMessage, taxpayerProfileSaving, birReadinessLoading, birReadiness, birReadinessError, invoiceSeriesSaving, invoiceSeriesError, invoiceSeriesMessage }}
           onVatRegisteredChange={setVatRegistered}
           onVatRateChange={setVatRate}
           onPricesVatInclusiveChange={setPricesVatInclusive}
