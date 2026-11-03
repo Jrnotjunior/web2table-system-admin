@@ -147,7 +147,7 @@ function AppContent() {
   const [cashOnPickupEnabled, setCashOnPickupEnabled] = useState(true);
   const [cashOnTakeOutEnabled, setCashOnTakeOutEnabled] = useState(true);
   const [automaticRiderAssignmentEnabled, setAutomaticRiderAssignmentEnabled] = useState(false);
-  const [onlinePaymentsEnabled, setOnlinePaymentsEnabled] = useState(true);
+  const [onlinePaymentsEnabled, setOnlinePaymentsEnabled] = useState(false);
   const [vatRegistered, setVatRegistered] = useState(false);
   const [pricesVatInclusive, setPricesVatInclusive] = useState(false);
   const [vatRate, setVatRate] = useState('12');
@@ -748,8 +748,12 @@ function AppContent() {
       setVatRegistered(settings?.tax_vat_registered ?? false);
       setPricesVatInclusive(settings?.tax_prices_vat_inclusive ?? false);
       setVatRate(String(settings?.tax_vat_rate ?? 0));
-      if (onlinePaymentsResult.error) setSettingsError(onlinePaymentsResult.error.message);
-      else setOnlinePaymentsEnabled(Boolean(onlinePaymentsResult.data));
+    }
+    if (onlinePaymentsResult.error) {
+      setOnlinePaymentsEnabled(false);
+      setSettingsError((previous) => previous || onlinePaymentsResult.error.message);
+    } else {
+      setOnlinePaymentsEnabled(Boolean(onlinePaymentsResult.data));
     }
 
     if (taxpayerProfileResult.error) {
