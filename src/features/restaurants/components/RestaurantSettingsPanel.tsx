@@ -117,7 +117,7 @@ export default function RestaurantSettingsPanel({
               <div className="detail-item">
                 <span>VAT registered</span>
                 <label className="toggle-row">
-                  <input className="toggle-input" type="checkbox" checked={vatRegistered} onChange={(event) => onVatRegisteredChange(event.target.checked)} disabled={!canManage} />
+                  <input className="toggle-input" type="checkbox" checked={vatRegistered} onChange={(event) => onVatRegisteredChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{vatRegistered ? 'Enabled' : 'Disabled'}</span>
                 </label>
@@ -125,13 +125,13 @@ export default function RestaurantSettingsPanel({
               <div className="detail-item">
                 <span>VAT rate</span>
                 <label>
-                  <input type="number" min="0" max="100" step="0.01" value={vatRate} onChange={(event) => onVatRateChange(event.target.value)} disabled={!canManage} />
+                  <input type="number" min="0" max="100" step="0.01" value={vatRate} onChange={(event) => onVatRateChange(event.target.value)} disabled={!canManage || settingsLoading || settingsSaving} />
                 </label>
               </div>
               <div className="detail-item">
                 <span>Prices are VAT-inclusive</span>
                 <label className="toggle-row">
-                  <input className="toggle-input" type="checkbox" checked={pricesVatInclusive} onChange={(event) => onPricesVatInclusiveChange(event.target.checked)} disabled={!canManage} />
+                  <input className="toggle-input" type="checkbox" checked={pricesVatInclusive} onChange={(event) => onPricesVatInclusiveChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{pricesVatInclusive ? 'Enabled' : 'Disabled'}</span>
                 </label>
@@ -139,7 +139,7 @@ export default function RestaurantSettingsPanel({
               <div className="detail-item">
                 <span>Cash on Delivery</span>
                 <label className="toggle-row">
-                  <input className="toggle-input" type="checkbox" checked={cashOnDeliveryEnabled} onChange={(event) => onCashOnDeliveryChange(event.target.checked)} disabled={!canManage} />
+                  <input className="toggle-input" type="checkbox" checked={cashOnDeliveryEnabled} onChange={(event) => onCashOnDeliveryChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{cashOnDeliveryEnabled ? 'Enabled' : 'Disabled'}</span>
                 </label>
@@ -147,7 +147,7 @@ export default function RestaurantSettingsPanel({
               <div className="detail-item">
                 <span>Cash for Pickup</span>
                 <label className="toggle-row">
-                  <input className="toggle-input" type="checkbox" checked={cashOnPickupEnabled} onChange={(event) => onCashOnPickupChange(event.target.checked)} disabled={!canManage} />
+                  <input className="toggle-input" type="checkbox" checked={cashOnPickupEnabled} onChange={(event) => onCashOnPickupChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{cashOnPickupEnabled ? "Enabled" : "Disabled"}</span>
                 </label>
@@ -155,7 +155,7 @@ export default function RestaurantSettingsPanel({
               <div className="detail-item">
                 <span>Cash for Take-out</span>
                 <label className="toggle-row">
-                  <input className="toggle-input" type="checkbox" checked={cashOnTakeOutEnabled} onChange={(event) => onCashOnTakeOutChange(event.target.checked)} disabled={!canManage} />
+                  <input className="toggle-input" type="checkbox" checked={cashOnTakeOutEnabled} onChange={(event) => onCashOnTakeOutChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{cashOnTakeOutEnabled ? 'Enabled' : 'Disabled'}</span>
                 </label>
@@ -163,7 +163,7 @@ export default function RestaurantSettingsPanel({
               <div className="detail-item">
                 <span>Online Payments</span>
                 <label className="toggle-row">
-                  <input className="toggle-input" type="checkbox" checked={onlinePaymentsEnabled} onChange={(event) => onOnlinePaymentsEnabledChange(event.target.checked)} disabled={!canManage} />
+                  <input className="toggle-input" type="checkbox" checked={onlinePaymentsEnabled} onChange={(event) => onOnlinePaymentsEnabledChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{onlinePaymentsEnabled ? 'Enabled' : 'Disabled'}</span>
                 </label>
@@ -171,7 +171,7 @@ export default function RestaurantSettingsPanel({
               <div className="detail-item">
                 <span>Automatic rider assignment</span>
                 <label className="toggle-row">
-                  <input className="toggle-input" type="checkbox" checked={automaticRiderAssignmentEnabled} onChange={(event) => onAutomaticRiderAssignmentChange(event.target.checked)} disabled={!canManage} />
+                  <input className="toggle-input" type="checkbox" checked={automaticRiderAssignmentEnabled} onChange={(event) => onAutomaticRiderAssignmentChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{automaticRiderAssignmentEnabled ? 'Enabled' : 'Disabled'}</span>
                 </label>
