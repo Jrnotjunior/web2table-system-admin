@@ -1597,18 +1597,6 @@ function AppContent() {
       return;
     }
 
-    await recordAdminAudit(
-      nextStatus ? 'Restaurant activated' : 'Restaurant deactivated',
-      restaurant.id,
-      'restaurant',
-      restaurant.id,
-      {
-        name: restaurant.name,
-        previous_status: restaurant.is_active ? 'active' : 'inactive',
-        new_status: nextStatus ? 'active' : 'inactive',
-      },
-    );
-
     await loadRestaurants();
   }
 
