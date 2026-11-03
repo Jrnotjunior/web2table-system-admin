@@ -1755,7 +1755,20 @@ function AppContent() {
           onDomainChange={setDomain}
           domainSaving={domainSaving}
           domainError={domainError}
-          onRequestSaveDomain={() => { setDomainError(''); setPendingSaveDomain(true); }}
+          onRequestSaveDomain={() => {
+            const hostname = domain.trim().toLowerCase();
+            const isValidHostname = hostname.length >= 4 && hostname.length <= 253
+              && /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/.test(hostname)
+              && hostname !== 'web2table.io' && !hostname.endsWith('.web2table.io');
+            if (!isValidHostname) {
+              setDomainError('Enter a valid custom hostname you own, such as restaurant.com. The Web2Table platform domain is managed separately.');
+              setPendingSaveDomain(false);
+              return;
+            }
+            setDomain(hostname);
+            setDomainError('');
+            setPendingSaveDomain(true);
+          }}
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
