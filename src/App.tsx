@@ -17,7 +17,6 @@ import { fetchRestaurants, fetchRestaurantById, deleteRestaurant as deleteRestau
 import { setRestaurantCustomDomain } from './features/restaurants/services/restaurantDomainService';
 import { updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
-import { fetchRestaurantPackage, assignRestaurantPackage as assignRestaurantPackageService, setRestaurantModuleOverride } from './features/restaurants/services/restaurantPackageService';
 import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled, fetchTaxpayerProfile, reviewTaxpayerProfile, fetchBirIssuanceReadiness, configureDisabledInvoiceSeries, type DisabledInvoiceSeriesInput, type TaxpayerProfileReview, type BirIssuanceReadiness } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, deleteRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, inviteRestaurantOwner, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
@@ -39,7 +38,7 @@ import MapboxUsagePage from './components/MapboxUsagePage';
 import SystemAdminMfaGate from './components/SystemAdminMfaGate';
 import SystemAdminSidebar from './components/SystemAdminSidebar';
 import RestaurantsPage from './features/restaurants/RestaurantsPage';
-import type { Restaurant, RestaurantPackageRow, RestaurantStaff } from './features/restaurants/types';
+import type { Restaurant, RestaurantStaff } from './features/restaurants/types';
 import { fetchPosIntegrationStatus, updatePosIntegrationStatus, type PosIntegrationStatus, type PosIntegrationAction } from './features/restaurants/services/posIntegrationService';
 import RestaurantDetailsPage from './features/restaurants/RestaurantDetailsPage';
 
@@ -122,17 +121,12 @@ function AppContent() {
   const [search, setSearch] = useState('');
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const canManage = adminAccessLevel === 'owner' || adminAccessLevel === 'administrator';
-  const [manageTab, setManageTab] = useState<'overview' | 'owner' | 'domain' | 'settings' | 'staff' | 'package' | 'pos'>('overview');
+  const [manageTab, setManageTab] = useState<'overview' | 'owner' | 'domain' | 'settings' | 'staff' | 'pos'>('overview');
   const [posIntegrationStatus, setPosIntegrationStatus] = useState<PosIntegrationStatus>('not_enabled');
   const [posIntegrationLoading, setPosIntegrationLoading] = useState(false);
   const [posIntegrationSaving, setPosIntegrationSaving] = useState(false);
   const [posIntegrationError, setPosIntegrationError] = useState('');
   const [posIntegrationMessage, setPosIntegrationMessage] = useState('');
-  const [restaurantPackageId, setRestaurantPackageId] = useState<number | null>(null);
-  const [restaurantPackageRows, setRestaurantPackageRows] = useState<RestaurantPackageRow[]>([]);
-  const [packageLoading, setPackageLoading] = useState(false);
-  const [packageSaving, setPackageSaving] = useState(false);
-  const [packageError, setPackageError] = useState('');
   const [staffLoading, setStaffLoading] = useState(false);
   const [staffError, setStaffError] = useState('');
   const [restaurantStaff, setRestaurantStaff] = useState<RestaurantStaff[]>([]);
@@ -666,59 +660,6 @@ function AppContent() {
     );
 
     await supabase.auth.signOut();
-  }
-
-  async function loadRestaurantPackage(restaurantId: string) {
-    setPackageLoading(true);
-    setPackageError('');
-
-    const { data, error } = await fetchRestaurantPackage(restaurantId);
-
-    if (error) {
-      setPackageError(error.message);
-      setRestaurantPackageId(null);
-      setRestaurantPackageRows([]);
-    } else {
-      const rows = (Array.isArray(data) ? data : []) as typeof restaurantPackageRows;
-      setRestaurantPackageRows(rows);
-      setRestaurantPackageId(rows[0]?.package_id ?? null);
-    }
-
-    setPackageLoading(false);
-  }
-
-  async function assignRestaurantPackage(packageId: number) {
-    if (!selectedRestaurant) return;
-
-    setPackageSaving(true);
-    setPackageError('');
-
-    const { error } = await assignRestaurantPackageService(selectedRestaurant.id, packageId);
-
-    if (error) {
-      setPackageError(error.message);
-    } else {
-      await loadRestaurantPackage(selectedRestaurant.id);
-    }
-
-    setPackageSaving(false);
-  }
-
-  async function setRestaurantModuleEnabled(moduleKey: string, enabled: boolean) {
-    if (!selectedRestaurant) return;
-
-    setPackageSaving(true);
-    setPackageError('');
-
-    const { error } = await setRestaurantModuleOverride(selectedRestaurant.id, moduleKey, enabled);
-
-    if (error) {
-      setPackageError(error.message);
-    } else {
-      await loadRestaurantPackage(selectedRestaurant.id);
-    }
-
-    setPackageSaving(false);
   }
 
   async function loadRestaurantSettings(restaurantId: string) {
@@ -1743,9 +1684,6 @@ function AppContent() {
     setSelectedRestaurant(restaurant);
     setAdminPage('restaurants');
     setManageTab('overview');
-    setRestaurantPackageId(null);
-    setRestaurantPackageRows([]);
-    setPackageError('');
     setOwnerEmail('');
     setOwnerName('');
     setOwnerUserId('');
@@ -1892,7 +1830,6 @@ function AppContent() {
           onSelectDomain={() => { setDomain(selectedRestaurant.custom_domain ?? ''); setDomainError(''); }}
           onLoadSettings={() => void loadRestaurantSettings(selectedRestaurant.id)}
           onLoadStaff={() => void loadRestaurantStaff(selectedRestaurant.id)}
-          onLoadPackage={() => void loadRestaurantPackage(selectedRestaurant.id)}
           onLoadPos={() => void loadPosIntegration(selectedRestaurant.id)}
           posIntegration={{ status: posIntegrationStatus, loading: posIntegrationLoading, saving: posIntegrationSaving, error: posIntegrationError, message: posIntegrationMessage }}
           onSetPosIntegration={(action, reason) => void changePosIntegration(action, reason)}
@@ -1906,9 +1843,6 @@ function AppContent() {
           domainSaving={domainSaving}
           domainError={domainError}
           onRequestSaveDomain={() => { setDomainError(''); setPendingSaveDomain(true); }}
-          packageState={{ packageLoading, packageSaving, packageError, restaurantPackageId, restaurantPackageRows }}
-          onAssignPackage={(packageId) => void assignRestaurantPackage(packageId)}
-          onSetModuleEnabled={(moduleKey, enabled) => void setRestaurantModuleEnabled(moduleKey, enabled)}
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
