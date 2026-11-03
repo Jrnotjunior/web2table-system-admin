@@ -30,7 +30,7 @@ export default function RestaurantDomainConfirmation({
             <>
               <p>You are about to set the public domain for <strong>{restaurantName}</strong> to <strong>{domain.trim().toLowerCase()}</strong>.</p>
               <div className="domain-confirm-warning">
-                <strong>This will change the restaurant's public domain configuration.</strong>
+                <strong>The restaurant will continue using its Web2Table platform URL until this custom domain is verified and activated.</strong>
                 <span>Use only the hostname, such as restaurant.com. Do not include https:// or a path.</span>
               </div>
             </>
