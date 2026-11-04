@@ -3,7 +3,8 @@ import { supabase } from '../../../lib/supabase';
 export type SystemAdminInviteAccessLevel = 'administrator' | 'view_only';
 
 export interface InviteSystemAdministratorInput {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   accessLevel: SystemAdminInviteAccessLevel;
 }
@@ -15,7 +16,8 @@ export async function inviteSystemAdministrator(
   const { data, error } = await supabase.functions.invoke('web2table-invite-user', {
     body: {
       invitation_type: 'system_admin',
-      name: input.name,
+      first_name: input.firstName,
+      last_name: input.lastName,
       email: input.email,
       access_level: input.accessLevel,
     },
