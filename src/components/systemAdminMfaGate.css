@@ -30,3 +30,42 @@
 .system-admin-mfa-recovery-form input{box-sizing:border-box;width:100%;height:42px;padding:0 12px;border:1px solid #dce6f7;border-radius:8px;background:#e8f0fe;color:#111;font:14px Inter,sans-serif}
 .system-admin-mfa-screen .system-admin-mfa-card>button{width:100%;min-height:41px;margin-top:8px;border:1px solid #ED1C24;border-radius:8px;background:#ED1C24;color:#fff;font-weight:650;cursor:pointer}
 @media(max-width:480px){.system-admin-mfa-screen{padding:20px 16px}.system-admin-mfa-card{padding:26px 22px 22px;border-radius:16px}.system-admin-mfa-card h1{font-size:26px}.system-admin-mfa-code-cells{gap:5px}}
+
+/* Recovery remains a quiet inline action, never a filled primary button. */
+.system-admin-mfa-screen .system-admin-mfa-card .system-admin-mfa-recovery .system-admin-mfa-recovery-copy .system-admin-mfa-recovery-link{
+  display:inline;
+  width:auto;
+  min-width:0;
+  min-height:0;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  background-color:transparent;
+  color:#ff555c;
+  box-shadow:none;
+  font:inherit;
+  font-weight:600;
+  line-height:inherit;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  cursor:pointer;
+}
+.system-admin-mfa-screen .system-admin-mfa-card .system-admin-mfa-recovery .system-admin-mfa-recovery-copy .system-admin-mfa-recovery-link:hover:not(:disabled),
+.system-admin-mfa-screen .system-admin-mfa-card .system-admin-mfa-recovery .system-admin-mfa-recovery-copy .system-admin-mfa-recovery-link:focus-visible{
+  background:transparent;
+  background-color:transparent;
+  color:#ff858a;
+  border:0;
+  box-shadow:none;
+}
+.system-admin-mfa-screen .system-admin-mfa-card .system-admin-mfa-recovery .system-admin-mfa-recovery-copy .system-admin-mfa-recovery-link:focus-visible{
+  outline:2px solid #ED1C24;
+  outline-offset:4px;
+}
+.system-admin-mfa-code-input:focus{outline:0}
+.system-admin-mfa-code-wrap:focus-within .system-admin-mfa-code-cells span.is-current{
+  border-color:#ED1C24;
+  box-shadow:0 0 0 2px rgba(237,28,36,.12);
+}
