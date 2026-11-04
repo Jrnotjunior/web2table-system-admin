@@ -234,21 +234,6 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
     if (state.kind === 'enroll' || state.kind === 'challenge') codeInput.current?.focus();
   }, [state.kind]);
 
-  useEffect(() => {
-    if (state.kind !== 'enroll' && state.kind !== 'challenge') return;
-    const timeoutId = window.setTimeout(() => {
-      void (async () => {
-        try {
-          await supabase.auth.signOut();
-        } finally {
-          // Return to the system-admin sign-in flow when the MFA window expires.
-          window.location.reload();
-        }
-      })();
-    }, 60_000);
-    return () => window.clearTimeout(timeoutId);
-  }, [state.kind, lastInspectedUserId.current]);
-
   async function verify(event: React.FormEvent) {
     event.preventDefault();
     if (state.kind !== 'enroll' && state.kind !== 'challenge') return;
@@ -288,6 +273,23 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       setState({ kind: 'ready' });
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to verify the authenticator code.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function signOut() {
+    setBusy(true);
+    setMessage('');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setCode('');
+      setRecoveryPassword('');
+      setShowRecovery(false);
+      setState({ kind: 'ready' });
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Unable to sign out. Please try again.');
     } finally {
       setBusy(false);
     }
@@ -334,11 +336,10 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
   return (
     <main className="system-admin-mfa-screen">
       <section className="system-admin-mfa-card" aria-labelledby="mfa-title">
-        <p className="system-admin-mfa-eyebrow">WEB2TABLE PLATFORM</p>
         <h1 id="mfa-title">{enrolling ? 'Secure your System Admin account' : 'Verify your identity'}</h1>
         <p className="system-admin-mfa-description">{enrolling
           ? 'Scan this QR code with an authenticator app, then enter the six-digit code to finish setup.'
-          : 'Enter the current six-digit code from your authenticator app to access the System Admin dashboard.'}</p>
+          : 'Your authenticator is already set up. Enter its current six-digit code to continue to your workspace.'}</p>
         {enrolling && (
           <div className="system-admin-mfa-enrollment">
             <img src={state.qrCode} alt="Authenticator enrollment QR code" />
@@ -361,6 +362,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
           {message && <p role="alert" className="system-admin-mfa-error">{message}</p>}
           <button className="system-admin-mfa-primary" type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying…' : 'Verify authenticator'}</button>
         </form>
+        <button className="system-admin-mfa-secondary" type="button" onClick={() => void signOut()} disabled={busy}>Sign out</button>
         {state.kind === 'challenge' && (
           <section className="system-admin-mfa-recovery" aria-label="Authenticator recovery">
             {showRecovery ? (

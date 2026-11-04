@@ -1190,7 +1190,7 @@ function AppContent() {
     return (
       <main className="auth-shell">
         <section className="auth-card">
-          <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
+          <img className="company-logo auth-logo" src="https://wvibrchebfwirbgkcnbr.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE Platform</div>
           <h1>Set up your account</h1>
           <p>You have been invited as a System Administrator. Create your password to activate your account.</p>
@@ -1268,7 +1268,7 @@ function AppContent() {
     return (
       <main className="auth-shell">
         <section className="auth-card auth-login-card">
-          <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
+          <img className="company-logo auth-logo" src="https://wvibrchebfwirbgkcnbr.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE PLATFORM</div>
           <h1>Set a new password.</h1>
           <p>Choose a new password for your System Admin account.</p>
@@ -1298,7 +1298,7 @@ function AppContent() {
           </div>
         )}
         <section className="system-admin-auth-card system-admin-login-card">
-          <img className="system-admin-auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
+          <img className="system-admin-auth-logo" src="https://wvibrchebfwirbgkcnbr.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE PLATFORM</div>
           <h1>Welcome back.</h1>
           <p>{forgotPasswordMode ? 'We will email you a secure link to reset your password.' : 'Sign in to manage your restaurants and platform settings.'}</p>
@@ -1313,7 +1313,7 @@ function AppContent() {
               </div>
             ) : (
               <form onSubmit={requestPasswordReset}>
-                <label><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email address" aria-label="Email address" autoComplete="email" required /></label>
+                <label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" aria-label="Email address" autoComplete="email" required /></label>
                 <button type="submit" disabled={resetPasswordBusy}>{resetPasswordBusy ? 'Sending reset link…' : 'Send reset link'}</button>
                 <button type="button" className="auth-secondary-button" onClick={() => { setForgotPasswordMode(false); setResetPasswordError(''); }}>Back to sign in</button>
               </form>
@@ -1321,10 +1321,12 @@ function AppContent() {
           ) : (
             <form onSubmit={signIn}>
               <label>
-                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email address" aria-label="Email address" autoComplete="email" required />
+                Email address
+                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" aria-label="Email address" autoComplete="email" required />
               </label>
               <label>
-                <span className="password-input-wrap"><input type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Password" aria-label="Password" autoComplete="current-password" required /><button className="password-visibility-toggle" type="button" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="M4 4 20 20" />}</svg></button></span>
+                Password
+                <span className="password-input-wrap"><input type={showPassword ? "text" : "password"} value={password} onChange={(event) => { const nextPassword = event.target.value; setPassword(nextPassword); if (!nextPassword) setShowPassword(false); }} placeholder="Your password" aria-label="Password" autoComplete="current-password" required />{password.length > 0 && <button className="password-visibility-toggle" type="button" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="M4 4 20 20" />}</svg></button>}</span>
               </label>
               <button type="button" className="auth-secondary-button" onClick={() => { setForgotPasswordMode(true); setResetPasswordError(''); setResetEmailSent(false); }}>Forgot password?</button>
               <button type="submit">Sign in</button>

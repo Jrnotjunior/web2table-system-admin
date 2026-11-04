@@ -12,9 +12,24 @@
 .system-admin-login-card form input::placeholder{color:#667085;opacity:1}
 .system-admin-login-card .password-input-wrap{position:relative;display:block;width:100%}
 .system-admin-login-card .password-input-wrap input{padding-right:48px}
-.system-admin-login-card .password-visibility-toggle{position:absolute;right:5px;top:50%;z-index:2;transform:translateY(-50%);display:grid;place-items:center;width:36px;height:36px;padding:7px;border:0;border-radius:7px;background:transparent;color:#344054;cursor:pointer}
-.system-admin-login-card .password-visibility-toggle:hover{background:rgba(0,0,0,.08)}
-.system-admin-login-card .password-visibility-toggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.system-admin-login-card .password-visibility-toggle{all:unset;position:absolute;right:5px;top:50%;z-index:2;transform:translateY(-50%);box-sizing:border-box;display:grid;place-items:center;width:36px;height:36px;padding:7px;border:0;border-radius:7px;background:transparent;color:#344054;cursor:pointer}
+.system-admin-login-card .password-visibility-toggle:hover,
+.system-admin-login-card .password-visibility-toggle:active{
+  transform:translateY(-50%);
+  background:transparent;
+  color:#344054;
+}
+.system-admin-login-card .password-visibility-toggle:focus,
+.system-admin-login-card .password-visibility-toggle:focus-visible{
+  transform:translateY(-50%);
+  outline:none;
+  box-shadow:none;
+}
+.system-admin-login-card .password-visibility-toggle:focus-visible{
+  outline:2px solid #ED1C24;
+  outline-offset:1px;
+}
+.system-admin-login-card .password-visibility-toggle svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .system-admin-login-card form button[type="submit"]{width:100%;height:50px;margin-top:2px;border:0;border-radius:9px;background:#ED1C24;color:#fff;font:700 15px Inter,sans-serif;cursor:pointer}
 .system-admin-login-card form button[type="submit"]:hover{background:#c9161d}
 .system-admin-login-card form button[type="submit"]:disabled{opacity:.6;cursor:wait}
