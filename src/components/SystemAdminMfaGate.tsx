@@ -278,6 +278,23 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
     }
   }
 
+  async function signOut() {
+    setBusy(true);
+    setMessage('');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setCode('');
+      setRecoveryPassword('');
+      setShowRecovery(false);
+      setState({ kind: 'ready' });
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Unable to sign out. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function resetAuthenticator(event: React.FormEvent) {
     event.preventDefault();
     if (!recoveryPassword) {
@@ -346,6 +363,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
           {message && <p role="alert" className="system-admin-mfa-error">{message}</p>}
           <button className="system-admin-mfa-primary" type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying…' : 'Verify authenticator'}</button>
         </form>
+        <button className="system-admin-mfa-secondary" type="button" onClick={() => void signOut()} disabled={busy}>Sign out</button>
         {state.kind === 'challenge' && (
           <section className="system-admin-mfa-recovery" aria-label="Authenticator recovery">
             {showRecovery ? (
