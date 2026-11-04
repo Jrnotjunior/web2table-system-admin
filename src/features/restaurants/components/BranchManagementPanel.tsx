@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { createAdminBranch, fetchAdminBranches, updateAdminBranch, type AdminBranch } from '../services/branchService';
+import { createAdminBranch, editAdminBranch, fetchAdminBranches, updateAdminBranch, type AdminBranch } from '../services/branchService';
 
 function slugify(value: string) {
   return value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
@@ -14,6 +14,9 @@ export default function BranchManagementPanel({ tenantId, canManage }: { tenantI
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [workingId, setWorkingId] = useState('');
+  const [editingBranchId, setEditingBranchId] = useState('');
+  const [editName, setEditName] = useState('');
+  const [editSlug, setEditSlug] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
@@ -54,6 +57,33 @@ export default function BranchManagementPanel({ tenantId, canManage }: { tenantI
     setWorkingId('');
   }
 
+  function beginEdit(branch: AdminBranch) {
+    setEditingBranchId(branch.id);
+    setEditName(branch.name);
+    setEditSlug(branch.slug);
+    setError(''); setMessage('');
+  }
+
+  async function saveEdit(event: FormEvent<HTMLFormElement>, branch: AdminBranch) {
+    event.preventDefault();
+    if (!canManage || workingId) return;
+    const cleanName = editName.trim();
+    const cleanSlug = editSlug.trim().toLowerCase();
+    if (cleanName.length < 2 || cleanName.length > 160 || cleanSlug.length < 2 || cleanSlug.length > 64
+      || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(cleanSlug)) {
+      setError('Enter a branch name and a URL slug using lowercase letters, numbers, and hyphens.'); return;
+    }
+    setWorkingId(branch.id); setError(''); setMessage('');
+    const result = await editAdminBranch(tenantId, branch.id, cleanSlug, cleanName);
+    if (result.error) setError(result.error.message || 'Unable to save branch details.');
+    else {
+      setMessage('Branch details updated. If the URL slug changed, update any printed QR codes or saved links.');
+      setEditingBranchId('');
+      await load();
+    }
+    setWorkingId('');
+  }
+
   return <div className="manage-overview">
     <div className="overview-section">
       <div className="eyebrow">Restaurant locations</div>
@@ -63,10 +93,22 @@ export default function BranchManagementPanel({ tenantId, canManage }: { tenantI
       {message && <div className="success-banner" role="status">{message}</div>}
       {loading ? <p>Loading branches…</p> : <div className="restaurant-branch-list">
         {branches.map(branch => <article className="restaurant-branch-row" key={branch.id}>
-          <div><strong>{branch.name}{branch.isDefault?' · Main branch':''}</strong><small>/{branch.slug} · {branch.hasPickupAddress?'Pickup address set':'Pickup address needed'} · {branch.hasDeliveryLocation?'Delivery map configured':'Delivery map needed'}</small></div>
-          <div><span className={`status-badge ${branch.isActive?'active':'inactive'}`}>{branch.isActive?'Active':'Inactive'}</span>
-            {!branch.isDefault&&canManage&&<button type="button" className={branch.isActive?'secondary-button':'primary-button'} disabled={workingId!==''||(!branch.isActive&&(!branch.hasDeliveryLocation||!branch.hasPickupAddress))} onClick={()=>void toggle(branch)}>{workingId===branch.id?'Saving…':branch.isActive?'Deactivate':'Activate'}</button>}
-          </div>
+          {editingBranchId === branch.id ? <form className="restaurant-branch-edit-form" onSubmit={event=>void saveEdit(event, branch)}>
+            <div className="restaurant-form-grid">
+              <label>Branch name<input required minLength={2} maxLength={160} value={editName} onChange={event=>setEditName(event.target.value)} /></label>
+              <label>Branch URL slug<input required minLength={2} maxLength={64} pattern="[a-z0-9]+(-[a-z0-9]+)*" value={editSlug} onChange={event=>setEditSlug(event.target.value.toLowerCase())} /><small>Changing this changes the branch link. Update printed QR codes and saved links.</small></label>
+            </div>
+            <div className="restaurant-branch-edit-actions">
+              <button type="submit" className="primary-button" disabled={workingId!==''}>{workingId===branch.id?'Saving…':'Save changes'}</button>
+              <button type="button" className="secondary-button" disabled={workingId!==''} onClick={()=>setEditingBranchId('')}>Cancel</button>
+            </div>
+          </form> : <>
+            <div><strong>{branch.name}{branch.isDefault?' · Main branch':''}</strong><small>/{branch.slug} · {branch.hasPickupAddress?'Pickup address set':'Pickup address needed'} · {branch.hasDeliveryLocation?'Delivery map configured':'Delivery map needed'}</small></div>
+            <div><span className={`status-badge ${branch.isActive?'active':'inactive'}`}>{branch.isActive?'Active':'Inactive'}</span>
+              {canManage&&<button type="button" className="secondary-button" disabled={workingId!==''} onClick={()=>beginEdit(branch)}>Edit</button>}
+              {!branch.isDefault&&canManage&&<button type="button" className={branch.isActive?'secondary-button':'primary-button'} disabled={workingId!==''||(!branch.isActive&&(!branch.hasDeliveryLocation||!branch.hasPickupAddress))} onClick={()=>void toggle(branch)}>{workingId===branch.id?'Saving…':branch.isActive?'Deactivate':'Activate'}</button>}
+            </div>
+          </>}
         </article>)}
         {branches.length===0&&<p>No branches have been created for this restaurant.</p>}
       </div>}

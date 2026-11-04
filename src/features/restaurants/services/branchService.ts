@@ -33,3 +33,9 @@ export async function updateAdminBranch(tenantId: string, branchId: string, name
     p_tenant_id: tenantId, p_branch_id: branchId, p_name: name, p_active: active,
   });
 }
+
+export async function editAdminBranch(tenantId: string, branchId: string, slug: string, name: string) {
+  return supabase.rpc('system_admin_edit_branch', {
+    p_tenant_id: tenantId, p_branch_id: branchId, p_slug: slug, p_name: name,
+  });
+}
