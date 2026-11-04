@@ -12,6 +12,7 @@ type GateState =
 export default function SystemAdminMfaGate({ children }: { children: ReactNode }) {
   const [state, setState] = useState<GateState>({ kind: 'checking' });
   const [code, setCode] = useState('');
+  const codeInput = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [showRecovery, setShowRecovery] = useState(false);
@@ -230,6 +231,10 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
   }, [inspect]);
 
   useEffect(() => {
+    if (state.kind === 'enroll' || state.kind === 'challenge') codeInput.current?.focus();
+  }, [state.kind]);
+
+  useEffect(() => {
     if (state.kind !== 'enroll' && state.kind !== 'challenge') return;
     const timeoutId = window.setTimeout(() => {
       void (async () => {
@@ -350,7 +355,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
           <label htmlFor="system-admin-mfa-code">Authenticator code</label>
           <div className="system-admin-mfa-code-wrap">
             <div className="system-admin-mfa-code-cells" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <span className={index === code.length ? 'is-current' : ''} key={index}>{code[index] ?? ''}</span>)}</div>
-            <input id="system-admin-mfa-code" className="system-admin-mfa-code-input" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={code} onChange={(event) => setCode(event.target.value.replace(/\\D/g, '').slice(0, 6))} required />
+            <input ref={codeInput} id="system-admin-mfa-code" className="system-admin-mfa-code-input" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} required />
           </div>
           <p className="system-admin-mfa-hint">Enter the 6-digit code from your authenticator app.</p>
           {message && <p role="alert" className="system-admin-mfa-error">{message}</p>}
@@ -364,9 +369,9 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
                 <button type="button" className="system-admin-mfa-recovery-link" disabled={busy} onClick={() => { setShowRecovery(false); setMessage(''); }}>Cancel reset</button>
               </p>
             ) : (
-              <p className="mfa-recovery-copy">
+              <p className="system-admin-mfa-recovery-copy">
                 Lost your authenticator?{' '}
-                <button type="button" className="mfa-recovery-link" disabled={busy} onClick={() => { setShowRecovery(true); setMessage(''); }}>Reset it</button>
+                <button type="button" className="system-admin-mfa-recovery-link" disabled={busy} onClick={() => { setShowRecovery(true); setMessage(''); }}>Reset it</button>
               </p>
             )}
             {showRecovery && (
@@ -374,7 +379,7 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
                 <p>Reset only your own authenticator. You’ll be signed out and must enroll a new authenticator before the dashboard unlocks.</p>
                 <label htmlFor="system-admin-recovery-password">Current System Admin password</label>
                 <input id="system-admin-recovery-password" type="password" autoComplete="current-password" value={recoveryPassword} onChange={(event) => setRecoveryPassword(event.target.value)} required />
-                {message && <p role="alert" className="error-banner">{message}</p>}
+                {message && <p role="alert" className="system-admin-mfa-error">{message}</p>}
                 <button className="system-admin-mfa-primary" type="submit" disabled={busy || !recoveryPassword}>{busy ? 'Resetting…' : 'Confirm reset'}</button>
               </form>
             )}
