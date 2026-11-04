@@ -21,7 +21,10 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: headersFor(req) });
   if (req.method !== "POST") return respond(req, 405, { error: "Method not allowed." });
 
-  const token = (req.headers.get("Authorization") ?? "").match(/^Bearer\\s+(.+)$/i)?.[1];
+  const authorization = req.headers.get("Authorization") ?? "";
+  const token = authorization.toLowerCase().startsWith("bearer ")
+    ? authorization.slice(7).trim()
+    : "";
   if (!token) return respond(req, 401, { error: "Sign in as an authorized System Admin first." });
 
   const url = Deno.env.get("SUPABASE_URL");
