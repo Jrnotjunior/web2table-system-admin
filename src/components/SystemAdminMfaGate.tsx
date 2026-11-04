@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { supabase, isPasswordSetupPending } from '../lib/supabase';
+import './systemAdminMfaGate.css';
 
 type GateState =
   | { kind: 'checking' }
@@ -318,24 +319,24 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
 
   if (state.kind === 'ready') return <>{children}</>;
   if (state.kind === 'checking') {
-    return <main className="auth-shell"><section className="auth-card"><h1>Checking account security</h1><p>Verifying your System Admin MFA status…</p></section></main>;
+    return <main className="system-admin-mfa-screen"><section className="system-admin-mfa-card"><h1>Checking account security</h1><p>Verifying your System Admin MFA status…</p></section></main>;
   }
   if (state.kind === 'error') {
-    return <main className="auth-shell"><section className="auth-card"><h1>MFA setup unavailable</h1><p>{state.message}</p><button type="button" onClick={() => void inspect()}>Try again</button></section></main>;
+    return <main className="system-admin-mfa-screen"><section className="system-admin-mfa-card"><h1>MFA setup unavailable</h1><p>{state.message}</p><button type="button" onClick={() => void inspect()}>Try again</button></section></main>;
   }
 
   const enrolling = state.kind === 'enroll';
   return (
-    <main className="auth-shell">
-      <section className="auth-card" aria-labelledby="mfa-title">
-        <p className="eyebrow">Web2Table Security</p>
+    <main className="system-admin-mfa-screen">
+      <section className="system-admin-mfa-card" aria-labelledby="mfa-title">
+        <p className="system-admin-mfa-eyebrow">WEB2TABLE PLATFORM</p>
         <h1 id="mfa-title">{enrolling ? 'Secure your System Admin account' : 'Verify your identity'}</h1>
-        <p>{enrolling
+        <p className="system-admin-mfa-description">{enrolling
           ? 'Scan this QR code with an authenticator app, then enter the six-digit code to finish setup.'
           : 'Enter the current six-digit code from your authenticator app to access the System Admin dashboard.'}</p>
         {enrolling && (
-          <div className="mfa-enrollment">
-            <img src={state.qrCode} alt="Authenticator enrollment QR code" style={{ display: 'block', width: 'min(100%, 320px)', height: 'auto', aspectRatio: '1 / 1', objectFit: 'contain', background: '#fff', padding: '12px', boxSizing: 'border-box', imageRendering: 'pixelated', margin: '16px auto' }} />
+          <div className="system-admin-mfa-enrollment">
+            <img src={state.qrCode} alt="Authenticator enrollment QR code" />
             <details>
               <summary>Can't scan the QR code? Set up manually</summary>
               <p>In your authenticator app, choose the option to enter a setup key manually. Enter this secret key:</p>
@@ -345,18 +346,22 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
             </details>
           </div>
         )}
-        <form onSubmit={verify}>
+        <form className="system-admin-mfa-form" onSubmit={verify}>
           <label htmlFor="system-admin-mfa-code">Authenticator code</label>
-          <input id="system-admin-mfa-code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} placeholder="" value={code} onChange={(event) => setCode(event.target.value.replace(/\\D/g, '').slice(0, 6))} required />
-          {message && <p role="alert" className="error-banner">{message}</p>}
-          <button type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying…' : 'Verify'}</button>
+          <div className="system-admin-mfa-code-wrap">
+            <div className="system-admin-mfa-code-cells" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <span className={index === code.length ? 'is-current' : ''} key={index}>{code[index] ?? ''}</span>)}</div>
+            <input id="system-admin-mfa-code" className="system-admin-mfa-code-input" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={code} onChange={(event) => setCode(event.target.value.replace(/\\D/g, '').slice(0, 6))} required />
+          </div>
+          <p className="system-admin-mfa-hint">Enter the 6-digit code from your authenticator app.</p>
+          {message && <p role="alert" className="system-admin-mfa-error">{message}</p>}
+          <button className="system-admin-mfa-primary" type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying…' : 'Verify authenticator'}</button>
         </form>
         {state.kind === 'challenge' && (
-          <section aria-label="Authenticator recovery" style={{ marginTop: '18px', borderTop: '1px solid #ddd', paddingTop: '14px' }}>
+          <section className="system-admin-mfa-recovery" aria-label="Authenticator recovery">
             {showRecovery ? (
-              <p className="mfa-recovery-copy">
+              <p className="system-admin-mfa-recovery-copy">
                 Lost your authenticator?{' '}
-                <button type="button" className="mfa-recovery-link" disabled={busy} onClick={() => { setShowRecovery(false); setMessage(''); }}>Cancel reset</button>
+                <button type="button" className="system-admin-mfa-recovery-link" disabled={busy} onClick={() => { setShowRecovery(false); setMessage(''); }}>Cancel reset</button>
               </p>
             ) : (
               <p className="mfa-recovery-copy">
@@ -365,12 +370,12 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
               </p>
             )}
             {showRecovery && (
-              <form onSubmit={resetAuthenticator} style={{ marginTop: '12px' }}>
+              <form className="system-admin-mfa-recovery-form" onSubmit={resetAuthenticator}>
                 <p>Reset only your own authenticator. You’ll be signed out and must enroll a new authenticator before the dashboard unlocks.</p>
                 <label htmlFor="system-admin-recovery-password">Current System Admin password</label>
                 <input id="system-admin-recovery-password" type="password" autoComplete="current-password" value={recoveryPassword} onChange={(event) => setRecoveryPassword(event.target.value)} required />
                 {message && <p role="alert" className="error-banner">{message}</p>}
-                <button type="submit" disabled={busy || !recoveryPassword}>{busy ? 'Resetting…' : 'Confirm reset'}</button>
+                <button className="system-admin-mfa-primary" type="submit" disabled={busy || !recoveryPassword}>{busy ? 'Resetting…' : 'Confirm reset'}</button>
               </form>
             )}
           </section>
