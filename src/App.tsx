@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
+import './features/auth/systemAdminAuth.css';
 import { supabase, isPasswordSetupPending, isPasswordSetupCompleted, markPasswordSetupPending, markPasswordSetupCompleted, clearPasswordSetupPending } from './lib/supabase';
 import { type AdminPage } from './app/navigation';
 import { useAdministratorManagement } from './features/administrators/hooks/useAdministratorManagement';
@@ -1284,7 +1285,7 @@ function AppContent() {
 
   if (!signedIn) {
     return (
-      <main className="auth-shell">
+      <main className="system-admin-auth-screen">
         {authDialogMessage && (
           <div className="auth-dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setAuthDialogMessage(''); }}>
             <section className="auth-dialog" role="alertdialog" aria-modal="true" aria-labelledby="auth-dialog-title" aria-describedby="auth-dialog-description">
@@ -1296,10 +1297,11 @@ function AppContent() {
             </section>
           </div>
         )}
-        <section className="auth-card auth-login-card">
-          <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
+        <section className="system-admin-auth-card system-admin-login-card">
+          <img className="system-admin-auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE PLATFORM</div>
           <h1>Welcome back.</h1>
+          <h2 className="system-admin-signin-heading">Sign In</h2>
           <p>{forgotPasswordMode ? 'We will email you a secure link to reset your password.' : 'Sign in to manage your restaurants and platform settings.'}</p>
           {resetPasswordSuccess && <p role="status" className="auth-form-message">{resetPasswordSuccess}</p>}
           {resetPasswordError && !passwordRecoveryMode && <p role="alert" className="auth-form-message">{resetPasswordError}</p>}
