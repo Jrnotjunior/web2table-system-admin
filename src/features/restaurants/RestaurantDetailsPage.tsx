@@ -7,6 +7,7 @@ import RestaurantDomainPanel from './components/RestaurantDomainPanel';
 import RestaurantSettingsPanel from './components/RestaurantSettingsPanel';
 import RestaurantStaffPanel from './components/RestaurantStaffPanel';
 import PosIntegrationPanel from './components/PosIntegrationPanel';
+import BranchManagementPanel from './components/BranchManagementPanel';
 
 type HeaderProps = ComponentProps<typeof RestaurantManagementHeader>;
 type OwnerProps = ComponentProps<typeof RestaurantOwnerPanel>;
@@ -48,6 +49,8 @@ export default function RestaurantDetailsPage(p: Props) {
       <RestaurantManagementHeader restaurant={p.restaurant} manageTab={p.manageTab} onSelectTab={p.onSelectTab} onClose={p.onClose} onLoadOwner={p.onLoadOwner} onSelectDomain={p.onSelectDomain} onLoadSettings={p.onLoadSettings} onLoadStaff={p.onLoadStaff} onLoadPos={p.onLoadPos} />
       {p.manageTab === 'pos' ? (
         <PosIntegrationPanel restaurant={p.restaurant} status={p.posIntegration.status} loading={p.posIntegration.loading} saving={p.posIntegration.saving} error={p.posIntegration.error} message={p.posIntegration.message} canManage={p.canManage} onAction={p.onSetPosIntegration} />
+      ) : p.manageTab === 'branches' ? (
+        <BranchManagementPanel tenantId={p.restaurant.id} canManage={p.canManage} />
       ) : p.manageTab === 'overview' ? (
         <RestaurantOverview restaurant={p.restaurant} canManage={p.canManage} onRequestStatusChange={p.onRequestStatusChange} />
       ) : p.manageTab === 'owner' ? (

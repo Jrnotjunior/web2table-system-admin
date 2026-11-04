@@ -119,7 +119,7 @@ function AppContent() {
   const [search, setSearch] = useState('');
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const canManage = adminAccessLevel === 'owner' || adminAccessLevel === 'administrator';
-  const [manageTab, setManageTab] = useState<'overview' | 'owner' | 'domain' | 'settings' | 'staff' | 'pos'>('overview');
+  const [manageTab, setManageTab] = useState<'overview' | 'branches' | 'owner' | 'domain' | 'settings' | 'staff' | 'package' | 'pos'>('overview');
   const [posIntegrationStatus, setPosIntegrationStatus] = useState<PosIntegrationStatus>('not_enabled');
   const [posIntegrationLoading, setPosIntegrationLoading] = useState(false);
   const [posIntegrationSaving, setPosIntegrationSaving] = useState(false);

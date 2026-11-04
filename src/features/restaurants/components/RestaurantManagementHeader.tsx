@@ -1,7 +1,7 @@
 type RestaurantSummary = {
  id: string; name: string; slug: string; logo_url: string | null; custom_domain: string | null;
 };
-type ManageTab = 'overview' | 'owner' | 'domain' | 'settings' | 'staff' | 'pos';
+type ManageTab = 'overview' | 'branches' | 'owner' | 'domain' | 'settings' | 'staff' | 'package' | 'pos';
 type Props = {
  restaurant: RestaurantSummary;
  manageTab: ManageTab;
@@ -24,6 +24,7 @@ export default function RestaurantManagementHeader({ restaurant, manageTab, onSe
   </div>
   <nav className="manage-tabs" aria-label="Restaurant management sections">
    <button className={`manage-tab ${manageTab === 'overview' ? 'active' : ''}`} type="button" onClick={() => onSelectTab('overview')}>Overview</button>
+   <button className={`manage-tab ${manageTab === 'branches' ? 'active' : ''}`} type="button" onClick={() => onSelectTab('branches')}>Branches</button>
    <button className={`manage-tab ${manageTab === 'owner' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('owner'); onLoadOwner(); }}>Owner</button>
    <button className={`manage-tab ${manageTab === 'domain' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('domain'); onSelectDomain(); }}>Domain</button>
    <button className={`manage-tab ${manageTab === 'settings' ? 'active' : ''}`} type="button" onClick={() => { onSelectTab('settings'); onLoadSettings(); }}>Settings</button>
