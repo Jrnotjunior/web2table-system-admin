@@ -336,11 +336,10 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
   return (
     <main className="system-admin-mfa-screen">
       <section className="system-admin-mfa-card" aria-labelledby="mfa-title">
-        <p className="system-admin-mfa-eyebrow">WEB2TABLE PLATFORM</p>
         <h1 id="mfa-title">{enrolling ? 'Secure your System Admin account' : 'Verify your identity'}</h1>
         <p className="system-admin-mfa-description">{enrolling
           ? 'Scan this QR code with an authenticator app, then enter the six-digit code to finish setup.'
-          : 'Enter the current six-digit code from your authenticator app to access the System Admin dashboard.'}</p>
+          : 'Your authenticator is already set up. Enter its current six-digit code to continue to your workspace.'}</p>
         {enrolling && (
           <div className="system-admin-mfa-enrollment">
             <img src={state.qrCode} alt="Authenticator enrollment QR code" />
