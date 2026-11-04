@@ -1322,7 +1322,7 @@ function AppContent() {
             <form onSubmit={signIn}>
               <label>
                 Email address
-                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} aria-label="Email address" autoComplete="email" required />
+                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" aria-label="Email address" autoComplete="email" required />
               </label>
               <label>
                 Password
