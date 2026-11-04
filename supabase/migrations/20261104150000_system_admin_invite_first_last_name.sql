@@ -6,7 +6,7 @@ ALTER TABLE private.platform_admin_invitations
 
 UPDATE private.platform_admin_invitations
 SET first_name = coalesce(nullif(first_name,''), split_part(name,' ',1)),
-    last_name = coalesce(nullif(last_name,''), nullif(btrim(substr(name, length(split_part(name,' ',1))+1)), ''))
+    last_name = coalesce(nullif(last_name,''), coalesce(nullif(btrim(substr(name, length(split_part(name,' ',1))+1)), ''), 'Unknown'))
 WHERE first_name IS NULL OR last_name IS NULL;
 
 ALTER TABLE private.platform_admin_invitations
