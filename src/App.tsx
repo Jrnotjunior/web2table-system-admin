@@ -1301,8 +1301,8 @@ function AppContent() {
           <img className="system-admin-auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE PLATFORM</div>
           <h1>Welcome back.</h1>
-          <h2 className="system-admin-signin-heading">Sign In</h2>
           <p>{forgotPasswordMode ? 'We will email you a secure link to reset your password.' : 'Sign in to manage your restaurants and platform settings.'}</p>
+          <h2 className="system-admin-signin-heading">Sign In</h2>
           {resetPasswordSuccess && <p role="status" className="auth-form-message">{resetPasswordSuccess}</p>}
           {resetPasswordError && !passwordRecoveryMode && <p role="alert" className="auth-form-message">{resetPasswordError}</p>}
           {forgotPasswordMode ? (
@@ -1326,8 +1326,8 @@ function AppContent() {
               <label>
                 <span className="password-input-wrap"><input type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Password" aria-label="Password" autoComplete="current-password" required /><button className="password-visibility-toggle" type="button" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="M4 4 20 20" />}</svg></button></span>
               </label>
-              <button type="submit">Sign in</button>
               <button type="button" className="auth-secondary-button" onClick={() => { setForgotPasswordMode(true); setResetPasswordError(''); setResetEmailSent(false); }}>Forgot password?</button>
+              <button type="submit">Sign in</button>
             </form>
           )}
         </section>
