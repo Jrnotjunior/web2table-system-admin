@@ -1313,7 +1313,7 @@ function AppContent() {
               </div>
             ) : (
               <form onSubmit={requestPasswordReset}>
-                <label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} aria-label="Email address" autoComplete="email" required /></label>
+                <label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" aria-label="Email address" autoComplete="email" required /></label>
                 <button type="submit" disabled={resetPasswordBusy}>{resetPasswordBusy ? 'Sending reset link…' : 'Send reset link'}</button>
                 <button type="button" className="auth-secondary-button" onClick={() => { setForgotPasswordMode(false); setResetPasswordError(''); }}>Back to sign in</button>
               </form>
@@ -1326,7 +1326,7 @@ function AppContent() {
               </label>
               <label>
                 Password
-                <span className="password-input-wrap"><input type={showPassword ? "text" : "password"} value={password} onChange={(event) => { const nextPassword = event.target.value; setPassword(nextPassword); if (!nextPassword) setShowPassword(false); }} aria-label="Password" autoComplete="current-password" required />{password.length > 0 && <button className="password-visibility-toggle" type="button" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="M4 4 20 20" />}</svg></button>}</span>
+                <span className="password-input-wrap"><input type={showPassword ? "text" : "password"} value={password} onChange={(event) => { const nextPassword = event.target.value; setPassword(nextPassword); if (!nextPassword) setShowPassword(false); }} placeholder="Your password" aria-label="Password" autoComplete="current-password" required />{password.length > 0 && <button className="password-visibility-toggle" type="button" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="M4 4 20 20" />}</svg></button>}</span>
               </label>
               <button type="button" className="auth-secondary-button" onClick={() => { setForgotPasswordMode(true); setResetPasswordError(''); setResetEmailSent(false); }}>Forgot password?</button>
               <button type="submit">Sign in</button>
