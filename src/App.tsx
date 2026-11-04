@@ -1190,7 +1190,7 @@ function AppContent() {
     return (
       <main className="auth-shell">
         <section className="auth-card">
-          <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
+          <img className="company-logo auth-logo" src="https://wvibrchebfwirbgkcnbr.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE Platform</div>
           <h1>Set up your account</h1>
           <p>You have been invited as a System Administrator. Create your password to activate your account.</p>
@@ -1268,7 +1268,7 @@ function AppContent() {
     return (
       <main className="auth-shell">
         <section className="auth-card auth-login-card">
-          <img className="company-logo auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
+          <img className="company-logo auth-logo" src="https://wvibrchebfwirbgkcnbr.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE PLATFORM</div>
           <h1>Set a new password.</h1>
           <p>Choose a new password for your System Admin account.</p>
@@ -1298,7 +1298,7 @@ function AppContent() {
           </div>
         )}
         <section className="system-admin-auth-card system-admin-login-card">
-          <img className="system-admin-auth-logo" src="https://xaihajwrsvcdjisezmmc.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
+          <img className="system-admin-auth-logo" src="https://wvibrchebfwirbgkcnbr.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
           <div className="eyebrow">WEB2TABLE PLATFORM</div>
           <h1>Welcome back.</h1>
           <p>{forgotPasswordMode ? 'We will email you a secure link to reset your password.' : 'Sign in to manage your restaurants and platform settings.'}</p>
