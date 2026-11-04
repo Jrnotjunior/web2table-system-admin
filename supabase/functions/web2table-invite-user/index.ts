@@ -89,21 +89,24 @@ Deno.serve(async (req: Request) => {
     }
 
     const email = normalizedEmail(body.email);
-    const name = typeof body.name === "string" ? body.name.trim() : "";
+    const firstName = typeof body.first_name === "string" ? body.first_name.trim() : "";
+    const lastName = typeof body.last_name === "string" ? body.last_name.trim() : "";
+    const name = [firstName, lastName].filter(Boolean).join(" ");
     const accessLevel = body.access_level;
     if (!email) return respond(req, 400, { error: "Enter a valid email address." });
-    if (!name || name.length > 120) {
-      return respond(req, 400, { error: "Name must be between 1 and 120 characters." });
+    if (firstName.length < 1 || firstName.length > 60 || lastName.length < 1 || lastName.length > 60) {
+      return respond(req, 400, { error: "First name and last name must each be between 1 and 60 characters." });
     }
     if (accessLevel !== "administrator" && accessLevel !== "view_only") {
       return respond(req, 400, { error: "Choose a valid System Admin access level." });
     }
 
     const { data: invitationId, error: prepareError } = await adminClient.rpc(
-      "system_admin_invitation_prepare_for_service",
+      "system_admin_invitation_prepare_with_names_for_service",
       {
         p_email: email,
-        p_name: name,
+        p_first_name: firstName,
+        p_last_name: lastName,
         p_access_level: accessLevel,
         p_invited_by: identity.user.id,
       },
@@ -124,6 +127,9 @@ Deno.serve(async (req: Request) => {
         redirectTo: APP_URL + "/",
         data: {
           name,
+          first_name: firstName,
+          last_name: lastName,
+          full_name: name,
           invitation_type: "system_admin",
           system_admin_access_level: accessLevel,
           system_admin_invitation_id: invitationId,
