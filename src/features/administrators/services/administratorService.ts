@@ -17,8 +17,8 @@ export async function restoreAdministratorAccess(adminUserId: string) {
 }
 
 export async function deleteRevokedAdministratorAccess(adminUserId: string) {
-  return supabase.rpc('system_admin_delete_revoked_access', {
-    p_admin_user_id: adminUserId,
+  return supabase.functions.invoke('system-admin-delete-admin-account', {
+    body: { admin_user_id: adminUserId },
   });
 }
 
