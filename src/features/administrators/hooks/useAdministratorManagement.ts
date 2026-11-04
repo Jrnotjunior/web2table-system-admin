@@ -17,7 +17,8 @@ export function useAdministratorManagement() {
   const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdministratorAction | null>(null);
   const [adminActionSaving, setAdminActionSaving] = useState(false);
   const [showInviteAdmin, setShowInviteAdmin] = useState(false);
-  const [inviteAdminName, setInviteAdminName] = useState('');
+  const [inviteAdminFirstName, setInviteAdminFirstName] = useState('');
+  const [inviteAdminLastName, setInviteAdminLastName] = useState('');
   const [inviteAdminEmail, setInviteAdminEmail] = useState('');
   const [inviteAdminAccessLevel, setInviteAdminAccessLevel] = useState<'administrator' | 'view_only'>('administrator');
   const [inviteAdminSaving, setInviteAdminSaving] = useState(false);
@@ -45,7 +46,8 @@ export function useAdministratorManagement() {
     setInviteAdminSuccess('');
 
     const result = await inviteSystemAdministrator({
-      name: inviteAdminName.trim(),
+      firstName: inviteAdminFirstName.trim(),
+      lastName: inviteAdminLastName.trim(),
       email: inviteAdminEmail.trim(),
       accessLevel: inviteAdminAccessLevel,
     });
@@ -60,7 +62,8 @@ export function useAdministratorManagement() {
     setInviteAdminSuccess(`Invitation sent to ${sentEmail}.`);
     setInviteAdminConfirmationEmail(sentEmail);
     setShowInviteAdmin(false);
-    setInviteAdminName('');
+    setInviteAdminFirstName('');
+    setInviteAdminLastName('');
     setInviteAdminEmail('');
     setInviteAdminAccessLevel('administrator');
     setInviteAdminSaving(false);
@@ -111,8 +114,10 @@ export function useAdministratorManagement() {
     adminActionSaving,
     showInviteAdmin,
     setShowInviteAdmin,
-    inviteAdminName,
-    setInviteAdminName,
+    inviteAdminFirstName,
+    setInviteAdminFirstName,
+    inviteAdminLastName,
+    setInviteAdminLastName,
     inviteAdminEmail,
     setInviteAdminEmail,
     inviteAdminAccessLevel,
