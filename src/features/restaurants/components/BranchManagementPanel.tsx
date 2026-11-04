@@ -38,14 +38,14 @@ export default function BranchManagementPanel({ tenantId, canManage }: { tenantI
     const result = await createAdminBranch(tenantId, cleanSlug, cleanName);
     if (result.error) { setError(result.error.message || 'Unable to create this branch.'); setSaving(false); return; }
     setName(''); setSlug(''); setSlugTouched(false);
-    setMessage('Branch created as inactive. The owner must set its map location and delivery pricing before you activate it.');
+    setMessage('Branch created as inactive. The owner must enter its exact pickup address and configure the delivery map pin and pricing before you activate it.');
     await load(); setSaving(false);
   }
 
   async function toggle(branch: AdminBranch) {
     if (!canManage || branch.isDefault || workingId) return;
-    if (!branch.isActive && !branch.hasDeliveryLocation) {
-      setError('The owner must configure this branch’s address, map pin, and delivery pricing before it can be activated.'); return;
+    if (!branch.isActive && (!branch.hasDeliveryLocation || !branch.hasPickupAddress)) {
+      setError('The owner must enter this branch’s exact pickup address and configure its delivery map pin and pricing before it can be activated.'); return;
     }
     setWorkingId(branch.id); setError(''); setMessage('');
     const result = await updateAdminBranch(tenantId, branch.id, branch.name, !branch.isActive);
@@ -58,14 +58,14 @@ export default function BranchManagementPanel({ tenantId, canManage }: { tenantI
     <div className="overview-section">
       <div className="eyebrow">Restaurant locations</div>
       <h3>Branches</h3>
-      <p className="intro">The System Administrator is the only role that can add a branch. Owners can configure its map pin and delivery pricing after it is created.</p>
+      <p className="intro">The System Administrator is the only role that can add a branch. Owners manually enter its exact pickup address and configure the separate delivery map pin and pricing after it is created.</p>
       {error && <div className="error-banner" role="alert">{error}</div>}
       {message && <div className="success-banner" role="status">{message}</div>}
       {loading ? <p>Loading branches…</p> : <div className="restaurant-branch-list">
         {branches.map(branch => <article className="restaurant-branch-row" key={branch.id}>
-          <div><strong>{branch.name}{branch.isDefault?' · Main branch':''}</strong><small>/{branch.slug} · {branch.hasDeliveryLocation?'Delivery location configured':'Delivery location needed'}</small></div>
+          <div><strong>{branch.name}{branch.isDefault?' · Main branch':''}</strong><small>/{branch.slug} · {branch.hasPickupAddress?'Pickup address set':'Pickup address needed'} · {branch.hasDeliveryLocation?'Delivery map configured':'Delivery map needed'}</small></div>
           <div><span className={`status-badge ${branch.isActive?'active':'inactive'}`}>{branch.isActive?'Active':'Inactive'}</span>
-            {!branch.isDefault&&canManage&&<button type="button" className={branch.isActive?'secondary-button':'primary-button'} disabled={workingId!==''||(!branch.isActive&&!branch.hasDeliveryLocation)} onClick={()=>void toggle(branch)}>{workingId===branch.id?'Saving…':branch.isActive?'Deactivate':'Activate'}</button>}
+            {!branch.isDefault&&canManage&&<button type="button" className={branch.isActive?'secondary-button':'primary-button'} disabled={workingId!==''||(!branch.isActive&&(!branch.hasDeliveryLocation||!branch.hasPickupAddress))} onClick={()=>void toggle(branch)}>{workingId===branch.id?'Saving…':branch.isActive?'Deactivate':'Activate'}</button>}
           </div>
         </article>)}
         {branches.length===0&&<p>No branches have been created for this restaurant.</p>}

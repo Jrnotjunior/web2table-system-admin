@@ -7,6 +7,7 @@ export type AdminBranch = {
   isActive: boolean;
   isDefault: boolean;
   hasDeliveryLocation: boolean;
+  hasPickupAddress: boolean;
 };
 
 export async function fetchAdminBranches(tenantId: string) {
@@ -18,6 +19,7 @@ export async function fetchAdminBranches(tenantId: string) {
       id: String(row.id ?? ''), slug: String(row.slug ?? ''), name: String(row.name ?? ''),
       isActive: row.isActive === true, isDefault: row.isDefault === true,
       hasDeliveryLocation: row.hasDeliveryLocation === true,
+      hasPickupAddress: row.hasPickupAddress === true,
     } satisfies AdminBranch));
   return { data: branches, error: null };
 }
