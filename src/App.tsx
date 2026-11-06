@@ -1201,6 +1201,7 @@ function AppContent() {
                 <input
                   type={showInvitePassword ? 'text' : 'password'}
                   value={invitePassword}
+                  placeholder="Your password"
                   onChange={(event) => setInvitePassword(event.target.value)}
                   autoComplete="new-password"
                   minLength={8}
