@@ -46,7 +46,7 @@ export default function BranchManagementPanel({ tenantId, canManage }: { tenantI
   }
 
   async function toggle(branch: AdminBranch) {
-    if (!canManage || branch.isDefault || workingId) return;
+    if (!canManage || (branch.isDefault && branch.isActive) || workingId) return;
     if (!branch.isActive && (!branch.hasDeliveryLocation || !branch.hasPickupAddress)) {
       setError('The owner must enter this branch’s exact pickup address and configure its delivery map pin and pricing before it can be activated.'); return;
     }
@@ -106,7 +106,7 @@ export default function BranchManagementPanel({ tenantId, canManage }: { tenantI
             <div><strong>{branch.name}{branch.isDefault?' · Main branch':''}</strong><small>/{branch.slug} · {branch.hasPickupAddress?'Pickup address set':'Pickup address needed'} · {branch.hasDeliveryLocation?'Delivery map configured':'Delivery map needed'}</small></div>
             <div><span className={`status-badge ${branch.isActive?'active':'inactive'}`}>{branch.isActive?'Active':'Inactive'}</span>
               {canManage&&<button type="button" className="secondary-button" disabled={workingId!==''} onClick={()=>beginEdit(branch)}>Edit</button>}
-              {!branch.isDefault&&canManage&&<button type="button" className={branch.isActive?'secondary-button':'primary-button'} disabled={workingId!==''||(!branch.isActive&&(!branch.hasDeliveryLocation||!branch.hasPickupAddress))} onClick={()=>void toggle(branch)}>{workingId===branch.id?'Saving…':branch.isActive?'Deactivate':'Activate'}</button>}
+              {canManage&&<button type="button" className={branch.isActive?'secondary-button':'primary-button'} disabled={workingId!==''||(!branch.isActive&&(!branch.hasDeliveryLocation||!branch.hasPickupAddress))||(branch.isDefault&&branch.isActive)} onClick={()=>void toggle(branch)}>{workingId===branch.id?'Saving…':branch.isActive?(branch.isDefault?'Always active':'Deactivate'):'Activate'}</button>}
             </div>
           </>}
         </article>)}
