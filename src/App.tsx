@@ -1190,9 +1190,9 @@ function AppContent() {
 
   if (inviteSetup) {
     return (
-      <main className="auth-shell">
-        <section className="auth-card">
-          <img className="company-logo auth-logo" src="https://wvibrchebfwirbgkcnbr.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="WEB2TABLE" />
+      <main className="system-admin-auth-screen">
+        <section className="system-admin-auth-card system-admin-login-card">
+          <img className="system-admin-auth-logo" src="https://wvibrchebfwirbgkcnbr.supabase.co/storage/v1/object/public/web2table-assets/web2table.png" alt="Web2Table" />
           <div className="eyebrow">WEB2TABLE Platform</div>
           <h1>Set up your account</h1>
           <p>You have been invited as a System Administrator. Create your password to activate your account.</p>
@@ -1250,14 +1250,7 @@ function AppContent() {
               </span>
             </label>
             {inviteSetupError && <div className="error-banner" role="alert" aria-live="assertive">{inviteSetupError}</div>}
-            <button
-              type="button"
-              disabled={inviteSettingPassword}
-              onClick={() => {
-                // Call setup directly from the click; do not depend on form submission.
-                void completeSystemAdminInvitation();
-              }}
-            >
+            <button type="submit" disabled={inviteSettingPassword}>
               {inviteSettingPassword ? 'Creating password...' : 'Create password'}
             </button>
           </form>
