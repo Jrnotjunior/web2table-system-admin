@@ -56,7 +56,7 @@ export default function RestaurantDetailsPage(p: Props) {
       ) : p.manageTab === 'owner' ? (
         <RestaurantOwnerPanel loading={p.owner.loading} ownerUserId={p.owner.ownerUserId} ownerName={p.owner.ownerName} ownerEmail={p.owner.ownerEmail} canManage={p.canManage} ownerSaving={p.owner.ownerSaving} error={p.owner.error} onEmailChange={p.onOwnerEmailChange} onRequestAssign={p.onRequestAssignOwner} onRequestRemove={p.onRequestRemoveOwner} />
       ) : p.manageTab === 'domain' ? (
-        <RestaurantDomainPanel restaurantName={p.restaurant.name} restaurantSlug={p.restaurant.slug} customDomain={p.restaurant.custom_domain} />
+        <RestaurantDomainPanel restaurantId={p.restaurant.id} restaurantName={p.restaurant.name} restaurantSlug={p.restaurant.slug} customDomain={p.restaurant.custom_domain} />
       ) : p.manageTab === 'staff' ? (
         <RestaurantStaffPanel canManage={p.canManage} staffLoading={p.staffState.staffLoading} staffError={p.staffState.staffError} restaurantStaff={p.staffState.restaurantStaff} staffActionError={p.staffState.staffActionError} staffActionId={p.staffState.staffActionId} onSetStaffActive={p.onSetStaffActive} onRequestDelete={p.onRequestDeleteStaff} />
       ) : (
