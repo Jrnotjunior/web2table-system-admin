@@ -70,19 +70,19 @@
   box-shadow:0 0 0 2px rgba(237,28,36,.12);
 }
 
-.system-admin-mfa-secondary{
+.system-admin-mfa-screen .system-admin-mfa-card>button.system-admin-mfa-secondary{
   display:flex;
   align-items:center;
   justify-content:center;
   width:100%;
   min-height:41px;
   margin-top:0;
-  border:1px solid #444;
+  border:1px solid #fff;
   border-radius:8px;
-  background:#080808;
-  color:#fff;
+  background:#fff;
+  color:#111;
   font:650 13px Inter,Arial,sans-serif;
   cursor:pointer;
 }
-.system-admin-mfa-secondary:hover:not(:disabled){background:#171717;border-color:#666}
-.system-admin-mfa-secondary:disabled{opacity:.6;cursor:not-allowed}
+.system-admin-mfa-screen .system-admin-mfa-card>button.system-admin-mfa-secondary:hover:not(:disabled){background:#e8e8e8;border-color:#e8e8e8;color:#111}
+.system-admin-mfa-screen .system-admin-mfa-card>button.system-admin-mfa-secondary:disabled{opacity:.6;cursor:not-allowed}
