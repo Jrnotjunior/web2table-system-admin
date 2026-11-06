@@ -1206,19 +1206,21 @@ function AppContent() {
                   minLength={8}
                   required
                 />
-                <button
-                  className="password-visibility-toggle"
-                  type="button"
-                  onClick={() => setShowInvitePassword((visible) => !visible)}
-                  aria-label={showInvitePassword ? 'Hide password' : 'Show password'}
-                  title={showInvitePassword ? 'Hide password' : 'Show password'}
-                >
-                  {showInvitePassword ? (
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><path d="M3 3l18 18M10.6 10.7a2 2 0 002.7 2.7M9.9 5.2A10.8 10.8 0 0112 5c5.2 0 8.8 4.2 10 7-.5 1.2-1.4 2.7-2.8 4M6.2 6.3C3.9 7.7 2.5 10 2 12c1.2 2.8 4.8 7 10 7 1.2 0 2.4-.3 3.4-.7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8"/></svg>
-                  )}
-                </button>
+                {invitePassword.length > 0 && (
+                  <button
+                    className="password-visibility-toggle"
+                    type="button"
+                    onClick={() => setShowInvitePassword((visible) => !visible)}
+                    aria-label={showInvitePassword ? 'Hide password' : 'Show password'}
+                    title={showInvitePassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showInvitePassword ? (
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><path d="M3 3l18 18M10.6 10.7a2 2 0 002.7 2.7M9.9 5.2A10.8 10.8 0 0112 5c5.2 0 8.8 4.2 10 7-.5 1.2-1.4 2.7-2.8 4M6.2 6.3C3.9 7.7 2.5 10 2 12c1.2 2.8 4.8 7 10 7 1.2 0 2.4-.3 3.4-.7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8"/></svg>
+                    )}
+                  </button>
+                )}
               </span>
             </label>
             {invitePassword.length > 0 && (
