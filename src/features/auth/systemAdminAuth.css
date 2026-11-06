@@ -37,3 +37,10 @@
 .system-admin-login-card form .auth-secondary-button:hover{color:#ff777c;background:transparent}
 .system-admin-login-card .auth-form-message{padding:11px 12px;border:1px solid rgba(237,28,36,.55);border-radius:8px;background:rgba(237,28,36,.1);color:#fff;text-align:center;font-size:14px;line-height:1.5}
 @media(max-width:480px){.system-admin-auth-screen{padding:20px 14px}.system-admin-auth-card{padding:32px 22px 26px}.system-admin-login-card>p{margin:17px auto 23px}}
+
+.system-admin-login-card .invite-password-requirements{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;margin:-7px 0 2px;padding:0;list-style:none;color:#a8a8a8;font-size:12px;line-height:1.4}
+.system-admin-login-card .invite-password-requirements li{position:relative;padding-left:17px}
+.system-admin-login-card .invite-password-requirements li::before{content:"○";position:absolute;left:0;color:#888}
+.system-admin-login-card .invite-password-requirements li.met{color:#75d69a}
+.system-admin-login-card .invite-password-requirements li.met::before{content:"✓";color:#75d69a}
+@media(max-width:480px){.system-admin-login-card .invite-password-requirements{grid-template-columns:1fr}}
