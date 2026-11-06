@@ -500,7 +500,6 @@ function AppContent() {
     );
 
     setInvitePassword('');
-    setInvitePasswordConfirm('');
     // Only after the first password has been saved do we run the existing
     // MFA challenge. No administrator privilege is granted by this screen.
     markPasswordSetupCompleted();
