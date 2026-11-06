@@ -292,6 +292,10 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
         if (claimed !== true) throw new Error('Invited administrator activation was not confirmed.');
         pendingInvitation.current = false;
       }
+      const { data: verifiedUser } = await supabase.auth.getUser();
+      if (verifiedUser.user) {
+        try { window.sessionStorage.removeItem(`web2table.pending-admin-mfa.v1:${verifiedUser.user.id}`); } catch { /* best effort */ }
+      }
       setCode('');
       setState({ kind: 'ready' });
     } catch (error) {
