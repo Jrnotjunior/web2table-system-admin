@@ -135,17 +135,32 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
 
     const verified = factors.totp.find((factor) => factor.status === 'verified');
     if (verified) {
+      try { window.sessionStorage.removeItem(`web2table.pending-admin-mfa.v1:${(await supabase.auth.getUser()).data.user?.id ?? ''}`); } catch { /* best effort */ }
       setState({ kind: 'challenge', factorId: verified.id });
       return;
     }
 
-    // Remove only unverified enrollments left over from interrupted setup.
-    for (const factor of factors.totp.filter((item) => item.status !== 'verified')) {
-      const { error } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
-      if (error) {
-        setState({ kind: 'error', message: error.message });
-        return;
+    const currentUser = (await supabase.auth.getUser()).data.user;
+    const storageKey = `web2table.pending-admin-mfa.v1:${currentUser?.id ?? ''}`;
+    const pendingFactors = factors.totp.filter((factor) => factor.status !== 'verified');
+    try {
+      const raw = window.sessionStorage.getItem(storageKey);
+      if (raw) {
+        const saved = JSON.parse(raw) as { factorId?: string; qrCode?: string; uri?: string; secret?: string; expiresAt?: number };
+        if (saved.expiresAt && saved.expiresAt > Date.now() && pendingFactors.some((factor) => factor.id === saved.factorId)
+          && saved.factorId && saved.qrCode && saved.uri && saved.secret) {
+          setState({ kind: 'enroll', factorId: saved.factorId, qrCode: saved.qrCode, uri: saved.uri, secret: saved.secret });
+          return;
+        }
+        window.sessionStorage.removeItem(storageKey);
       }
+    } catch {
+      setState({ kind: 'error', message: 'Unable to restore the pending authenticator setup in this browser tab. Do not scan an older QR code; restart setup explicitly.' });
+      return;
+    }
+    if (pendingFactors.length > 0) {
+      setState({ kind: 'error', message: 'An unfinished authenticator setup already exists but its original QR code is unavailable in this tab. Restart the incomplete setup before creating a new QR code.' });
+      return;
     }
     const { data: enrollment, error: enrollmentError } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
@@ -155,7 +170,15 @@ export default function SystemAdminMfaGate({ children }: { children: ReactNode }
       setState({ kind: 'error', message: enrollmentError.message });
       return;
     }
-    setState({ kind: 'enroll', factorId: enrollment.id, qrCode: enrollment.totp.qr_code, uri: enrollment.totp.uri, secret: enrollment.totp.secret });
+    const nextState = { kind: 'enroll' as const, factorId: enrollment.id, qrCode: enrollment.totp.qr_code, uri: enrollment.totp.uri, secret: enrollment.totp.secret };
+    try {
+      window.sessionStorage.setItem(storageKey, JSON.stringify({ ...nextState, expiresAt: Date.now() + 30 * 60 * 1000 }));
+    } catch {
+      await supabase.auth.mfa.unenroll({ factorId: enrollment.id });
+      setState({ kind: 'error', message: 'This browser cannot retain the pending authenticator setup. Enable session storage and retry.' });
+      return;
+    }
+    setState(nextState);
   }, []);
 
   useEffect(() => {
