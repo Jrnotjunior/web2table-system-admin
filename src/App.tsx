@@ -430,8 +430,15 @@ function AppContent() {
   async function completeSystemAdminInvitation() {
     setInviteSetupError('');
 
-    if (invitePassword.length < 8) {
-      setInviteSetupError('Your password must be at least 8 characters.');
+    const passwordRequirements = [
+      { label: 'At least 8 characters', met: invitePassword.length >= 8 },
+      { label: 'One uppercase letter', met: /[A-Z]/.test(invitePassword) },
+      { label: 'One lowercase letter', met: /[a-z]/.test(invitePassword) },
+      { label: 'One number', met: /[0-9]/.test(invitePassword) },
+      { label: 'One special character', met: /[^A-Za-z0-9]/.test(invitePassword) },
+    ];
+    if (passwordRequirements.some((requirement) => !requirement.met)) {
+      setInviteSetupError('Your password does not meet all the requirements.');
       return;
     }
 
@@ -1215,6 +1222,13 @@ function AppContent() {
                 </button>
               </span>
             </label>
+            <ul className="invite-password-requirements" aria-live="polite">
+              <li className={invitePassword.length >= 8 ? 'met' : ''}>At least 8 characters</li>
+              <li className={/[A-Z]/.test(invitePassword) ? 'met' : ''}>One uppercase letter</li>
+              <li className={/[a-z]/.test(invitePassword) ? 'met' : ''}>One lowercase letter</li>
+              <li className={/[0-9]/.test(invitePassword) ? 'met' : ''}>One number</li>
+              <li className={/[^A-Za-z0-9]/.test(invitePassword) ? 'met' : ''}>One special character</li>
+            </ul>
             {inviteSetupError && <div className="error-banner" role="alert" aria-live="assertive">{inviteSetupError}</div>}
             <button type="submit" disabled={inviteSettingPassword}>
               {inviteSettingPassword ? 'Creating password...' : 'Create password'}
