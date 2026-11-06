@@ -77,12 +77,12 @@
   width:100%;
   min-height:41px;
   margin-top:8px;
-  border:1px solid #fff;
+  border:1px solid #444;
   border-radius:8px;
-  background:#fff;
-  color:#111;
+  background:transparent;
+  color:#fff;
   font:650 13px Inter,Arial,sans-serif;
   cursor:pointer;
 }
-.system-admin-mfa-screen .system-admin-mfa-card>button.system-admin-mfa-secondary:hover:not(:disabled){background:#e8e8e8;border-color:#e8e8e8;color:#111}
+.system-admin-mfa-screen .system-admin-mfa-card>button.system-admin-mfa-secondary:hover:not(:disabled){background:#171717;border-color:#666;color:#fff}
 .system-admin-mfa-screen .system-admin-mfa-card>button.system-admin-mfa-secondary:disabled{opacity:.6;cursor:not-allowed}
