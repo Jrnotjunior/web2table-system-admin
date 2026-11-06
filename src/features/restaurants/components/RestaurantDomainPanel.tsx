@@ -1,21 +1,24 @@
 type RestaurantDomainPanelProps = {
   restaurantName: string;
   restaurantSlug: string;
+  customDomain: string | null;
 };
 
-export default function RestaurantDomainPanel({ restaurantName, restaurantSlug }: RestaurantDomainPanelProps) {
-  const orderingUrl = `https://app.web2table.io/#order/${encodeURIComponent(restaurantSlug)}?branch=main`;
+export default function RestaurantDomainPanel({ restaurantName, restaurantSlug, customDomain }: RestaurantDomainPanelProps) {
+  const activeDomain = customDomain?.trim() || 'app.web2table.io';
+  const isCustomDomain = activeDomain !== 'app.web2table.io';
+  const orderingUrl = `https://${activeDomain}/#order/${encodeURIComponent(restaurantSlug)}?branch=main`;
 
   return (
     <div className="manage-overview">
       <div className="overview-section">
         <div className="eyebrow">Restaurant ordering domain</div>
         <h3>Public ordering URL</h3>
-        <p>This restaurant uses Web2Table's shared ordering domain. Each restaurant is identified by its own URL path.</p>
+        <p>{isCustomDomain ? 'This restaurant uses its own custom ordering domain.' : "This restaurant uses Web2Table's shared ordering domain. Each restaurant is identified by its own URL path."}</p>
         <div className="domain-status-panel">
           <div>
-            <strong>Active Web2Table domain</strong>
-            <span><strong>app.web2table.io</strong> is the ordering domain for {restaurantName}.</span>
+            <strong>{isCustomDomain ? 'Active custom domain' : 'Active Web2Table domain'}</strong>
+            <span><strong>{activeDomain}</strong> is the ordering domain for {restaurantName}.</span>
           </div>
           <span className="status active">Active</span>
         </div>
@@ -31,7 +34,7 @@ export default function RestaurantDomainPanel({ restaurantName, restaurantSlug }
           </div>
         </div>
         <div className="domain-help">
-          The URL uses this restaurant's unique identifier (<strong>{restaurantSlug}</strong>) and the default branch. No separate domain registration is required for the standard Web2Table ordering address.
+          The URL uses this restaurant's unique identifier (<strong>{restaurantSlug}</strong>) and the default branch. {isCustomDomain ? 'Customers access the storefront through the restaurant’s custom domain.' : 'No separate domain registration is required for the standard Web2Table ordering address.'}
         </div>
       </div>
     </div>
