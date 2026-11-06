@@ -1221,13 +1221,15 @@ function AppContent() {
                 </button>
               </span>
             </label>
-            <ul className="invite-password-requirements" aria-live="polite">
-              <li className={invitePassword.length >= 8 ? 'met' : ''}>At least 8 characters</li>
-              <li className={/[A-Z]/.test(invitePassword) ? 'met' : ''}>One uppercase letter</li>
-              <li className={/[a-z]/.test(invitePassword) ? 'met' : ''}>One lowercase letter</li>
-              <li className={/[0-9]/.test(invitePassword) ? 'met' : ''}>One number</li>
-              <li className={/[^A-Za-z0-9]/.test(invitePassword) ? 'met' : ''}>One special character</li>
-            </ul>
+            {invitePassword.length > 0 && (
+              <ul className="invite-password-requirements" aria-live="polite">
+                <li className={invitePassword.length >= 8 ? 'met' : ''}>At least 8 characters</li>
+                <li className={/[A-Z]/.test(invitePassword) ? 'met' : ''}>One uppercase letter</li>
+                <li className={/[a-z]/.test(invitePassword) ? 'met' : ''}>One lowercase letter</li>
+                <li className={/[0-9]/.test(invitePassword) ? 'met' : ''}>One number</li>
+                <li className={/[^A-Za-z0-9]/.test(invitePassword) ? 'met' : ''}>One special character</li>
+              </ul>
+            )}
             {inviteSetupError && <div className="error-banner" role="alert" aria-live="assertive">{inviteSetupError}</div>}
             <button type="submit" disabled={inviteSettingPassword}>
               {inviteSettingPassword ? 'Creating password...' : 'Create password'}
