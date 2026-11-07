@@ -8,6 +8,12 @@ type RestaurantSettingsPanelProps = {
   automaticRiderAssignmentEnabled: boolean;
   onlinePaymentsEnabled: boolean;
   onOnlinePaymentsEnabledChange: (value: boolean) => void;
+  scheduledOrderingEnabled: boolean;
+  scheduledCashPaymentEnabled: boolean;
+  scheduledOnlinePaymentEnabled: boolean;
+  onScheduledOrderingEnabledChange: (value: boolean) => void;
+  onScheduledCashPaymentEnabledChange: (value: boolean) => void;
+  onScheduledOnlinePaymentEnabledChange: (value: boolean) => void;
   onAutomaticRiderAssignmentChange: (value: boolean) => void;
   settingsError: string;
   settingsSaving: boolean;
@@ -25,6 +31,12 @@ export default function RestaurantSettingsPanel({
   onAutomaticRiderAssignmentChange,
   onlinePaymentsEnabled,
   onOnlinePaymentsEnabledChange,
+  scheduledOrderingEnabled,
+  scheduledCashPaymentEnabled,
+  scheduledOnlinePaymentEnabled,
+  onScheduledOrderingEnabledChange,
+  onScheduledCashPaymentEnabledChange,
+  onScheduledOnlinePaymentEnabledChange,
   settingsError,
   settingsSaving,
   onRequestSave,
@@ -64,6 +76,30 @@ export default function RestaurantSettingsPanel({
                   <input className="toggle-input" type="checkbox" checked={onlinePaymentsEnabled} onChange={(event) => onOnlinePaymentsEnabledChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
                   <span className="toggle-switch" aria-hidden="true"><span /></span>
                   <span className="toggle-label">{onlinePaymentsEnabled ? 'Enabled' : 'Disabled'}</span>
+                </label>
+              </div>
+              <div className="detail-item">
+                <span>Scheduled Ordering</span>
+                <label className="toggle-row">
+                  <input className="toggle-input" type="checkbox" checked={scheduledOrderingEnabled} onChange={(event) => onScheduledOrderingEnabledChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
+                  <span className="toggle-switch" aria-hidden="true"><span /></span>
+                  <span className="toggle-label">{scheduledOrderingEnabled ? 'Enabled' : 'Disabled'}</span>
+                </label>
+              </div>
+              <div className="detail-item">
+                <span>Scheduled Cash Payment</span>
+                <label className="toggle-row">
+                  <input className="toggle-input" type="checkbox" checked={scheduledCashPaymentEnabled} onChange={(event) => onScheduledCashPaymentEnabledChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
+                  <span className="toggle-switch" aria-hidden="true"><span /></span>
+                  <span className="toggle-label">{scheduledCashPaymentEnabled ? 'Enabled' : 'Disabled'}</span>
+                </label>
+              </div>
+              <div className="detail-item">
+                <span>Scheduled Online Payment</span>
+                <label className="toggle-row">
+                  <input className="toggle-input" type="checkbox" checked={scheduledOnlinePaymentEnabled} onChange={(event) => onScheduledOnlinePaymentEnabledChange(event.target.checked)} disabled={!canManage || settingsLoading || settingsSaving} />
+                  <span className="toggle-switch" aria-hidden="true"><span /></span>
+                  <span className="toggle-label">{scheduledOnlinePaymentEnabled ? 'Enabled' : 'Disabled'}</span>
                 </label>
               </div>
               <div className="detail-item">
