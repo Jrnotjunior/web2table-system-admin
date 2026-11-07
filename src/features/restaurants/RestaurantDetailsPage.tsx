@@ -35,11 +35,14 @@ type Props = {
   staffState: Pick<StaffProps, 'staffLoading' | 'staffError' | 'restaurantStaff' | 'staffActionError' | 'staffActionId'>;
   onSetStaffActive: StaffProps['onSetStaffActive'];
   onRequestDeleteStaff: StaffProps['onRequestDelete'];
-  settingsState: Pick<SettingsProps, 'settingsLoading' | 'cashOnDeliveryEnabled' | 'cashOnPickupEnabled' | 'automaticRiderAssignmentEnabled' | 'onlinePaymentsEnabled' | 'settingsError' | 'settingsSaving'>;
+  settingsState: Pick<SettingsProps, 'settingsLoading' | 'cashOnDeliveryEnabled' | 'cashOnPickupEnabled' | 'automaticRiderAssignmentEnabled' | 'onlinePaymentsEnabled' | 'settingsError' | 'settingsSaving' | 'scheduledOrderingEnabled' | 'scheduledCashPaymentEnabled' | 'scheduledOnlinePaymentEnabled'>;
   onCashOnDeliveryChange: SettingsProps['onCashOnDeliveryChange'];
   onCashOnPickupChange: SettingsProps['onCashOnPickupChange'];
   onAutomaticRiderAssignmentChange: SettingsProps['onAutomaticRiderAssignmentChange'];
   onOnlinePaymentsEnabledChange: SettingsProps['onOnlinePaymentsEnabledChange'];
+  onScheduledOrderingEnabledChange: SettingsProps['onScheduledOrderingEnabledChange'];
+  onScheduledCashPaymentEnabledChange: SettingsProps['onScheduledCashPaymentEnabledChange'];
+  onScheduledOnlinePaymentEnabledChange: SettingsProps['onScheduledOnlinePaymentEnabledChange'];
   onRequestSaveSettings: () => void;
 };
 
@@ -60,7 +63,7 @@ export default function RestaurantDetailsPage(p: Props) {
       ) : p.manageTab === 'staff' ? (
         <RestaurantStaffPanel canManage={p.canManage} staffLoading={p.staffState.staffLoading} staffError={p.staffState.staffError} restaurantStaff={p.staffState.restaurantStaff} staffActionError={p.staffState.staffActionError} staffActionId={p.staffState.staffActionId} onSetStaffActive={p.onSetStaffActive} onRequestDelete={p.onRequestDeleteStaff} />
       ) : (
-        <RestaurantSettingsPanel canManage={p.canManage} settingsLoading={p.settingsState.settingsLoading} cashOnDeliveryEnabled={p.settingsState.cashOnDeliveryEnabled} onCashOnDeliveryChange={p.onCashOnDeliveryChange} cashOnPickupEnabled={p.settingsState.cashOnPickupEnabled} onCashOnPickupChange={p.onCashOnPickupChange} automaticRiderAssignmentEnabled={p.settingsState.automaticRiderAssignmentEnabled} onAutomaticRiderAssignmentChange={p.onAutomaticRiderAssignmentChange} onlinePaymentsEnabled={p.settingsState.onlinePaymentsEnabled} onOnlinePaymentsEnabledChange={p.onOnlinePaymentsEnabledChange} settingsError={p.settingsState.settingsError} settingsSaving={p.settingsState.settingsSaving} onRequestSave={p.onRequestSaveSettings} />
+        <RestaurantSettingsPanel canManage={p.canManage} settingsLoading={p.settingsState.settingsLoading} cashOnDeliveryEnabled={p.settingsState.cashOnDeliveryEnabled} onCashOnDeliveryChange={p.onCashOnDeliveryChange} cashOnPickupEnabled={p.settingsState.cashOnPickupEnabled} onCashOnPickupChange={p.onCashOnPickupChange} automaticRiderAssignmentEnabled={p.settingsState.automaticRiderAssignmentEnabled} onAutomaticRiderAssignmentChange={p.onAutomaticRiderAssignmentChange} onlinePaymentsEnabled={p.settingsState.onlinePaymentsEnabled} onOnlinePaymentsEnabledChange={p.onOnlinePaymentsEnabledChange} scheduledOrderingEnabled={p.settingsState.scheduledOrderingEnabled} scheduledCashPaymentEnabled={p.settingsState.scheduledCashPaymentEnabled} scheduledOnlinePaymentEnabled={p.settingsState.scheduledOnlinePaymentEnabled} onScheduledOrderingEnabledChange={p.onScheduledOrderingEnabledChange} onScheduledCashPaymentEnabledChange={p.onScheduledCashPaymentEnabledChange} onScheduledOnlinePaymentEnabledChange={p.onScheduledOnlinePaymentEnabledChange} settingsError={p.settingsState.settingsError} settingsSaving={p.settingsState.settingsSaving} onRequestSave={p.onRequestSaveSettings} />
       )}
     </section>
   );
