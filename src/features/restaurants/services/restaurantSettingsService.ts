@@ -134,3 +134,28 @@ export async function configureDisabledInvoiceSeries(restaurantId: string, input
     p_next_serial: input.nextSerial,
   });
 }
+
+
+export type ScheduledOrderingSettings = {
+  enabled: boolean;
+  cash_payment_enabled: boolean;
+  online_payment_enabled: boolean;
+};
+
+export async function fetchScheduledOrderingSettings(restaurantId: string) {
+  return supabase.rpc('system_admin_get_scheduled_ordering_settings', {
+    p_restaurant_id: restaurantId,
+  });
+}
+
+export async function updateScheduledOrderingSettings(
+  restaurantId: string,
+  settings: ScheduledOrderingSettings,
+) {
+  return supabase.rpc('system_admin_set_scheduled_ordering_settings', {
+    p_restaurant_id: restaurantId,
+    p_enabled: settings.enabled,
+    p_cash_payment_enabled: settings.cash_payment_enabled,
+    p_online_payment_enabled: settings.online_payment_enabled,
+  });
+}
