@@ -17,7 +17,7 @@ import { fetchDashboardData } from './features/dashboard/services/dashboardServi
 import { fetchRestaurants, fetchRestaurantById, deleteRestaurant as deleteRestaurantService } from './features/restaurants/services/restaurantService';
 import { updateRestaurantActiveStatus } from './features/restaurants/services/restaurantProfileService';
 import { inviteRestaurantTenant } from './features/restaurants/services/restaurantInvitationService';
-import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled } from './features/restaurants/services/restaurantSettingsService';
+import { fetchRestaurantSettings, updateRestaurantSettings, fetchOnlinePaymentsEnabled, updateOnlinePaymentsEnabled, fetchScheduledOrderingSettings, updateScheduledOrderingSettings } from './features/restaurants/services/restaurantSettingsService';
 import { fetchRestaurantStaff, deleteRestaurantStaff, setRestaurantStaffActive as setRestaurantStaffActiveService } from './features/restaurants/services/restaurantStaffService';
 import { fetchRestaurantOwner, assignRestaurantOwner as assignRestaurantOwnerService, inviteRestaurantOwner, removeRestaurantOwner } from './features/restaurants/services/restaurantOwnerService';
 
@@ -141,6 +141,9 @@ function AppContent() {
   const [cashOnTakeOutEnabled, setCashOnTakeOutEnabled] = useState(true);
   const [automaticRiderAssignmentEnabled, setAutomaticRiderAssignmentEnabled] = useState(false);
   const [onlinePaymentsEnabled, setOnlinePaymentsEnabled] = useState(false);
+  const [scheduledOrderingEnabled, setScheduledOrderingEnabled] = useState(false);
+  const [scheduledCashPaymentEnabled, setScheduledCashPaymentEnabled] = useState(false);
+  const [scheduledOnlinePaymentEnabled, setScheduledOnlinePaymentEnabled] = useState(false);
   const [vatRegistered, setVatRegistered] = useState(false);
   const [pricesVatInclusive, setPricesVatInclusive] = useState(false);
   const [vatRate, setVatRate] = useState('12');
@@ -649,9 +652,10 @@ function AppContent() {
     setSettingsLoading(true);
     setSettingsError('');
 
-    const [{ data, error }, onlinePaymentsResult] = await Promise.all([
+    const [{ data, error }, onlinePaymentsResult, scheduledOrderingResult] = await Promise.all([
       fetchRestaurantSettings(restaurantId),
       fetchOnlinePaymentsEnabled(restaurantId),
+      fetchScheduledOrderingSettings(restaurantId),
     ]);
 
     if (error) {
@@ -671,6 +675,19 @@ function AppContent() {
       setSettingsError((previous) => previous || onlinePaymentsResult.error.message);
     } else {
       setOnlinePaymentsEnabled(Boolean(onlinePaymentsResult.data));
+    }
+    const scheduledSettings = scheduledOrderingResult.data as {
+      enabled?: boolean; cash_payment_enabled?: boolean; online_payment_enabled?: boolean;
+    } | null;
+    if (scheduledOrderingResult.error) {
+      setSettingsError((previous) => previous || scheduledOrderingResult.error.message);
+      setScheduledOrderingEnabled(false);
+      setScheduledCashPaymentEnabled(false);
+      setScheduledOnlinePaymentEnabled(false);
+    } else {
+      setScheduledOrderingEnabled(Boolean(scheduledSettings?.enabled));
+      setScheduledCashPaymentEnabled(Boolean(scheduledSettings?.cash_payment_enabled));
+      setScheduledOnlinePaymentEnabled(Boolean(scheduledSettings?.online_payment_enabled));
     }
 
     setSettingsLoading(false);
@@ -699,6 +716,12 @@ function AppContent() {
     } else {
       const { error: onlinePaymentsError } = await updateOnlinePaymentsEnabled(selectedRestaurant.id, onlinePaymentsEnabled);
       if (onlinePaymentsError) setSettingsError(onlinePaymentsError.message);
+      const { error: scheduledOrderingError } = await updateScheduledOrderingSettings(selectedRestaurant.id, {
+        enabled: scheduledOrderingEnabled,
+        cash_payment_enabled: scheduledCashPaymentEnabled,
+        online_payment_enabled: scheduledOnlinePaymentEnabled,
+      });
+      if (scheduledOrderingError) setSettingsError(scheduledOrderingError.message);
       const settings = Array.isArray(data) ? data[0] : data;
       setCashOnDeliveryEnabled(settings?.cash_on_delivery_enabled ?? cashOnDeliveryEnabled);
       setCashOnPickupEnabled(settings?.cash_on_pickup_enabled ?? cashOnPickupEnabled);
@@ -1701,11 +1724,14 @@ function AppContent() {
           staffState={{ staffLoading, staffError, restaurantStaff, staffActionError, staffActionId }}
           onSetStaffActive={(staffId, isActive) => void setRestaurantStaffActive(staffId, isActive)}
           onRequestDeleteStaff={requestDeleteRestaurantStaff}
-          settingsState={{ settingsLoading, cashOnDeliveryEnabled, cashOnPickupEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, settingsError, settingsSaving }}
+          settingsState={{ settingsLoading, cashOnDeliveryEnabled, cashOnPickupEnabled, automaticRiderAssignmentEnabled, onlinePaymentsEnabled, scheduledOrderingEnabled, scheduledCashPaymentEnabled, scheduledOnlinePaymentEnabled, settingsError, settingsSaving }}
           onCashOnDeliveryChange={setCashOnDeliveryEnabled}
           onCashOnPickupChange={setCashOnPickupEnabled}
           onAutomaticRiderAssignmentChange={setAutomaticRiderAssignmentEnabled}
           onOnlinePaymentsEnabledChange={setOnlinePaymentsEnabled}
+          onScheduledOrderingEnabledChange={setScheduledOrderingEnabled}
+          onScheduledCashPaymentEnabledChange={setScheduledCashPaymentEnabled}
+          onScheduledOnlinePaymentEnabledChange={setScheduledOnlinePaymentEnabled}
           onRequestSaveSettings={() => setPendingSaveSettings(true)}
         />
           {pendingRestaurantStatus && (
